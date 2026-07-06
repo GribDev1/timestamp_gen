@@ -34,6 +34,7 @@ os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 from pathlib import Path
 import numpy as np
 import cv2
+from tqdm import tqdm
 
 from timestamp_dataset import TimestampBlock, TimestampDataset, TimestampMetadata
 
@@ -795,21 +796,20 @@ def main():
 
         prev_tau_hat = curr_tau_hat
 
-        valid_count = np.isfinite(block.timestamps_noisy_s).sum()
-        mean_detected_per_pixel = valid_count / (TOF_H * TOF_W)
-
-        print(
-            f"Frame {block.frame_number:03d}: "
-            f"valid noisy timestamps={valid_count}, "
-            f"mean detections/pixel={mean_detected_per_pixel:.2f}"
-        )
-
     if USE_INTERPOLATED_VISIBILITY_SWITCH:
-        frame_pairs = zip(
+        frame_pairs = list(zip(
             depth_files[:-1],
             depth_files[1:],
             normal_files[:-1],
             normal_files[1:],
+        ))
+
+        total_blocks = len(frame_pairs) * NUM_INTERPOLATION_STEPS
+
+        pbar = tqdm(
+            total=total_blocks,
+            desc="Generating timestamp blocks",
+            unit="block",
         )
 
         output_frame_number = 1
@@ -838,10 +838,16 @@ def main():
 
                 process_block(block)
 
+                pbar.update(1)
                 output_frame_number += 1
 
+        pbar.close()
     else:
-        for frame_i, (depth_path, normal_path) in enumerate(zip(depth_files, normal_files)):
+        frame_items = list(zip(depth_files, normal_files))
+
+        for frame_i, (depth_path, normal_path) in enumerate(
+            tqdm(frame_items, desc="Generating timestamp blocks", unit="frame")
+        ):
             frame_number = frame_i + 1
 
             depth = load_depth_file(depth_path)
