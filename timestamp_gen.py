@@ -71,8 +71,6 @@ HIST_NUM_BINS = 256
 USE_ADAPTIVE_TIME_GATING = True
 ADAPTIVE_GATE_M = 1.0
 
-DELTA_WINDOW = 0.15
-
 MAX_SAME_SURFACE_SPEED_M_PER_S = 10.0
 SWITCH_DIST_THRESH_M = MAX_SAME_SURFACE_SPEED_M_PER_S * RENDER_DT
 
@@ -584,32 +582,6 @@ def adaptive_time_gate(timestamps, coarse_tau_hat, gate_tau):
     return gated
 
 
-def compute_pulse_streams(timestamps, tau_hat, delta_tau):
-    """
-    Classifies each pulse as in-window (S1) or out-of-window (S2+).
-
-    timestamps: [L, tof_h, tof_w]  — NaN = missed pulse
-    tau_hat:    [tof_h, tof_w]      — block-rate depth estimate (seconds)
-    delta_m:    window half-width in meters
-
-    Returns:
-        S1:   float32 [tof_h, tof_w], fraction of pulses inside window
-        S2p:  float32 [tof_h, tof_w], fraction of pulses outside window
-    """
-    diff = np.abs(timestamps - tau_hat[np.newaxis])   # [L, tof_h, tof_w]
-    valid = np.isfinite(timestamps)
-
-    # Missed pulses register as 0 in both streams (paper Section 3.4)
-    in_window  = valid & (diff <= delta_tau)
-    out_window = valid & (diff >  delta_tau)
-
-    L = timestamps.shape[0]
-    S1  = in_window.sum(axis=0).astype(np.float32)  / L
-    S2p = out_window.sum(axis=0).astype(np.float32) / L
-
-    return S1, S2p
-
-
 def compute_valid_detection_fraction(timestamps: np.ndarray):
     """
     I[k] = 1 if a valid timestamp is recorded, else 0.
@@ -713,13 +685,6 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--delta-window-m",
-        type=float,
-        default=0.15,
-        help="Pulse stream in-window half-width in meters. Default: 0.15",
-    )
-
-    parser.add_argument(
         "--no-full-dataset",
         action="store_true",
         help="Do not save full per-frame timestamp dataset.",
@@ -800,12 +765,8 @@ def main():
 
     blocks = [] if save_full_timestamp_dataset else None
     tof_depths = []
-    all_S1 = []
-    all_S2p = []
     all_I = []
     all_histograms = []
-
-    prev_tau_hat = None
 
     depth_edges = np.linspace(hist_depth_min_m, hist_depth_max_m, hist_num_bins + 1)
     tau_edges = SENSOR.depth_to_timestamp(depth_edges).astype(np.float32)
@@ -819,11 +780,8 @@ def main():
     ray_cos_map = SENSOR.build_ray_cos_map()
 
     gate_tau = SENSOR.depth_to_timestamp(adaptive_gate_m)
-    delta_tau = SENSOR.depth_to_timestamp(delta_window_m)
 
     def process_block(block):
-        nonlocal prev_tau_hat
-
         if save_full_timestamp_dataset:
             blocks.append(block)
 
@@ -847,23 +805,11 @@ def main():
 
         tof_depth_hist = SENSOR.timestamp_to_depth(curr_tau_hat)
 
-        reference_tau_hat = curr_tau_hat if prev_tau_hat is None else prev_tau_hat
-
-        S1, S2p = compute_pulse_streams(
-            timestamps=timestamps,
-            tau_hat=reference_tau_hat,
-            delta_tau=delta_tau,
-        )
-
         I = compute_valid_detection_fraction(timestamps)
 
         tof_depths.append(tof_depth_hist)
-        all_S1.append(S1)
-        all_S2p.append(S2p)
         all_I.append(I)
         all_histograms.append(histograms)
-
-        prev_tau_hat = curr_tau_hat
 
     if use_interpolated_visibility_switch:
         frame_pairs = list(zip(
@@ -945,8 +891,6 @@ def main():
         raise RuntimeError("No timestamp blocks were generated.")
 
     tof_depths = np.stack(tof_depths, axis=0)
-    all_S1 = np.stack(all_S1, axis=0)
-    all_S2p = np.stack(all_S2p, axis=0)
     all_I = np.stack(all_I, axis=0)
     all_histograms = np.stack(all_histograms, axis=0)
 
@@ -958,8 +902,6 @@ def main():
         np.savez(
             precomputed_path,
             tof_depths=tof_depths,
-            all_S1=all_S1,
-            all_S2p=all_S2p,
             all_I=all_I,
             all_histograms=all_histograms,
             hist_bin_centers_tau=hist_bin_centers_tau,

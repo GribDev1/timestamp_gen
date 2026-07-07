@@ -30,12 +30,11 @@ The goal is to bridge rendered depth scenes and timestamp-based ToF algorithms.
 * Supports weighted depth sampling using surface normals and distance falloff.
 * Preserves sub-pixel depth mixtures at object boundaries and occlusions.
 * Supports interpolated visibility switching between rendered frames.
-* Generates per-frame mini-histograms.
-* Computes block-rate depth estimates.
-* Computes pulse-rate streams used for token generation:
-  * S1: in-window timestamp fraction
-  * S2+: out-of-window timestamp fraction
-  * I: valid detection fraction
+* Computes timestamp-derived diagnostic data:
+  * per-frame mini-histograms
+  * block-rate depth estimates
+  * valid detection fraction I
+  * histogram bin centers
 * Saves timestamp datasets in a reusable .npz format with metadata.
 
 ## Pipeline
