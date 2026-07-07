@@ -35,31 +35,16 @@ from pathlib import Path
 import numpy as np
 import cv2
 from tqdm import tqdm
+import argparse
 
-from tof_sensor import ToFSensor
+from sensor_presets import get_sensor_preset
 from timestamp_dataset import TimestampBlock, TimestampDataset, TimestampMetadata
 
 # =========================
 # User settings
 # =========================
 
-RENDER_DIR = Path("full_render_320x160")
-DEPTH_DIR = RENDER_DIR / "depths"
-NORMAL_DIR = RENDER_DIR / "normals"
-
-OUTPUT_DIR = Path("timestamp_output")
-
-SENSOR = ToFSensor(
-    name="generic_spad_sensor",
-    tof_h=32,
-    tof_w=64,
-    laser_rate_hz=10e6,
-    block_size_L=256,
-    detection_probability_rho=0.05,
-    timing_jitter_std_s=50e-12,
-    min_valid_depth_m=0.01,
-    max_valid_depth_m=20.0,
-)
+SENSOR = get_sensor_preset("generic_spad_sensor")
 
 USE_INTERPOLATED_VISIBILITY_SWITCH = True
 
@@ -635,15 +620,174 @@ def compute_valid_detection_fraction(timestamps: np.ndarray):
     return np.isfinite(timestamps).sum(axis=0).astype(np.float32) / timestamps.shape[0]
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description=(
+            "Generate simulated single-photon ToF timestamp data from "
+            "rendered depth and normal EXR files."
+        )
+    )
+
+    parser.add_argument(
+        "--sensor",
+        default="generic_spad_sensor",
+        help=(
+            "Name of the ToF sensor preset to use from configs/tof_sensors.csv. "
+            "Default: generic_spad_sensor"
+        ),
+    )
+
+    parser.add_argument(
+        "--render-dir",
+        type=Path,
+        default=Path("full_render_320x160"),
+        help=(
+            "Directory containing depths/ and normals/ subfolders. "
+            "Default: full_render_320x160"
+        ),
+    )
+
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("timestamp_output"),
+        help="Directory where timestamp outputs will be saved. Default: timestamp_output",
+    )
+
+    parser.add_argument(
+        "--random-seed",
+        type=int,
+        default=0,
+        help="Random seed for reproducible timestamp simulation. Default: 0",
+    )
+
+    parser.add_argument(
+        "--render-fps",
+        type=float,
+        default=240.0,
+        help="Frame rate of the rendered input sequence. Default: 240.0",
+    )
+
+    parser.add_argument(
+        "--interpolation-steps",
+        type=int,
+        default=4,
+        help=(
+            "Number of timestamp blocks generated between each rendered frame pair. "
+            "Default: 4"
+        ),
+    )
+
+    parser.add_argument(
+        "--no-interpolation",
+        action="store_true",
+        help="Disable interpolated visibility switching and process rendered frames directly.",
+    )
+
+    parser.add_argument(
+        "--hist-bins",
+        type=int,
+        default=256,
+        help="Number of histogram bins for timestamp depth estimation. Default: 256",
+    )
+
+    parser.add_argument(
+        "--hist-depth-min",
+        type=float,
+        default=0.1,
+        help="Minimum histogram depth in meters. Default: 0.1",
+    )
+
+    parser.add_argument(
+        "--hist-depth-max",
+        type=float,
+        default=20.0,
+        help="Maximum histogram depth in meters. Default: 20.0",
+    )
+
+    parser.add_argument(
+        "--adaptive-gate-m",
+        type=float,
+        default=1.0,
+        help="Adaptive time-gate half-width in meters. Default: 1.0",
+    )
+
+    parser.add_argument(
+        "--delta-window-m",
+        type=float,
+        default=0.15,
+        help="Pulse stream in-window half-width in meters. Default: 0.15",
+    )
+
+    parser.add_argument(
+        "--no-full-dataset",
+        action="store_true",
+        help="Do not save full per-frame timestamp dataset.",
+    )
+
+    parser.add_argument(
+        "--no-precomputed",
+        action="store_true",
+        help="Do not save timestamp_precomputed.npz.",
+    )
+
+    return parser.parse_args()
+
+
 # =========================
 # Main
 # =========================
 
 def main():
-    np.random.seed(RANDOM_SEED)
+    global SENSOR
 
-    depth_files = find_depth_files(DEPTH_DIR)
-    normal_files = find_normal_files(NORMAL_DIR)
+    args = parse_args()
+
+    SENSOR = get_sensor_preset(args.sensor)
+
+    render_dir = args.render_dir
+    depth_dir = render_dir / "depths"
+    normal_dir = render_dir / "normals"
+    output_dir = args.output_dir
+
+    use_interpolated_visibility_switch = not args.no_interpolation
+    num_interpolation_steps = args.interpolation_steps
+
+    render_fps = args.render_fps
+    render_dt = 1.0 / render_fps
+
+    effective_fps = (
+        render_fps * num_interpolation_steps
+        if use_interpolated_visibility_switch
+        else render_fps
+    )
+    effective_dt = 1.0 / effective_fps
+
+    hist_depth_min_m = args.hist_depth_min
+    hist_depth_max_m = args.hist_depth_max
+    hist_num_bins = args.hist_bins
+
+    adaptive_gate_m = args.adaptive_gate_m
+    delta_window_m = args.delta_window_m
+
+    save_full_timestamp_dataset = not args.no_full_dataset
+    save_precomputed_data = not args.no_precomputed
+
+    switch_dist_thresh_m = MAX_SAME_SURFACE_SPEED_M_PER_S * render_dt
+    
+    print(f"Using sensor preset: {SENSOR.name}")
+    print(f"Sensor grid: {SENSOR.tof_h} x {SENSOR.tof_w}")
+    print(f"Laser rate: {SENSOR.laser_rate_hz:.3g} Hz")
+    print(f"Block size: {SENSOR.block_size_L} pulses")
+    print(
+        "Expected detections/pixel/block: "
+        f"{SENSOR.block_size_L * SENSOR.detection_probability_rho:.2f}"
+    )
+
+    np.random.seed(args.random_seed)
+
+    depth_files = find_depth_files(depth_dir)
+    normal_files = find_normal_files(normal_dir)
 
     if len(depth_files) != len(normal_files):
         raise RuntimeError(
@@ -654,7 +798,7 @@ def main():
     print(f"Found {len(depth_files)} frames.")
     print("Generating timestamp dataset...")
 
-    blocks = [] if SAVE_FULL_TIMESTAMP_DATASET else None
+    blocks = [] if save_full_timestamp_dataset else None
     tof_depths = []
     all_S1 = []
     all_S2p = []
@@ -663,7 +807,7 @@ def main():
 
     prev_tau_hat = None
 
-    depth_edges = np.linspace(HIST_DEPTH_MIN_M, HIST_DEPTH_MAX_M, HIST_NUM_BINS + 1)
+    depth_edges = np.linspace(hist_depth_min_m, hist_depth_max_m, hist_num_bins + 1)
     tau_edges = SENSOR.depth_to_timestamp(depth_edges).astype(np.float32)
     hist_bin_centers_tau = (0.5 * (tau_edges[:-1] + tau_edges[1:])).astype(np.float32)
     hist_bin_centers_depth_m = SENSOR.timestamp_to_depth(hist_bin_centers_tau)
@@ -674,13 +818,13 @@ def main():
     ray_dirs_full = SENSOR.build_fullres_ray_dirs(image_h, image_w)
     ray_cos_map = SENSOR.build_ray_cos_map()
 
-    gate_tau = SENSOR.depth_to_timestamp(ADAPTIVE_GATE_M)
-    delta_tau = SENSOR.depth_to_timestamp(DELTA_WINDOW)
+    gate_tau = SENSOR.depth_to_timestamp(adaptive_gate_m)
+    delta_tau = SENSOR.depth_to_timestamp(delta_window_m)
 
     def process_block(block):
         nonlocal prev_tau_hat
 
-        if SAVE_FULL_TIMESTAMP_DATASET:
+        if save_full_timestamp_dataset:
             blocks.append(block)
 
         timestamps_raw = block.timestamps_noisy_s
@@ -721,7 +865,7 @@ def main():
 
         prev_tau_hat = curr_tau_hat
 
-    if USE_INTERPOLATED_VISIBILITY_SWITCH:
+    if use_interpolated_visibility_switch:
         frame_pairs = list(zip(
             depth_files[:-1],
             depth_files[1:],
@@ -729,7 +873,7 @@ def main():
             normal_files[1:],
         ))
 
-        total_blocks = len(frame_pairs) * NUM_INTERPOLATION_STEPS
+        total_blocks = len(frame_pairs) * num_interpolation_steps
 
         with tqdm(
             total=total_blocks,
@@ -745,8 +889,8 @@ def main():
                 normals1 = load_normal_file(normal_path1)
                 normals2 = load_normal_file(normal_path2)
 
-                for interp_i in range(NUM_INTERPOLATION_STEPS):
-                    alpha = interp_i / float(NUM_INTERPOLATION_STEPS)
+                for interp_i in range(num_interpolation_steps):
+                    alpha = interp_i / float(num_interpolation_steps)
 
                     block = simulate_timestamp_block_interpolated_pair(
                         depth1=depth1,
@@ -758,6 +902,12 @@ def main():
                         source_depth_file=f"{depth_path1} -> {depth_path2}, alpha={alpha:.3f}",
                         source_normal_file=f"{normal_path1} -> {normal_path2}, alpha={alpha:.3f}",
                         ray_dirs_full=ray_dirs_full,
+                        tof_h=SENSOR.tof_h,
+                        tof_w=SENSOR.tof_w,
+                        L=SENSOR.block_size_L,
+                        rho=SENSOR.detection_probability_rho,
+                        jitter_std=SENSOR.timing_jitter_std_s,
+                        switch_dist_thresh_m=switch_dist_thresh_m,
                     )
 
                     process_block(block)
@@ -782,6 +932,11 @@ def main():
                 source_depth_file=str(depth_path),
                 source_normal_file=str(normal_path),
                 ray_cos_map=ray_cos_map,
+                tof_h=SENSOR.tof_h,
+                tof_w=SENSOR.tof_w,
+                L=SENSOR.block_size_L,
+                rho=SENSOR.detection_probability_rho,
+                jitter_std=SENSOR.timing_jitter_std_s,
             )
 
             process_block(block)
@@ -795,10 +950,10 @@ def main():
     all_I = np.stack(all_I, axis=0)
     all_histograms = np.stack(all_histograms, axis=0)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    if SAVE_PRECOMPUTED_DATA:
-        precomputed_path = OUTPUT_DIR / "timestamp_precomputed.npz"
+    if save_precomputed_data:
+        precomputed_path = output_dir / "timestamp_precomputed.npz"
 
         np.savez(
             precomputed_path,
@@ -813,7 +968,7 @@ def main():
 
         print(f"Saved precomputed timestamp/histogram data to: {precomputed_path}")
 
-    if SAVE_FULL_TIMESTAMP_DATASET:
+    if save_full_timestamp_dataset:
         metadata = TimestampMetadata(
             tof_h=SENSOR.tof_h,
             tof_w=SENSOR.tof_w,
@@ -821,8 +976,8 @@ def main():
             laser_rate_hz=SENSOR.laser_rate_hz,
             detection_probability_rho=SENSOR.detection_probability_rho,
             timing_jitter_std_s=SENSOR.timing_jitter_std_s,
-            fps=EFFECTIVE_FPS,
-            dt_s=EFFECTIVE_DT,
+            fps=effective_fps,
+            dt_s=effective_dt,
             c_light=SENSOR.c_light,
             min_valid_depth_m=SENSOR.min_valid_depth_m,
             max_valid_depth_m=SENSOR.max_valid_depth_m,
@@ -830,7 +985,7 @@ def main():
         )
 
         dataset = TimestampDataset(blocks=blocks, metadata=metadata)
-        dataset.save(OUTPUT_DIR)
+        dataset.save(output_dir)
 
     print("Done.")
     
