@@ -36,6 +36,7 @@ import numpy as np
 import cv2
 from tqdm import tqdm
 
+from tof_sensor import ToFSensor
 from timestamp_dataset import TimestampBlock, TimestampDataset, TimestampMetadata
 
 # =========================
@@ -48,22 +49,17 @@ NORMAL_DIR = RENDER_DIR / "normals"
 
 OUTPUT_DIR = Path("timestamp_output")
 
-TOF_H = 32
-TOF_W = 64
-
-FOCAL_LENGTH_MM = 24.0
-SENSOR_WIDTH_MM = 36.0
-SENSOR_HEIGHT_MM = SENSOR_WIDTH_MM * (TOF_H / TOF_W)
-
-CAMERA_FOV_X_DEG = np.degrees(
-    2.0 * np.arctan(SENSOR_WIDTH_MM / (2.0 * FOCAL_LENGTH_MM))
+SENSOR = ToFSensor(
+    name="generic_spad_sensor",
+    tof_h=32,
+    tof_w=64,
+    laser_rate_hz=10e6,
+    block_size_L=256,
+    detection_probability_rho=0.05,
+    timing_jitter_std_s=50e-12,
+    min_valid_depth_m=0.01,
+    max_valid_depth_m=20.0,
 )
-CAMERA_FOV_Y_DEG = np.degrees(
-    2.0 * np.arctan(SENSOR_HEIGHT_MM / (2.0 * FOCAL_LENGTH_MM))
-)
-
-MIN_VALID_DEPTH = 0.01
-MAX_VALID_DEPTH = 20.0
 
 USE_INTERPOLATED_VISIBILITY_SWITCH = True
 
@@ -78,13 +74,6 @@ EFFECTIVE_FPS = (
     else RENDER_FPS
 )
 EFFECTIVE_DT = 1.0 / EFFECTIVE_FPS
-
-C_LIGHT = 299_792_458.0
-
-LASER_RATE_HZ = 10e6
-BLOCK_SIZE_L = 256
-DETECTION_PROB_RHO = 0.05
-TIMING_JITTER_STD = 50e-12
 
 USE_WEIGHTED_DEPTH_SAMPLING = True
 
@@ -125,8 +114,8 @@ def load_depth_file(path: Path) -> np.ndarray:
         
     depth = np.where(
         np.isfinite(depth)
-        & (depth > MIN_VALID_DEPTH)
-        & (depth < MAX_VALID_DEPTH),
+        & (depth > SENSOR.min_valid_depth_m)
+        & (depth < SENSOR.max_valid_depth_m),
         depth,
         np.nan
     )
@@ -172,18 +161,6 @@ def find_normal_files(normal_dir: Path):
 
 
 # =========================
-# Timestamp conversion
-# =========================
-
-def depth_to_timestamp(depth_m):
-    return 2.0 * depth_m / C_LIGHT
-
-
-def timestamp_to_depth(tau_s):
-    return tau_s * C_LIGHT / 2.0
-
-
-# =========================
 # Interpolation
 # =========================
 
@@ -191,41 +168,7 @@ def timestamp_to_depth(tau_s):
 def normalize_vectors(v, eps=1e-12):
     norm = np.linalg.norm(v, axis=-1, keepdims=True)
     return v / np.maximum(norm, eps)
-
-
-def build_fullres_ray_dirs(image_h: int, image_w: int) -> np.ndarray:
-    """
-    Build one camera ray direction per rendered high-resolution pixel.
-    
-    Output:
-        ray_dirs_full: [image_h, image_w, 3]
-    """
-    sensor_height_mm = SENSOR_WIDTH_MM * (image_h / image_w)
-    
-    fov_x = 2.0 * np.arctan(SENSOR_WIDTH_MM / (2.0 * FOCAL_LENGTH_MM))
-    fov_y = 2.0 * np.arctan(sensor_height_mm / (2.0 * FOCAL_LENGTH_MM))
-    
-    xs = np.arange(image_w, dtype=np.float32)
-    ys = np.arange(image_h, dtype=np.float32)
-    
-    nx = ((xs + 0.5) / image_w) * 2.0 - 1.0
-    ny = ((ys + 0.5) / image_h) * 2.0 - 1.0
-    
-    ray_x = nx[np.newaxis, :] * np.tan(fov_x / 2.0)
-    ray_y = ny[:, np.newaxis] * np.tan(fov_y / 2.0)
-    ray_z = np.ones((image_h, image_w), dtype=np.float32)
-    
-    ray_dirs = np.stack(
-        [
-            np.broadcast_to(ray_x, (image_h, image_w)),
-            np.broadcast_to(ray_y, (image_h, image_w)),
-            ray_z,
-        ],
-        axis=-1,
-    )
-    
-    return normalize_vectors(ray_dirs).astype(np.float32)
-        
+       
         
 def simulate_timestamp_block_interpolated_pair(
     depth1: np.ndarray,
@@ -237,11 +180,11 @@ def simulate_timestamp_block_interpolated_pair(
     source_depth_file: str,
     source_normal_file: str,
     ray_dirs_full: np.ndarray,
-    tof_h: int=TOF_H,
-    tof_w: int=TOF_W,
-    L: int=BLOCK_SIZE_L,
-    rho: float=DETECTION_PROB_RHO,
-    jitter_std: float=TIMING_JITTER_STD,
+    tof_h: int=SENSOR.tof_h,
+    tof_w: int=SENSOR.tof_w,
+    L: int=SENSOR.block_size_L,
+    rho: float=SENSOR.detection_probability_rho,
+    jitter_std: float=SENSOR.timing_jitter_std_s,
     switch_dist_thresh_m: float=SWITCH_DIST_THRESH_M,
     normal_cosine_thresh: float=NORMAL_COSINE_THRESH,
 ) -> TimestampBlock:
@@ -280,13 +223,13 @@ def simulate_timestamp_block_interpolated_pair(
 
             valid1 = (
                 np.isfinite(z1)
-                & (z1 > MIN_VALID_DEPTH)
-                & (z1 < MAX_VALID_DEPTH)
+                & (z1 > SENSOR.min_valid_depth_m)
+                & (z1 < SENSOR.max_valid_depth_m)
             )
             valid2 = (
                 np.isfinite(z2)
-                & (z2 > MIN_VALID_DEPTH)
-                & (z2 < MAX_VALID_DEPTH)
+                & (z2 > SENSOR.min_valid_depth_m)
+                & (z2 < SENSOR.max_valid_depth_m)
             )
 
             ray_dirs = ray_dirs_full[y0:y1, x0:x1, :].reshape(-1, 3)
@@ -337,8 +280,8 @@ def simulate_timestamp_block_interpolated_pair(
                 hit
                 & np.isfinite(z)
                 & np.isfinite(dist)
-                & (dist > MIN_VALID_DEPTH)
-                & (dist < MAX_VALID_DEPTH)
+                & (dist > SENSOR.min_valid_depth_m)
+                & (dist < SENSOR.max_valid_depth_m)
             )
 
             if not np.any(valid):
@@ -376,7 +319,7 @@ def simulate_timestamp_block_interpolated_pair(
                 sample_idx = np.random.randint(0, valid_ranges.size, size=L)
                 sampled_range = valid_ranges[sample_idx]
 
-            tau_clean = (2.0 * sampled_range / C_LIGHT).astype(np.float32)
+            tau_clean = (2.0 * sampled_range / SENSOR.c_light).astype(np.float32)
 
             detection_mask = detection_mask_all[:, y, x]
             tau_noisy = tau_clean + jitter_all[:, y, x]
@@ -400,31 +343,13 @@ def simulate_timestamp_block_interpolated_pair(
 # Ray Angle
 # =========================
 
-def build_ray_cos_map(tof_h=TOF_H, tof_w=TOF_W):
-    fov_x = np.deg2rad(CAMERA_FOV_X_DEG)
-    fov_y = np.deg2rad(CAMERA_FOV_Y_DEG)
-
-    xs = np.arange(tof_w, dtype=np.float32)
-    ys = np.arange(tof_h, dtype=np.float32)
-
-    nx = ((xs + 0.5) / tof_w) * 2.0 - 1.0
-    ny = ((ys + 0.5) / tof_h) * 2.0 - 1.0
-
-    ray_x = nx[np.newaxis, :] * np.tan(fov_x / 2.0)
-    ray_y = ny[:, np.newaxis] * np.tan(fov_y / 2.0)
-    ray_z = 1.0
-
-    ray_norm = np.sqrt(ray_x**2 + ray_y**2 + ray_z**2)
-
-    return (ray_z / ray_norm).astype(np.float32)
-
 def pixel_ray_cos(
     x: int,
     y: int,
     tof_w: int,
     tof_h: int,
-    fov_x_deg: float = CAMERA_FOV_X_DEG,
-    fov_y_deg: float = CAMERA_FOV_Y_DEG,
+    fov_x_deg: float = SENSOR.camera_fov_x_deg,
+    fov_y_deg: float = SENSOR.camera_fov_y_deg,
 ) -> float:
     """
     Computes cos(theta) for the ray through one ToF pixel.
@@ -468,11 +393,11 @@ def simulate_timestamp_block(
     source_depth_file: str,
     source_normal_file: str,
     ray_cos_map: np.ndarray,
-    tof_h: int = TOF_H,
-    tof_w: int = TOF_W,
-    L: int = BLOCK_SIZE_L,
-    rho: float = DETECTION_PROB_RHO,
-    jitter_std: float = TIMING_JITTER_STD,
+    tof_h: int = SENSOR.tof_h,
+    tof_w: int = SENSOR.tof_w,
+    L: int = SENSOR.block_size_L,
+    rho: float = SENSOR.detection_probability_rho,
+    jitter_std: float = SENSOR.timing_jitter_std_s,
 ) -> TimestampBlock:
     """
     Converts one rendered depth/normal frame into a TimestampBlock.
@@ -513,8 +438,8 @@ def simulate_timestamp_block(
             depth_block = depth[y0:y1, x0:x1]
             valid = (
                 np.isfinite(depth_block) 
-                & (depth_block > MIN_VALID_DEPTH)
-                & (depth_block < MAX_VALID_DEPTH)
+                & (depth_block > SENSOR.min_valid_depth_m)
+                & (depth_block < SENSOR.max_valid_depth_m)
             )
 
             if not np.any(valid):
@@ -553,7 +478,7 @@ def simulate_timestamp_block(
             ray_cos = ray_cos_map[y, x]
             
             sampled_range = sampled / ray_cos
-            tau_clean = (2.0 * sampled_range / C_LIGHT).astype(np.float32)
+            tau_clean = (2.0 * sampled_range / SENSOR.c_light).astype(np.float32)
 
             detection_mask = detection_mask_all[:, y, x]
             tau_noisy = tau_clean + jitter_all[:, y, x]
@@ -739,18 +664,18 @@ def main():
     prev_tau_hat = None
 
     depth_edges = np.linspace(HIST_DEPTH_MIN_M, HIST_DEPTH_MAX_M, HIST_NUM_BINS + 1)
-    tau_edges = depth_to_timestamp(depth_edges).astype(np.float32)
+    tau_edges = SENSOR.depth_to_timestamp(depth_edges).astype(np.float32)
     hist_bin_centers_tau = (0.5 * (tau_edges[:-1] + tau_edges[1:])).astype(np.float32)
-    hist_bin_centers_depth_m = timestamp_to_depth(hist_bin_centers_tau)
+    hist_bin_centers_depth_m = SENSOR.timestamp_to_depth(hist_bin_centers_tau)
 
     first_depth = load_depth_file(depth_files[0])
     image_h, image_w = first_depth.shape
     
-    ray_dirs_full = build_fullres_ray_dirs(image_h, image_w)
-    ray_cos_map = build_ray_cos_map()
+    ray_dirs_full = SENSOR.build_fullres_ray_dirs(image_h, image_w)
+    ray_cos_map = SENSOR.build_ray_cos_map()
 
-    gate_tau = depth_to_timestamp(ADAPTIVE_GATE_M)
-    delta_tau = depth_to_timestamp(DELTA_WINDOW)
+    gate_tau = SENSOR.depth_to_timestamp(ADAPTIVE_GATE_M)
+    delta_tau = SENSOR.depth_to_timestamp(DELTA_WINDOW)
 
     def process_block(block):
         nonlocal prev_tau_hat
@@ -776,7 +701,7 @@ def main():
             bin_centers_tau=hist_bin_centers_tau,
         )
 
-        tof_depth_hist = timestamp_to_depth(curr_tau_hat)
+        tof_depth_hist = SENSOR.timestamp_to_depth(curr_tau_hat)
 
         reference_tau_hat = curr_tau_hat if prev_tau_hat is None else prev_tau_hat
 
@@ -806,42 +731,39 @@ def main():
 
         total_blocks = len(frame_pairs) * NUM_INTERPOLATION_STEPS
 
-        pbar = tqdm(
+        with tqdm(
             total=total_blocks,
             desc="Generating timestamp blocks",
             unit="block",
-        )
+        ) as pbar:
+            output_frame_number = 1
 
-        output_frame_number = 1
+            for pair_i, (depth_path1, depth_path2, normal_path1, normal_path2) in enumerate(frame_pairs):
+                depth1 = load_depth_file(depth_path1)
+                depth2 = load_depth_file(depth_path2)
 
-        for pair_i, (depth_path1, depth_path2, normal_path1, normal_path2) in enumerate(frame_pairs):
-            depth1 = load_depth_file(depth_path1)
-            depth2 = load_depth_file(depth_path2)
+                normals1 = load_normal_file(normal_path1)
+                normals2 = load_normal_file(normal_path2)
 
-            normals1 = load_normal_file(normal_path1)
-            normals2 = load_normal_file(normal_path2)
+                for interp_i in range(NUM_INTERPOLATION_STEPS):
+                    alpha = interp_i / float(NUM_INTERPOLATION_STEPS)
 
-            for interp_i in range(NUM_INTERPOLATION_STEPS):
-                alpha = interp_i / float(NUM_INTERPOLATION_STEPS)
+                    block = simulate_timestamp_block_interpolated_pair(
+                        depth1=depth1,
+                        depth2=depth2,
+                        normals1=normals1,
+                        normals2=normals2,
+                        alpha=alpha,
+                        frame_number=output_frame_number,
+                        source_depth_file=f"{depth_path1} -> {depth_path2}, alpha={alpha:.3f}",
+                        source_normal_file=f"{normal_path1} -> {normal_path2}, alpha={alpha:.3f}",
+                        ray_dirs_full=ray_dirs_full,
+                    )
 
-                block = simulate_timestamp_block_interpolated_pair(
-                    depth1=depth1,
-                    depth2=depth2,
-                    normals1=normals1,
-                    normals2=normals2,
-                    alpha=alpha,
-                    frame_number=output_frame_number,
-                    source_depth_file=f"{depth_path1} -> {depth_path2}, alpha={alpha:.3f}",
-                    source_normal_file=f"{normal_path1} -> {normal_path2}, alpha={alpha:.3f}",
-                    ray_dirs_full=ray_dirs_full,
-                )
+                    process_block(block)
 
-                process_block(block)
-
-                pbar.update(1)
-                output_frame_number += 1
-
-        pbar.close()
+                    pbar.update(1)
+                    output_frame_number += 1
     else:
         frame_items = list(zip(depth_files, normal_files))
 
@@ -893,17 +815,17 @@ def main():
 
     if SAVE_FULL_TIMESTAMP_DATASET:
         metadata = TimestampMetadata(
-            tof_h=TOF_H,
-            tof_w=TOF_W,
-            block_size_L=BLOCK_SIZE_L,
-            laser_rate_hz=LASER_RATE_HZ,
-            detection_probability_rho=DETECTION_PROB_RHO,
-            timing_jitter_std_s=TIMING_JITTER_STD,
+            tof_h=SENSOR.tof_h,
+            tof_w=SENSOR.tof_w,
+            block_size_L=SENSOR.block_size_L,
+            laser_rate_hz=SENSOR.laser_rate_hz,
+            detection_probability_rho=SENSOR.detection_probability_rho,
+            timing_jitter_std_s=SENSOR.timing_jitter_std_s,
             fps=EFFECTIVE_FPS,
             dt_s=EFFECTIVE_DT,
-            c_light=C_LIGHT,
-            min_valid_depth_m=MIN_VALID_DEPTH,
-            max_valid_depth_m=MAX_VALID_DEPTH,
+            c_light=SENSOR.c_light,
+            min_valid_depth_m=SENSOR.min_valid_depth_m,
+            max_valid_depth_m=SENSOR.max_valid_depth_m,
             use_weighted_depth_sampling=USE_WEIGHTED_DEPTH_SAMPLING,
         )
 
