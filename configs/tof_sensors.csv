@@ -1,2 +1,0 @@
-name,source,notes,tof_h,tof_w,focal_length_mm,sensor_width_mm,wavelength_nm,min_valid_depth_m,max_valid_depth_m,laser_rate_hz,block_size_L,detection_probability_rho,timing_jitter_std_s
-generic_spad_sensor,simulation default,Generic 32x64 SPAD-style ToF simulation sensor,32,64,24.0,36.0,,0.01,20.0,10000000,256,0.05,5e-11
