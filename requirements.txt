@@ -2,3 +2,4 @@ numpy
 opencv-python
 matplotlib
 tqdm
+PyYAML>=6.0

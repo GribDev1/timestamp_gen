@@ -1,0 +1,38 @@
+name: vl53l8ch
+source: STMicroelectronics VL53L8CH product information
+notes: >
+  Preset for the ST VL53L8CH 8x8 multizone ToF sensor.
+  This preset maps the real sensor into the timestamp generator's simulated
+  sensor model. The real device outputs processed multizone/histogram-style
+  ranging data, not full raw timestamp lists.
+
+tof:
+  height: 8
+  width: 8
+
+camera:
+  diagonal_fov_deg: 65.0
+  wavelength_nm: 940
+  fov_x_deg: 48.8
+  fov_y_deg: 48.8
+
+depth:
+  min_valid_depth_m: 0.02
+  max_valid_depth_m: 4.0
+
+timing:
+  laser_rate_hz: 10000000.0
+  block_size_L: 256
+  timing_jitter_std_s: 5.0e-11
+
+detection:
+  detection_probability_rho: 0.05
+
+constants:
+  c_light: 299792458.0
+
+readout:
+  output_type: compact_normalized_histogram
+  timestamp_bits: 16
+  depth_bits: 16
+  histogram_bin_bits: 8

@@ -1,0 +1,17 @@
+{
+    "tof_h": 8,
+    "tof_w": 8,
+    "block_size_L": 256,
+    "laser_rate_hz": 10000000.0,
+    "detection_probability_rho": 0.05,
+    "timing_jitter_std_s": 5e-11,
+    "fps": 960.0,
+    "dt_s": 0.0010416666666666667,
+    "c_light": 299792458.0,
+    "min_valid_depth_m": 0.02,
+    "max_valid_depth_m": 4.0,
+    "use_weighted_depth_sampling": true,
+    "timestamp_units": "seconds",
+    "depth_units": "meters",
+    "missed_detection_value": "NaN"
+}

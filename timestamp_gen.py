@@ -1,25 +1,32 @@
 """
-    Timestamp Generation:
+Timestamp Generation:
 
-        This script converts rendered VisionSIM/Blender depth and normal maps into a
-        precomputed timestamp dataset for the token-based ToF pipeline.
+    This script converts rendered VisionSIM/Blender depth and normal maps into
+    simulated single-photon ToF timestamp datasets.
 
-        For each rendered frame, the script samples high-resolution depth values inside
-        each lower-resolution ToF pixel footprint. This preserves sub-pixel depth
-        mixtures at object boundaries and occlusions. The sampled depths are converted
-        to clean photon timestamps, then a Bernoulli detection model and Gaussian timing
-        jitter are applied to create noisy single-photon timestamp measurements.
+    For each rendered frame, the script samples high-resolution depth values
+    inside each lower-resolution ToF pixel footprint. This preserves sub-pixel
+    depth mixtures at object boundaries and occlusions. The sampled depths are
+    converted to clean photon timestamps, then a Bernoulli detection model and
+    Gaussian timing jitter are applied to create noisy single-photon timestamp
+    measurements.
 
-        The script also computes the block-rate data needed by token_process.py:
-            - per-frame mini-histograms
-            - block-rate depth estimates
-            - valid detection fraction I
-            - in-window stream S1
-            - out-of-window stream S2+
-            - histogram bin centers
+    Optional interpolation can generate timestamp blocks between rendered
+    frame pairs. Same-surface rays are linearly interpolated, while likely
+    visibility changes use a hard switch near alpha = 0.5.
 
-    Running file:
-        python timestamp_gen.py
+    The script can save:
+        - full timestamp blocks
+        - sampled ray/range depths
+        - clean timestamps
+        - noisy timestamps
+        - detection masks
+        - mini-histograms
+        - histogram-based depth estimates
+        - valid detection fraction
+
+    Running:
+        python timestamp_gen.py --render-dir full_render_320x160 --output-dir timestamp_output
 
     Running for performance testing:
         python -m cProfile -o timestamp_profile.prof timestamp_gen.py
@@ -604,7 +611,7 @@ def parse_args():
         "--sensor",
         default="generic_spad_sensor",
         help=(
-            "Name of the ToF sensor preset to use from configs/tof_sensors.csv. "
+            "Name of the ToF sensor preset to use from configs/sensors/{name}.yaml. "
             "Default: generic_spad_sensor"
         ),
     )
@@ -733,7 +740,6 @@ def main():
     hist_num_bins = args.hist_bins
 
     adaptive_gate_m = args.adaptive_gate_m
-    delta_window_m = args.delta_window_m
 
     save_full_timestamp_dataset = not args.no_full_dataset
     save_precomputed_data = not args.no_precomputed
