@@ -1,10 +1,10 @@
-name: generic_spad_sensor
-source: simulation default
-notes: Generic 32x64 SPAD-style ToF simulation sensor
+name: big_px_tof
+source: simulation experiment
+notes: Big 1x1 SPAD-style ToF simulation sensor
 
 tof:
-  height: 32
-  width: 64
+  height: 1
+  width: 1
 
 camera:
   focal_length_mm: 24.0
@@ -18,11 +18,16 @@ depth:
 
 timing:
   laser_rate_hz: 10000000.0
-  block_size_L: 256
+  block_size_L: 100000
   timing_jitter_std_s: 0.0
 
+histogram:
+  num_bins: 256
+  min_depth_m: 4.0
+  max_depth_m: 8.0
+
 detection:
-  detection_probability_rho: 0.05
+  detection_probability_rho: 1.0
 
 constants:
   c_light: 299792458.0

@@ -75,7 +75,7 @@ HIST_DEPTH_MIN_M = 0.1
 HIST_DEPTH_MAX_M = 10.0
 HIST_NUM_BINS = 32
 
-USE_ADAPTIVE_TIME_GATING = True
+USE_ADAPTIVE_TIME_GATING = False
 ADAPTIVE_GATE_M = 1.0
 
 MAX_SAME_SURFACE_SPEED_M_PER_S = 10.0
@@ -382,7 +382,7 @@ def simulate_timestamp_block(
     frame_number: int,
     source_depth_file: str,
     source_normal_file: str,
-    ray_cos_map: np.ndarray,
+    ray_dirs_full: np.ndarray,
     tof_h: int = SENSOR.tof_h,
     tof_w: int = SENSOR.tof_w,
     L: int = SENSOR.block_size_L,
@@ -434,22 +434,43 @@ def simulate_timestamp_block(
 
             if not np.any(valid):
                 continue
+            
+            ray_dirs_block = ray_dirs_full[y0:y1, x0:x1, :]
+            ray_z_block = ray_dirs_block[:, :, 2]
 
             valid_depths = depth_block[valid].astype(np.float32)
+            valid_ray_z = ray_z_block[valid].astype(np.float32)
+            
+            valid_ranges = valid_depths / np.maximum(valid_ray_z, 1e-8)
+            
+            range_valid = (
+                np.isfinite(valid_ranges)
+                & (valid_ranges > SENSOR.min_valid_depth_m)
+                & (valid_ranges < SENSOR.max_valid_depth_m)
+            )
+            
+            if not np.any(range_valid):
+                continue
+            
+            valid_depths = valid_depths[range_valid]
+            valid_ranges = valid_ranges[range_valid]
 
             weights = None
 
             if normals is not None and USE_WEIGHTED_DEPTH_SAMPLING:
                 normal_block = normals[y0:y1, x0:x1, :]
-                valid_normals = normal_block[valid]
+                valid_normals = normalize_vectors(normal_block[valid])
+                valid_ray_dirs = ray_dirs_block[valid]
+                
+                valid_ray_dirs = valid_ray_dirs[range_valid]
+                valid_normals = valid_normals[range_valid]
 
-                nz = valid_normals[:, 2]
-                facing = np.abs(nz)
-                facing = np.where(np.isfinite(facing), facing, 0.0)
+                cos_incidence = np.sum((-valid_ray_dirs) * valid_normals, axis=-1)
+                cos_incidence = np.maximum(cos_incidence, 0.0)
 
-                distance_falloff = 1.0 / np.maximum(valid_depths ** 2, 1e-6)
+                distance_falloff = 1.0 / np.maximum(valid_ranges ** 2, 1e-6)
 
-                weights = facing * distance_falloff
+                weights = cos_incidence * distance_falloff
                 weights = weights.astype(np.float64)
 
                 if np.sum(weights) <= 0 or not np.all(np.isfinite(weights)):
@@ -460,14 +481,16 @@ def simulate_timestamp_block(
             # Sample one geometric depth for every pulse.
             # This gives a complete clean model before missed detections.
             if weights is not None:
-                sampled = np.random.choice(valid_depths, size=L, replace=True, p=weights)
+                sampled_range = np.random.choice(
+                    valid_ranges, 
+                    size=L, 
+                    replace=True, 
+                    p=weights
+                )
             else:
-                sample_idx = np.random.randint(0, valid_depths.size, size=L)
-                sampled = valid_depths[sample_idx]
-
-            ray_cos = ray_cos_map[y, x]
-            
-            sampled_range = sampled / ray_cos
+                sample_idx = np.random.randint(0, valid_ranges.size, size=L)
+                sampled_range = valid_ranges[sample_idx]
+                
             tau_clean = (2.0 * sampled_range / SENSOR.c_light).astype(np.float32)
 
             detection_mask = detection_mask_all[:, y, x]
@@ -783,7 +806,6 @@ def main():
     image_h, image_w = first_depth.shape
     
     ray_dirs_full = SENSOR.build_fullres_ray_dirs(image_h, image_w)
-    ray_cos_map = SENSOR.build_ray_cos_map()
 
     gate_tau = SENSOR.depth_to_timestamp(adaptive_gate_m)
 
@@ -883,7 +905,7 @@ def main():
                 frame_number=frame_number,
                 source_depth_file=str(depth_path),
                 source_normal_file=str(normal_path),
-                ray_cos_map=ray_cos_map,
+                ray_dirs_full=ray_dirs_full,
                 tof_h=SENSOR.tof_h,
                 tof_w=SENSOR.tof_w,
                 L=SENSOR.block_size_L,

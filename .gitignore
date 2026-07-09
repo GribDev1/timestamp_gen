@@ -12,6 +12,7 @@ renders/
 render_output/
 depths/
 normals/
+inputs/
 
 # Generated visualizations and test figures
 tests/test_visualizations/
