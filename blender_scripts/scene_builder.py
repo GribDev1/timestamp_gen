@@ -2,6 +2,7 @@ import bpy
 import math
 from pathlib import Path
 from dataclasses import dataclass
+from mathutils import Vector
 
 @dataclass
 class RenderConfig:
@@ -20,6 +21,34 @@ class PlaneConfig:
     location: tuple = (0.0, 0.0, -5.0)
     rotation_deg: tuple = (0.0, 0.0, 0.0)
     color: tuple = (0.8, 0.8, 0.8, 1.0)
+    
+
+@dataclass
+class CubeConfig:
+    name: str = "Cube"
+    size: tuple = (1.0, 1.0, 1.0)
+    location: tuple = (0.0, 0.0, -5.0)
+    rotation_deg: tuple = (0.0, 0.0, 0.0)
+    color: tuple = (0.8, 0.8, 0.8, 1.0)
+    
+    
+@dataclass
+class CylinderConfig:
+    name: str = "Cylinder"
+    radius: float = 0.05
+    depth: float = 2.0
+    location: tuple = (0.0, 0.0, -5.0)
+    rotation_deg: tuple = (0.0, 0.0, 0.0)
+    color: tuple = (0.8, 0.8, 0.8, 1.0)
+    
+
+@dataclass
+class SphereConfig:
+    name: str = "Sphere"
+    radius: float = 0.25
+    location: tuple = (0.0, 0.0, -5.0)
+    color: tuple = (0.8, 0.8, 0.8, 1.0)  
+
 
 def clear_scene():
     bpy.ops.object.select_all(action="SELECT")
@@ -44,6 +73,17 @@ def set_scene_settings(config: RenderConfig):
 def create_material(name, color):
     mat = bpy.data.materials.new(name)
     mat.diffuse_color = color
+    return mat
+
+
+def apply_rotation_deg(obj, rotation_deg):
+    rx, ry, rz = [math.radians(v) for v in rotation_deg]
+    obj.rotation_euler = (rx, ry, rz)
+    
+    
+def assign_material(obj, name, color):
+    mat = create_material(name, color)
+    obj.data.materials.append(mat)
     return mat
 
 
@@ -78,6 +118,51 @@ def add_plane(config: PlaneConfig):
     plane.data.materials.append(mat)
     
     return plane
+
+
+def add_cube(config: CubeConfig):
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=config.location)
+    cube = bpy.context.object
+    cube.name = config.name
+    
+    cube.dimensions = config.size
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    
+    apply_rotation_deg(cube, config.rotation_deg)
+    assign_material(cube, f"{config.name}_Material", config.color)
+    
+    return cube
+
+
+def add_cylinder(config: CylinderConfig):
+    bpy.ops.mush.primitive_cylinder_add(
+        vertices=config.vertices,
+        radius=config.radius,
+        depth=config.depth,
+        location=config.location,
+    )
+    cylinder = bpy.context.object
+    cylinder.name = config.name
+    
+    apply_rotation_deg(cylinder, config.rotation_deg)
+    assign_material(cylinder, f"{config.name}_Material", config.color)
+    
+    return cylinder
+
+
+def add_sphere(config: SphereConfig):
+    bpy.ops.mesh.primitive_uv_sphere_add(
+        segments=32,
+        ring_count=16,
+        radius=config.radius,
+        location=config.location,
+    )
+    sphere = bpy.context.object
+    sphere.name = config.name
+    
+    assign_material(sphere, f"{config.name}_Material", config.color)
+    
+    return sphere
 
 
 def get_object_fcurves(obj):
@@ -142,7 +227,27 @@ def animate_location(obj, frame_locations, interpolation="LINEAR"):
         set_constant_keyframes(obj)
     else:
         set_linear_keyframes(obj)
+        
+        
+def animate_camera_path(camera, frame_locations, interpolation="LINEAR"):
+    animate_location(camera, frame_locations, interpolation)
 
+def look_at(obj, target):
+    """
+    Rotate an object so its local -Z axis points toward target.
+
+    This is useful for cameras, because Blender cameras look along -Z.
+    """
+    obj_location = Vector(obj.location)
+    target_location = Vector(target)
+
+    direction = target_location - obj_location
+
+    if direction.length == 0:
+        raise ValueError("look_at target must be different from object location.")
+
+    quat = direction.to_track_quat("-Z", "Y")
+    obj.rotation_euler = quat.to_euler()
 
 def save_blend(output_path):
     output_path = Path(output_path).resolve()
