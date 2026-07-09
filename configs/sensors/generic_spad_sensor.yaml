@@ -19,7 +19,7 @@ depth:
 timing:
   laser_rate_hz: 10000000.0
   block_size_L: 256
-  timing_jitter_std_s: 5.0e-11
+  timing_jitter_std_s: 0.0
 
 detection:
   detection_probability_rho: 0.05

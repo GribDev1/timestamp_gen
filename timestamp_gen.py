@@ -72,8 +72,8 @@ USE_WEIGHTED_DEPTH_SAMPLING = True
 RANDOM_SEED = 0
 
 HIST_DEPTH_MIN_M = 0.1
-HIST_DEPTH_MAX_M = 20.0
-HIST_NUM_BINS = 256
+HIST_DEPTH_MAX_M = 10.0
+HIST_NUM_BINS = 32
 
 USE_ADAPTIVE_TIME_GATING = True
 ADAPTIVE_GATE_M = 1.0
@@ -666,7 +666,7 @@ def parse_args():
     parser.add_argument(
         "--hist-bins",
         type=int,
-        default=256,
+        default=32,
         help="Number of histogram bins for timestamp depth estimation. Default: 256",
     )
 
