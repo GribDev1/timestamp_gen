@@ -10,7 +10,7 @@ The path:
     5. Moves along the other two walls.
 
 Run:
-    blender --background --python .\tests\blender_tests\create_drone_empty_room_blend.py
+    blender --background --python .\blender_scripts\create_drone_wall_approach_blend.py
 """
 
 from pathlib import Path

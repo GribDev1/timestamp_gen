@@ -35,6 +35,7 @@ class CubeConfig:
 @dataclass
 class CylinderConfig:
     name: str = "Cylinder"
+    vertices: int = 32
     radius: float = 0.05
     depth: float = 2.0
     location: tuple = (0.0, 0.0, -5.0)
@@ -135,7 +136,7 @@ def add_cube(config: CubeConfig):
 
 
 def add_cylinder(config: CylinderConfig):
-    bpy.ops.mush.primitive_cylinder_add(
+    bpy.ops.mesh.primitive_cylinder_add(
         vertices=config.vertices,
         radius=config.radius,
         depth=config.depth,
