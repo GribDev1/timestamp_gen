@@ -227,10 +227,39 @@ def animate_location(obj, frame_locations, interpolation="LINEAR"):
         set_constant_keyframes(obj)
     else:
         set_linear_keyframes(obj)
+  
+        
+def animate_rotation(obj, frame_rotations_deg, interpolation="LINEAR"):
+    """
+    Animate object Euler rotation using degrees.
+
+    frame_rotations_deg:
+        [
+            (frame, (rx_deg, ry_deg, rz_deg)),
+            ...
+        ]
+    """
+    scene = bpy.context.scene
+
+    for frame, rot_deg in frame_rotations_deg:
+        scene.frame_set(frame)
+        rx, ry, rz = [math.radians(v) for v in rot_deg]
+        obj.rotation_euler = (rx, ry, rz)
+        obj.keyframe_insert(data_path="rotation_euler", frame=frame)
+
+    if interpolation.upper() == "CONSTANT":
+        set_constant_keyframes(obj)
+    else:
+        set_linear_keyframes(obj)
         
         
 def animate_camera_path(camera, frame_locations, interpolation="LINEAR"):
     animate_location(camera, frame_locations, interpolation)
+    
+    
+def animate_camera_rotation(camera, frame_rotations_deg, interpolation="LINEAR"):
+    animate_rotation(camera, frame_rotations_deg, interpolation)
+    
 
 def look_at(obj, target):
     """
@@ -248,6 +277,21 @@ def look_at(obj, target):
 
     quat = direction.to_track_quat("-Z", "Y")
     obj.rotation_euler = quat.to_euler()
+    
+
+def set_world_background(color=(1.0, 1.0, 1.0), strength=0.8):
+    """
+    Set Blender world/background lighting.
+    Useful for making simple geometry visible in rendered preview.
+    """
+    world = bpy.context.scene.world
+
+    if world is None:
+        world = bpy.data.worlds.new("World")
+        bpy.context.scene.world = world
+
+    world.color = color
+
 
 def save_blend(output_path):
     output_path = Path(output_path).resolve()

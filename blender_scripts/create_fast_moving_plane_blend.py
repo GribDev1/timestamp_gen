@@ -14,7 +14,6 @@ import sys
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.append(str(SCRIPT_DIR))
 
-import bpy
 from scene_builder import RenderConfig, PlaneConfig, build_basic_scene   
 
 

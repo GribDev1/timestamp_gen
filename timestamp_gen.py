@@ -791,6 +791,43 @@ def main():
 
     print(f"Found {len(depth_files)} frames.")
     print("Generating timestamp dataset...")
+    
+    if use_interpolated_visibility_switch:
+        expected_blocks = (len(depth_files) - 1) * num_interpolation_steps
+    else:
+        expected_blocks = len(depth_files)
+
+    samples_per_block_per_pixel = SENSOR.block_size_L
+    samples_per_block_all_pixels = (
+        SENSOR.block_size_L * SENSOR.tof_h * SENSOR.tof_w
+    )
+    total_samples_per_pixel = expected_blocks * SENSOR.block_size_L
+    total_samples_all_pixels = (
+        expected_blocks * SENSOR.block_size_L * SENSOR.tof_h * SENSOR.tof_w
+    )
+
+    active_tof_time_per_pixel_s = total_samples_per_pixel / SENSOR.laser_rate_hz
+    scene_duration_s = expected_blocks * effective_dt
+
+    expected_detected_samples_per_pixel = (
+        total_samples_per_pixel * SENSOR.detection_probability_rho
+    )
+    expected_detected_samples_all_pixels = (
+        total_samples_all_pixels * SENSOR.detection_probability_rho
+    )
+
+    print()
+    print("=== Timestamp sample summary ===")
+    print(f"Expected timestamp blocks: {expected_blocks}")
+    print(f"Samples/block/pixel: {samples_per_block_per_pixel}")
+    print(f"Samples/block/all pixels: {samples_per_block_all_pixels:,}")
+    print(f"Total samples/pixel: {total_samples_per_pixel:,}")
+    print(f"Total samples/all pixels: {total_samples_all_pixels:,}")
+    print(f"Active ToF sampling time/pixel: {active_tof_time_per_pixel_s * 1e3:.4f} ms")
+    print(f"Scene duration represented: {scene_duration_s * 1e3:.4f} ms")
+    print(f"Expected detected samples/pixel: {expected_detected_samples_per_pixel:,.2f}")
+    print(f"Expected detected samples/all pixels: {expected_detected_samples_all_pixels:,.2f}")
+    print()
 
     blocks = [] if save_full_timestamp_dataset else None
     tof_depths = []
