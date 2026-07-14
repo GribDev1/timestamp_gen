@@ -3,6 +3,7 @@ import math
 from pathlib import Path
 from dataclasses import dataclass
 from mathutils import Vector
+import bmesh
 
 @dataclass
 class RenderConfig:
@@ -166,6 +167,64 @@ def add_sphere(config: SphereConfig):
     return sphere
 
 
+def add_wavy_pad(
+    name="Wavy Pad",
+    size_x=2.0,
+    size_z=1.4,
+    location=(0.0, -1.15, -7.6),
+    amplitude=0.08,
+    freq_x=3.0,
+    freq_z=4.0,
+    subdivisions=40,
+    color=(0.70, 0.70, 0.70, 1.0),
+):
+    """
+    Create a wavy landing pad in the X-Z plane.
+
+    X and Z define the pad surface.
+    Y is the height/roughness direction.
+    """
+
+    mesh = bpy.data.meshes.new(f"{name}_Mesh")
+    verts = []
+    faces = []
+
+    nx = subdivisions
+    nz = subdivisions
+
+    for iz in range(nz + 1):
+        z_norm = iz / nz
+        z = (z_norm - 0.5) * size_z
+
+        for ix in range(nx + 1):
+            x_norm = ix / nx
+            x = (x_norm - 0.5) * size_x
+
+            y = amplitude * math.sin(freq_x * x) * math.cos(freq_z * z)
+
+            verts.append((x, y, z))
+
+    for iz in range(nz):
+        for ix in range(nx):
+            v0 = iz * (nx + 1) + ix
+            v1 = v0 + 1
+            v2 = v0 + (nx + 1) + 1
+            v3 = v0 + (nx + 1)
+
+            faces.append((v0, v1, v2, v3))
+
+    mesh.from_pydata(verts, [], faces)
+    mesh.update()
+
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    obj.location = location
+
+    assign_material(obj, f"{name}_Material", color)
+
+    return obj
+
+
 def get_object_fcurves(obj):
     """
     Return the object's animation fcurves in both older Blender versions
@@ -279,7 +338,7 @@ def look_at(obj, target):
     quat = direction.to_track_quat("-Z", "Y")
     obj.rotation_euler = quat.to_euler()
     
-
+    
 def set_world_background(color=(1.0, 1.0, 1.0), strength=0.8):
     """
     Set Blender world/background lighting.
