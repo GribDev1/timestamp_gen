@@ -44,13 +44,7 @@ def main():
     sb.add_light(location=(-3.0, 0.0, 1.0), energy=400, size=5.0)
     sb.add_light(location=(3.0, 0.0, 1.0), energy=400, size=5.0)
     
-    #sb.set_world_background(color=(0.8, 0.8, 0.8), strength=0.8)
-
-    # -------------------------
-    # Room geometry
-    # -------------------------
-    room_size = 10.0
-    wall_size = 10.0
+    sb.set_world_background(color=(0.8, 0.8, 0.8), strength=0.8)
 
     # Back wall
     sb.add_cube(
@@ -58,6 +52,16 @@ def main():
             name="Back Wall",
             size=(10.0, 3.0, 0.1),
             location=(0.0, 0.0, 5.0),
+            color=(0.70, 0.70, 0.70, 1.0),
+        )
+    )
+    
+    # Front wall
+    sb.add_cube(
+        sb.CubeConfig(
+            name="Front Wall",
+            size=(10.0, 3.0, 0.1),
+            location=(0.0, 0.0, -5.0),
             color=(0.70, 0.70, 0.70, 1.0),
         )
     )
