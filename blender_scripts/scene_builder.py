@@ -381,3 +381,71 @@ def build_basic_scene(
         animate_location(fg, foreground_motion["keyframes"], foreground_motion.get("interpolation", "LINEAR"))
         
     save_blend(output_path)
+    
+    
+def save_drone_path_config(
+    name: str,
+    frame_locations: list,
+    segment_names: list[str] | None = None,
+    description: str = "",
+    output_dir: str | Path = "configs/drone_paths",
+):
+    """
+    Save camera translation keyframes as a drone path YAML config.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_path = output_dir / f"{name}.yaml"
+
+    if len(frame_locations) < 2:
+        raise ValueError(
+            "Drone path must contain at least two camera keyframes."
+        )
+
+    num_segments = len(frame_locations) - 1
+
+    if segment_names is None:
+        segment_names = [
+            f"Segment {index + 1}"
+            for index in range(num_segments)
+        ]
+
+    if len(segment_names) != num_segments:
+        raise ValueError(
+            "segment_names must contain one name for each path segment."
+        )
+
+    lines = [
+        f"name: {name}",
+        "",
+        "description: >",
+        f"  {description}" if description else "  Camera translation path.",
+        "",
+        "camera_path:",
+    ]
+
+    for frame, position in frame_locations:
+        x, y, z = position
+
+        lines.extend([
+            f"  - frame: {frame}",
+            f"    position: [{x}, {y}, {z}]",
+        ])
+
+    lines.extend([
+        "",
+        "segment_names:",
+    ])
+
+    for segment_name in segment_names:
+        lines.append(f'  - "{segment_name}"')
+
+    output_path.write_text(
+        "\n".join(lines) + "\n",
+        encoding="utf-8",
+    )
+
+    print(f"Saved drone path config: {output_path.resolve()}")
+
+    return output_path

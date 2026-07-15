@@ -1,0 +1,49 @@
+name: drone_landing
+
+description: >
+  Microdrone landing sequence over flat, slanted, and bumpy landing surfaces.
+
+camera_path:
+  - frame: 1
+    position: [0.0, 1.6, -2.4]
+  - frame: 60
+    position: [0.0, 0.4, -2.4]
+  - frame: 95
+    position: [0.0, -0.8, -2.4]
+  - frame: 120
+    position: [0.0, -0.8, -2.4]
+  - frame: 145
+    position: [0.0, 1.0, -2.4]
+  - frame: 175
+    position: [0.0, 1.0, -5.0]
+  - frame: 200
+    position: [0.0, 0.4, -5.0]
+  - frame: 225
+    position: [0.0, -0.75, -5.0]
+  - frame: 250
+    position: [0.0, -0.75, -5.0]
+  - frame: 275
+    position: [0.0, 1.0, -5.0]
+  - frame: 305
+    position: [0.0, 1.0, -7.6]
+  - frame: 325
+    position: [0.0, 0.4, -7.6]
+  - frame: 345
+    position: [0.0, -0.75, -7.6]
+  - frame: 360
+    position: [0.0, -0.75, -7.6]
+
+segment_names:
+  - "Flat pad initial descent"
+  - "Flat pad final approach"
+  - "Flat pad hover"
+  - "Rise from flat pad"
+  - "Translate to slanted pad"
+  - "Slanted pad initial descent"
+  - "Slanted pad final approach"
+  - "Slanted pad hover"
+  - "Rise from slanted pad"
+  - "Translate to bumpy pad"
+  - "Bumpy pad initial descent"
+  - "Bumpy pad final approach"
+  - "Bumpy pad hover"

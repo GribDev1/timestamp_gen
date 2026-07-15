@@ -118,25 +118,27 @@ def main():
     # The drone stays roughly 2 m away from each wall:
     #   x = -3 or +3
     #   z = -3 or +3
+    
+    frame_locations = [
+        (1,   (-3.0, 0.0,  3.0)),
+        (60,  (-3.0, 0.0, -3.0)),
+        (120, ( 3.0, 0.0, -3.0)),
+        (180, (-3.0, 0.0,  3.0)),
+        (240, ( 3.0, 0.0,  3.0)),
+        (300, ( 3.0, 0.0, -3.0)),
+    ]
+
+    segment_names = [
+        "Left wall toward front",
+        "Front wall toward right",
+        "Diagonal right-front to left-back",
+        "Back wall toward right",
+        "Right wall toward front",
+    ]
+    
     sb.animate_camera_path(
         camera,
-        frame_locations=[
-            # Along wall 1: near left wall, moving toward front wall.
-            (1,   (-3.0, 0.0,  3.0)),
-            (60,  (-3.0, 0.0, -3.0)),
-
-            # Along wall 2: near front wall, moving toward right wall.
-            (120, ( 3.0, 0.0, -3.0)),
-
-            # 135-degree opposite-direction turn, then diagonal across room.
-            (180, (-3.0, 0.0,  3.0)),
-
-            # Along wall 3: near back wall, moving toward right wall.
-            (240, ( 3.0, 0.0,  3.0)),
-
-            # Along wall 4: near right wall, moving toward front wall.
-            (300, ( 3.0, 0.0, -3.0)),
-        ],
+        frame_locations=frame_locations,
         interpolation="LINEAR",
     )
 
@@ -180,6 +182,16 @@ def main():
             (300, (0.0,    0.0, 0.0)),
         ],
         interpolation="LINEAR",
+    )
+    
+    sb.save_drone_path_config(
+        name="drone_wall_approach",
+        frame_locations=frame_locations,
+        segment_names=segment_names,
+        description=(
+            "Microdrone path following room walls and crossing "
+            "diagonally through an empty room."
+        ),
     )
 
     sb.save_blend("drone_wall_approach.blend")

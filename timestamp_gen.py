@@ -11,9 +11,12 @@ Timestamp Generation:
     Gaussian timing jitter are applied to create noisy single-photon timestamp
     measurements.
 
-    Optional interpolation can generate timestamp blocks between rendered
-    frame pairs. Same-surface rays are linearly interpolated, while likely
-    visibility changes use a hard switch near alpha = 0.5.
+    Optional temporal interpolation reconstructs scene states between adjacent
+    rendered frames. Timestamp blocks are generated independently according to
+    the sensor laser rate and block size.
+
+    Same-surface geometry is linearly interpolated between rendered frames,
+    while likely visibility changes use a hard switch near alpha = 0.5.
 
     The script can save:
         - full timestamp blocks
@@ -55,17 +58,8 @@ SENSOR = get_sensor_preset("generic_spad_sensor")
 
 USE_INTERPOLATED_VISIBILITY_SWITCH = True
 
-NUM_INTERPOLATION_STEPS = 4
-
 RENDER_FPS = 240.0
 RENDER_DT = 1.0 / RENDER_FPS
-
-EFFECTIVE_FPS = (
-    RENDER_FPS * NUM_INTERPOLATION_STEPS
-    if USE_INTERPOLATED_VISIBILITY_SWITCH
-    else RENDER_FPS
-)
-EFFECTIVE_DT = 1.0 / EFFECTIVE_FPS
 
 USE_WEIGHTED_DEPTH_SAMPLING = True
 
@@ -675,15 +669,19 @@ def parse_args():
         type=int,
         default=4,
         help=(
-            "Number of timestamp blocks generated between each rendered frame pair. "
-            "Default: 4"
+            "Number of discrete temporal interpolation states between "
+            "adjacent rendered frames. This controls scene interpolation "
+            "resolution and does not change the ToF block rate. Default: 4"
         ),
     )
 
     parser.add_argument(
         "--no-interpolation",
         action="store_true",
-        help="Disable interpolated visibility switching and process rendered frames directly.",
+        help=(
+            "Disable temporal interpolation. Each rendered frame is held constant "
+            "until the next rendered frame time."
+        ),
     )
 
     parser.add_argument(
@@ -747,16 +745,15 @@ def main():
 
     use_interpolated_visibility_switch = not args.no_interpolation
     num_interpolation_steps = args.interpolation_steps
+    
+    if num_interpolation_steps <= 0:
+        raise ValueError("--interpolation-steps must be greater than 0.")
 
     render_fps = args.render_fps
     render_dt = 1.0 / render_fps
 
-    effective_fps = (
-        render_fps * num_interpolation_steps
-        if use_interpolated_visibility_switch
-        else render_fps
-    )
-    effective_dt = 1.0 / effective_fps
+    block_duration_s = SENSOR.block_size_L / SENSOR.laser_rate_hz
+    block_rate_hz = SENSOR.laser_rate_hz / SENSOR.block_size_L
 
     hist_depth_min_m = args.hist_depth_min
     hist_depth_max_m = args.hist_depth_max
@@ -792,10 +789,13 @@ def main():
     print(f"Found {len(depth_files)} frames.")
     print("Generating timestamp dataset...")
     
-    if use_interpolated_visibility_switch:
-        expected_blocks = (len(depth_files) - 1) * num_interpolation_steps
-    else:
-        expected_blocks = len(depth_files)
+    num_render_intervals = len(depth_files) - 1
+
+    scene_duration_s = num_render_intervals / render_fps
+
+    expected_blocks = int(
+        np.floor(scene_duration_s / block_duration_s)
+    )
 
     samples_per_block_per_pixel = SENSOR.block_size_L
     samples_per_block_all_pixels = (
@@ -807,7 +807,8 @@ def main():
     )
 
     active_tof_time_per_pixel_s = total_samples_per_pixel / SENSOR.laser_rate_hz
-    scene_duration_s = expected_blocks * effective_dt
+    represented_duration_s = expected_blocks * block_duration_s
+    duration_error_s = scene_duration_s - represented_duration_s
 
     expected_detected_samples_per_pixel = (
         total_samples_per_pixel * SENSOR.detection_probability_rho
@@ -818,13 +819,25 @@ def main():
 
     print()
     print("=== Timestamp sample summary ===")
+    print(f"Render frames: {len(depth_files)}")
+    print(f"Render intervals: {num_render_intervals}")
+    print(f"Render FPS: {render_fps:.3f} Hz")
+    print(f"Scene duration: {scene_duration_s * 1e3:.4f} ms")
+    print(f"Interpolation enabled: {use_interpolated_visibility_switch}")
+    if use_interpolated_visibility_switch:
+        interp_dt_s = render_dt / num_interpolation_steps
+        print(f"Interpolation steps/frame interval: {num_interpolation_steps}")
+        print(f"Interpolation scene resolution: {interp_dt_s * 1e6:.4f} us")
+    print(f"ToF block duration: {block_duration_s * 1e6:.4f} us")
+    print(f"ToF block rate: {block_rate_hz:.4f} Hz")
     print(f"Expected timestamp blocks: {expected_blocks}")
     print(f"Samples/block/pixel: {samples_per_block_per_pixel}")
     print(f"Samples/block/all pixels: {samples_per_block_all_pixels:,}")
     print(f"Total samples/pixel: {total_samples_per_pixel:,}")
     print(f"Total samples/all pixels: {total_samples_all_pixels:,}")
     print(f"Active ToF sampling time/pixel: {active_tof_time_per_pixel_s * 1e3:.4f} ms")
-    print(f"Scene duration represented: {scene_duration_s * 1e3:.4f} ms")
+    print(f"ToF duration represented: {represented_duration_s * 1e3:.4f} ms")
+    print(f"Unrepresented trailing scene time: {duration_error_s * 1e6:.4f} us")
     print(f"Expected detected samples/pixel: {expected_detected_samples_per_pixel:,.2f}")
     print(f"Expected detected samples/all pixels: {expected_detected_samples_all_pixels:,.2f}")
     print()
@@ -876,81 +889,126 @@ def main():
         all_I.append(I)
         all_histograms.append(histograms)
 
-    if use_interpolated_visibility_switch:
-        frame_pairs = list(zip(
-            depth_files[:-1],
-            depth_files[1:],
-            normal_files[:-1],
-            normal_files[1:],
-        ))
+    with tqdm(
+        total=expected_blocks,
+        desc="Generating timestamp blocks",
+        unit="block",
+    ) as pbar:
 
-        total_blocks = len(frame_pairs) * num_interpolation_steps
+        current_pair_i = None
+        current_frame_i = None
 
-        with tqdm(
-            total=total_blocks,
-            desc="Generating timestamp blocks",
-            unit="block",
-        ) as pbar:
-            output_frame_number = 1
+        depth1 = None
+        depth2 = None
+        normals1 = None
+        normals2 = None
 
-            for pair_i, (depth_path1, depth_path2, normal_path1, normal_path2) in enumerate(frame_pairs):
-                depth1 = load_depth_file(depth_path1)
-                depth2 = load_depth_file(depth_path2)
+        depth = None
+        normals = None
 
-                normals1 = load_normal_file(normal_path1)
-                normals2 = load_normal_file(normal_path2)
+        for block_idx in range(expected_blocks):
+            # Actual scene time represented by this ToF block.
+            block_time_s = block_idx * block_duration_s
 
-                for interp_i in range(num_interpolation_steps):
-                    alpha = interp_i / float(num_interpolation_steps)
+            # Continuous location in the rendered frame sequence.
+            render_position = block_time_s * render_fps
 
-                    block = simulate_timestamp_block_interpolated_pair(
-                        depth1=depth1,
-                        depth2=depth2,
-                        normals1=normals1,
-                        normals2=normals2,
-                        alpha=alpha,
-                        frame_number=output_frame_number,
-                        source_depth_file=f"{depth_path1} -> {depth_path2}, alpha={alpha:.3f}",
-                        source_normal_file=f"{normal_path1} -> {normal_path2}, alpha={alpha:.3f}",
-                        ray_dirs_full=ray_dirs_full,
-                        tof_h=SENSOR.tof_h,
-                        tof_w=SENSOR.tof_w,
-                        L=SENSOR.block_size_L,
-                        rho=SENSOR.detection_probability_rho,
-                        jitter_std=SENSOR.timing_jitter_std_s,
-                        switch_dist_thresh_m=switch_dist_thresh_m,
+            if use_interpolated_visibility_switch:
+                pair_i = int(np.floor(render_position))
+                pair_i = min(pair_i, len(depth_files) - 2)
+
+                alpha_continuous = render_position - pair_i
+
+                # Quantize continuous scene time to the requested
+                # interpolation resolution.
+                interp_idx = int(
+                    np.floor(
+                        alpha_continuous * num_interpolation_steps
                     )
+                )
 
-                    process_block(block)
+                interp_idx = min(
+                    max(interp_idx, 0),
+                    num_interpolation_steps - 1,
+                )
 
-                    pbar.update(1)
-                    output_frame_number += 1
-    else:
-        frame_items = list(zip(depth_files, normal_files))
+                alpha = (
+                    interp_idx / float(num_interpolation_steps)
+                )
 
-        for frame_i, (depth_path, normal_path) in enumerate(
-            tqdm(frame_items, desc="Generating timestamp blocks", unit="frame")
-        ):
-            frame_number = frame_i + 1
+                # Only reload EXRs when entering a new render pair.
+                if pair_i != current_pair_i:
+                    depth_path1 = depth_files[pair_i]
+                    depth_path2 = depth_files[pair_i + 1]
 
-            depth = load_depth_file(depth_path)
-            normals = load_normal_file(normal_path)
+                    normal_path1 = normal_files[pair_i]
+                    normal_path2 = normal_files[pair_i + 1]
 
-            block = simulate_timestamp_block(
-                depth=depth,
-                normals=normals,
-                frame_number=frame_number,
-                source_depth_file=str(depth_path),
-                source_normal_file=str(normal_path),
-                ray_dirs_full=ray_dirs_full,
-                tof_h=SENSOR.tof_h,
-                tof_w=SENSOR.tof_w,
-                L=SENSOR.block_size_L,
-                rho=SENSOR.detection_probability_rho,
-                jitter_std=SENSOR.timing_jitter_std_s,
-            )
+                    depth1 = load_depth_file(depth_path1)
+                    depth2 = load_depth_file(depth_path2)
+
+                    normals1 = load_normal_file(normal_path1)
+                    normals2 = load_normal_file(normal_path2)
+
+                    current_pair_i = pair_i
+
+                block = simulate_timestamp_block_interpolated_pair(
+                    depth1=depth1,
+                    depth2=depth2,
+                    normals1=normals1,
+                    normals2=normals2,
+                    alpha=alpha,
+                    frame_number=block_idx + 1,
+                    source_depth_file=(
+                        f"{depth_files[pair_i]} -> "
+                        f"{depth_files[pair_i + 1]}, "
+                        f"alpha={alpha:.6f}"
+                    ),
+                    source_normal_file=(
+                        f"{normal_files[pair_i]} -> "
+                        f"{normal_files[pair_i + 1]}, "
+                        f"alpha={alpha:.6f}"
+                    ),
+                    ray_dirs_full=ray_dirs_full,
+                    tof_h=SENSOR.tof_h,
+                    tof_w=SENSOR.tof_w,
+                    L=SENSOR.block_size_L,
+                    rho=SENSOR.detection_probability_rho,
+                    jitter_std=SENSOR.timing_jitter_std_s,
+                    switch_dist_thresh_m=switch_dist_thresh_m,
+                )
+
+            else:
+                # No interpolation:
+                # hold the latest rendered frame until the next frame.
+                frame_i = int(np.floor(render_position))
+                frame_i = min(frame_i, len(depth_files) - 1)
+
+                if frame_i != current_frame_i:
+                    depth_path = depth_files[frame_i]
+                    normal_path = normal_files[frame_i]
+
+                    depth = load_depth_file(depth_path)
+                    normals = load_normal_file(normal_path)
+
+                    current_frame_i = frame_i
+
+                block = simulate_timestamp_block(
+                    depth=depth,
+                    normals=normals,
+                    frame_number=block_idx + 1,
+                    source_depth_file=str(depth_files[frame_i]),
+                    source_normal_file=str(normal_files[frame_i]),
+                    ray_dirs_full=ray_dirs_full,
+                    tof_h=SENSOR.tof_h,
+                    tof_w=SENSOR.tof_w,
+                    L=SENSOR.block_size_L,
+                    rho=SENSOR.detection_probability_rho,
+                    jitter_std=SENSOR.timing_jitter_std_s,
+                )
 
             process_block(block)
+            pbar.update(1)
             
     if len(tof_depths) == 0:
         raise RuntimeError("No timestamp blocks were generated.")
@@ -983,8 +1041,8 @@ def main():
             laser_rate_hz=SENSOR.laser_rate_hz,
             detection_probability_rho=SENSOR.detection_probability_rho,
             timing_jitter_std_s=SENSOR.timing_jitter_std_s,
-            fps=effective_fps,
-            dt_s=effective_dt,
+            fps=block_rate_hz,
+            dt_s=block_duration_s,
             c_light=SENSOR.c_light,
             min_valid_depth_m=SENSOR.min_valid_depth_m,
             max_valid_depth_m=SENSOR.max_valid_depth_m,

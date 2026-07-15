@@ -1,0 +1,25 @@
+name: drone_flyby
+
+description: >
+  Microdrone flyby path through a plane, cube, cylinder, and sphere obstacle course.
+
+camera_path:
+  - frame: 1
+    position: [0.0, 0.0, 0.0]
+  - frame: 45
+    position: [0.65, 0.0, -1.8]
+  - frame: 90
+    position: [-0.65, 0.0, -3.2]
+  - frame: 135
+    position: [0.6, 0.0, -4.6]
+  - frame: 180
+    position: [-0.6, 0.0, -6.0]
+  - frame: 240
+    position: [0.0, 0.0, -7.4]
+
+segment_names:
+  - "Approach plane"
+  - "Plane to cube"
+  - "Cube to cylinder"
+  - "Cylinder to sphere"
+  - "Sphere exit"

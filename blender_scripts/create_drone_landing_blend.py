@@ -82,38 +82,54 @@ def main():
     )
 
     # Drone path
+    
+    frame_locations = [
+        (1,   (0.0,  1.6,  -2.4)),
+        (60,  (0.0,  0.4,  -2.4)),
+        (95,  (0.0, -0.80, -2.4)),
+        (120, (0.0, -0.80, -2.4)),
+        (145, (0.0,  1.0,  -2.4)),
+        (175, (0.0,  1.0,  -5.0)),
+        (200, (0.0,  0.4,  -5.0)),
+        (225, (0.0, -0.75, -5.0)),
+        (250, (0.0, -0.75, -5.0)),
+        (275, (0.0,  1.0,  -5.0)),
+        (305, (0.0,  1.0,  -7.6)),
+        (325, (0.0,  0.4,  -7.6)),
+        (345, (0.0, -0.75, -7.6)),
+        (360, (0.0, -0.75, -7.6)),
+    ]
+
+    segment_names = [
+        "Flat pad initial descent",
+        "Flat pad final approach",
+        "Flat pad hover",
+        "Rise from flat pad",
+        "Translate to slanted pad",
+        "Slanted pad initial descent",
+        "Slanted pad final approach",
+        "Slanted pad hover",
+        "Rise from slanted pad",
+        "Translate to bumpy pad",
+        "Bumpy pad initial descent",
+        "Bumpy pad final approach",
+        "Bumpy pad hover",
+    ]
+    
     sb.animate_camera_path(
         camera,
-        frame_locations=[
-            # Flat pad
-            (1,   (0.0,  1.6,  -2.4)),   # high above flat pad
-            (60,  (0.0,  0.4,  -2.4)),   # descend
-            (95,  (0.0, -0.80, -2.4)),   # close hover over flat pad
-            (120, (0.0, -0.80, -2.4)),   # hold
-
-            # Rise before moving to next pad
-            (145, (0.0,  1.0,  -2.4)),
-
-            # Translate high over to slanted pad
-            (175, (0.0,  1.0,  -5.0)),
-
-            # Slanted pad
-            (200, (0.0,  0.4,  -5.0)),   # descend
-            (225, (0.0, -0.75, -5.0)),   # close hover over slanted pad
-            (250, (0.0, -0.75, -5.0)),   # hold
-
-            # Rise before moving to next pad
-            (275, (0.0,  1.0,  -5.0)),
-
-            # Translate high over to bumpy pad
-            (305, (0.0,  1.0,  -7.6)),
-
-            # Bumpy pad
-            (325, (0.0,  0.4,  -7.6)),   # descend
-            (345, (0.0, -0.75, -7.6)),   # close hover over bumpy pad
-            (360, (0.0, -0.75, -7.6)),   # hold
-        ],
+        frame_locations=frame_locations,
         interpolation="LINEAR",
+    )
+
+    sb.save_drone_path_config(
+        name="drone_landing",
+        frame_locations=frame_locations,
+        segment_names=segment_names,
+        description=(
+            "Microdrone landing sequence over flat, slanted, "
+            "and bumpy landing surfaces."
+        ),
     )
 
     sb.save_blend("drone_landing.blend")

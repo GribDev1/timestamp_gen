@@ -1,0 +1,25 @@
+name: drone_wall_approach
+
+description: >
+  Microdrone path following room walls and crossing diagonally through an empty room.
+
+camera_path:
+  - frame: 1
+    position: [-3.0, 0.0, 3.0]
+  - frame: 60
+    position: [-3.0, 0.0, -3.0]
+  - frame: 120
+    position: [3.0, 0.0, -3.0]
+  - frame: 180
+    position: [-3.0, 0.0, 3.0]
+  - frame: 240
+    position: [3.0, 0.0, 3.0]
+  - frame: 300
+    position: [3.0, 0.0, -3.0]
+
+segment_names:
+  - "Left wall toward front"
+  - "Front wall toward right"
+  - "Diagonal right-front to left-back"
+  - "Back wall toward right"
+  - "Right wall toward front"

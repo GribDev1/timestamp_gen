@@ -113,16 +113,27 @@ def main():
     )
 
     # Drone path
+    
+    frame_locations = [
+        (1,   (0.0,   0.0,  0.0)),
+        (45,  (0.65,  0.0, -1.8)),
+        (90,  (-0.65, 0.0, -3.2)),
+        (135, (0.60,  0.0, -4.6)),
+        (180, (-0.60, 0.0, -6.0)),
+        (240, (0.0,   0.0, -7.4)),
+    ]
+
+    segment_names = [
+        "Approach plane",
+        "Plane to cube",
+        "Cube to cylinder",
+        "Cylinder to sphere",
+        "Sphere exit",
+    ]
+
     sb.animate_camera_path(
         camera,
-        frame_locations=[
-            (1,   (0.0,   0.0,  0.0)),
-            (45,  (0.65,  0.0, -1.8)),
-            (90,  (-0.65, 0.0, -3.2)),
-            (135, (0.60,  0.0, -4.6)),
-            (180, (-0.60, 0.0, -6.0)),
-            (240, (0.0,   0.0, -7.4)),
-        ],
+        frame_locations=frame_locations,
         interpolation="LINEAR",
     )
 
@@ -137,6 +148,16 @@ def main():
             (240, (0.0,   0.0, 0.0)),
         ],
         interpolation="LINEAR",
+    )
+    
+    sb.save_drone_path_config(
+        name="drone_flyby",
+        frame_locations=frame_locations,
+        segment_names=segment_names,
+        description=(
+            "Microdrone flyby path through a plane, cube, "
+            "cylinder, and sphere obstacle course."
+        ),
     )
 
     sb.save_blend("drone_flyby.blend")
