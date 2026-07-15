@@ -29,10 +29,10 @@ Timestamp Generation:
         - valid detection fraction
 
     Running:
-        python timestamp_gen.py --sensor vl53l8ch --render-dir inputs\drone_flyby --output-dir outputs\examples\drone_flyby_lab
+        python timestamp_gen.py --sensor vl53l8ch --render-dir inputs\drone_flyby --output-dir outputs\examples\drone_flyby_lab --render-fps 240
 
     Running for performance testing:
-        python -m cProfile -o timestamp_profile.prof timestamp_gen.py
+        python -m cProfile -o timestamp_profile.prof timestamp_gen.py --sensor vl53l8ch --render-dir inputs\moving_plane_mwe --output-dir outputs\examples\flat_moving_ex --render-fps 240
         python -m pstats timestamp_profile.prof
         sort cumulative
         stats 40
@@ -56,8 +56,6 @@ from timestamp_dataset import TimestampBlock, TimestampDataset, TimestampMetadat
 
 SENSOR = get_sensor_preset("generic_spad_sensor")
 
-RENDER_FPS = 240.0
-RENDER_DT = 1.0 / RENDER_FPS
 
 USE_WEIGHTED_DEPTH_SAMPLING = True
 
@@ -67,12 +65,7 @@ HIST_DEPTH_MIN_M = 0.1
 HIST_DEPTH_MAX_M = 10.0
 HIST_NUM_BINS = 32
 
-USE_ADAPTIVE_TIME_GATING = False
-ADAPTIVE_GATE_M = 1.0
-
 MAX_SAME_SURFACE_SPEED_M_PER_S = 10.0
-SWITCH_DIST_THRESH_M = MAX_SAME_SURFACE_SPEED_M_PER_S * RENDER_DT
-
 NORMAL_COSINE_THRESH = 0.9
 
 SAVE_FULL_TIMESTAMP_DATASET = True
@@ -121,6 +114,8 @@ def load_normal_file(path: Path) -> np.ndarray:
     # OpenCV loads EXR channels as BGR, convert to RGB
     normal = normal[:, :, ::-1]
 
+    normal = normalize_vectors(normal).astype(np.float32)
+
     return normal
 
 
@@ -162,12 +157,12 @@ def simulate_timestamp_block(
     source_depth_file: str,
     source_normal_file: str,
     ray_dirs_full: np.ndarray,
+    switch_dist_thresh_m: float,
     tof_h: int=SENSOR.tof_h,
     tof_w: int=SENSOR.tof_w,
     L: int=SENSOR.block_size_L,
     rho: float=SENSOR.detection_probability_rho,
     jitter_std: float=SENSOR.timing_jitter_std_s,
-    switch_dist_thresh_m: float=SWITCH_DIST_THRESH_M,
     normal_cosine_thresh: float=NORMAL_COSINE_THRESH,
 ) -> TimestampBlock:
     """
@@ -232,10 +227,7 @@ def simulate_timestamp_block(
                 n1 = normals1[y0:y1, x0:x1, :].reshape(-1, 3)
                 n2 = normals2[y0:y1, x0:x1, :].reshape(-1, 3)
 
-                n1_unit = normalize_vectors(n1)
-                n2_unit = normalize_vectors(n2)
-
-                normal_cos = np.sum(n1_unit * n2_unit, axis=-1)
+                normal_cos = np.sum(n1 * n2, axis=-1)
 
                 same_surface = same_surface & (normal_cos >= normal_cosine_thresh)
 
@@ -243,7 +235,6 @@ def simulate_timestamp_block(
                 n_interp = normalize_vectors(n_interp)
 
                 n_switch = n1 if before_mid else n2
-                n_switch = normalize_vectors(n_switch)
 
                 n = np.where(same_surface[:, None], n_interp, n_switch)
 
@@ -274,7 +265,7 @@ def simulate_timestamp_block(
             weights = None
 
             if n is not None and USE_WEIGHTED_DEPTH_SAMPLING:
-                valid_normals = normalize_vectors(n[valid])
+                valid_normals = n[valid]
                 valid_ray_dirs = ray_dirs[valid]
                 
                 cos_incidence = np.sum((-valid_ray_dirs) * valid_normals, axis=-1)
@@ -319,49 +310,6 @@ def simulate_timestamp_block(
         source_depth_file=source_depth_file,
         source_normal_file=source_normal_file,
     )
-
-
-# =========================
-# Ray Angle
-# =========================
-
-def pixel_ray_cos(
-    x: int,
-    y: int,
-    tof_w: int,
-    tof_h: int,
-    fov_x_deg: float = SENSOR.camera_fov_x_deg,
-    fov_y_deg: float = SENSOR.camera_fov_y_deg,
-) -> float:
-    """
-    Computes cos(theta) for the ray through one ToF pixel.
-
-    theta is the angle between this pixel's camera ray and the camera's
-    forward optical axis.
-
-    Center pixel:
-        cos(theta) ≈ 1
-
-    Edge/corner pixels:
-        cos(theta) < 1
-        range = z_depth / cos(theta)
-    """
-    fov_x = np.deg2rad(fov_x_deg)
-    fov_y = np.deg2rad(fov_y_deg)
-
-    # Pixel center coordinates normalized to [-1, 1]
-    nx = ((x + 0.5) / tof_w) * 2.0 - 1.0
-    ny = ((y + 0.5) / tof_h) * 2.0 - 1.0
-
-    # Convert normalized image position to ray slope
-    ray_x = nx * np.tan(fov_x / 2.0)
-    ray_y = ny * np.tan(fov_y / 2.0)
-    ray_z = 1.0
-
-    ray_norm = np.sqrt(ray_x**2 + ray_y**2 + ray_z**2)
-
-    # Dot product with forward axis [0, 0, 1]
-    return ray_z / ray_norm
     
     
 # =========================
@@ -452,19 +400,6 @@ def block_depth_estimate_histogram(
     )
 
 
-def coarse_tau_estimate_median(timestamps: np.ndarray):
-    return np.nanmedian(timestamps, axis=0).astype(np.float32)
-
-
-def adaptive_time_gate(timestamps, coarse_tau_hat, gate_tau):
-    
-    diff = np.abs(timestamps - coarse_tau_hat[np.newaxis])
-    keep = np.isfinite(timestamps) & (diff <= gate_tau)
-
-    gated = np.where(keep, timestamps, np.nan)
-    return gated
-
-
 def compute_valid_detection_fraction(timestamps: np.ndarray):
     """
     I[k] = 1 if a valid timestamp is recorded, else 0.
@@ -545,13 +480,6 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--adaptive-gate-m",
-        type=float,
-        default=1.0,
-        help="Adaptive time-gate half-width in meters. Default: 1.0",
-    )
-
-    parser.add_argument(
         "--no-full-dataset",
         action="store_true",
         help="Do not save full per-frame timestamp dataset.",
@@ -561,6 +489,12 @@ def parse_args():
         "--no-precomputed",
         action="store_true",
         help="Do not save timestamp_precomputed.npz.",
+    )
+    
+    parser.add_argument(
+        "--no-progress",
+        action="store_true",
+        help="Disable the timestamp generation progress bar.",
     )
 
     return parser.parse_args()
@@ -595,8 +529,6 @@ def main():
     hist_depth_min_m = args.hist_depth_min
     hist_depth_max_m = args.hist_depth_max
     hist_num_bins = args.hist_bins
-
-    adaptive_gate_m = args.adaptive_gate_m
 
     save_full_timestamp_dataset = not args.no_full_dataset
     save_precomputed_data = not args.no_precomputed
@@ -697,23 +629,11 @@ def main():
     
     ray_dirs_full = SENSOR.build_fullres_ray_dirs(image_h, image_w)
 
-    gate_tau = SENSOR.depth_to_timestamp(adaptive_gate_m)
-
     def process_block(block):
         if save_full_timestamp_dataset:
             blocks.append(block)
 
-        timestamps_raw = block.timestamps_noisy_s
-        coarse_tau_hat = coarse_tau_estimate_median(timestamps_raw)
-
-        if USE_ADAPTIVE_TIME_GATING:
-            timestamps = adaptive_time_gate(
-                timestamps=timestamps_raw,
-                coarse_tau_hat=coarse_tau_hat,
-                gate_tau=gate_tau,
-            )
-        else:
-            timestamps = timestamps_raw
+        timestamps = block.timestamps_noisy_s
 
         curr_tau_hat, histograms = block_depth_estimate_histogram(
             timestamps=timestamps,
@@ -733,6 +653,7 @@ def main():
         total=expected_blocks,
         desc="Generating timestamp blocks",
         unit="block",
+        disable=args.no_progress,
     ) as pbar:
 
         current_pair_i = None
