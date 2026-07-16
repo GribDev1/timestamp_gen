@@ -154,6 +154,7 @@ def simulate_timestamp_block(
     normals2: np.ndarray | None,
     alpha: float,
     frame_number: int,
+    simulation_time_s: float,
     source_depth_file: str,
     source_normal_file: str,
     ray_dirs_full: np.ndarray,
@@ -303,6 +304,7 @@ def simulate_timestamp_block(
 
     return TimestampBlock(
         frame_number=frame_number,
+        simulation_time_s=simulation_time_s,
         sampled_depths_m=sampled_depths,
         timestamps_clean_s=timestamps_clean,
         detection_mask=detection_mask_all,
@@ -618,6 +620,7 @@ def main():
     tof_depths = []
     all_I = []
     all_histograms = []
+    tof_block_times_s = []
 
     depth_edges = np.linspace(hist_depth_min_m, hist_depth_max_m, hist_num_bins + 1)
     tau_edges = SENSOR.depth_to_timestamp(depth_edges).astype(np.float32)
@@ -648,6 +651,7 @@ def main():
         tof_depths.append(tof_depth_hist)
         all_I.append(I)
         all_histograms.append(histograms)
+        tof_block_times_s.append(block.simulation_time_s)
 
     with tqdm(
         total=expected_blocks,
@@ -664,11 +668,12 @@ def main():
         normals2 = None
 
         for block_idx in range(expected_blocks):
-            # Actual scene time represented by this ToF block.
-            block_time_s = block_idx * block_duration_s
+            # Start and end time of this ToF acquisition block.
+            block_start_time_s = block_idx * block_duration_s
+            block_end_time_s = (block_idx + 1) * block_duration_s
 
-            # Continuous location in the rendered frame sequence.
-            render_position = block_time_s * render_fps
+            # Use the block start to select/interpolate the scene state.
+            render_position = block_start_time_s * render_fps
 
             pair_i = int(np.floor(render_position))
             pair_i = min(pair_i, len(depth_files) - 2)
@@ -698,6 +703,7 @@ def main():
                 normals2=normals2,
                 alpha=alpha,
                 frame_number=block_idx + 1,
+                simulation_time_s=block_end_time_s,
                 source_depth_file=(
                     f"{depth_files[pair_i]} -> "
                     f"{depth_files[pair_i + 1]}, "
@@ -743,6 +749,7 @@ def main():
             tof_depths=tof_depths,
             all_I=all_I,
             all_histograms=all_histograms,
+            tof_block_times_s=tof_block_times_s,
             hist_bin_centers_tau=hist_bin_centers_tau,
             hist_bin_centers_depth_m=hist_bin_centers_depth_m,
         )

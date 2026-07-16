@@ -25,6 +25,7 @@ class TimestampMetadata:
 @dataclass
 class TimestampBlock:
     frame_number: int
+    simulation_time_s: float # End time of this ToF acquisition block
     
     # Ideal geometry-derived data
     sampled_depths_m: np.ndarray # [L, H, W]
@@ -85,6 +86,10 @@ class TimestampDataset:
             np.savez(
                 frame_path,
                 frame_number=np.array(block.frame_number, dtype=np.int32),
+                simulation_time_s=np.array(
+                    block.simulation_time_s, 
+                    dtype=np.float64
+                ),
                 sampled_depths_m=block.sampled_depths_m.astype(np.float32),
                 timestamps_clean_s=block.timestamps_clean_s.astype(np.float32),
                 detection_mask=block.detection_mask.astype(bool),
@@ -123,6 +128,7 @@ class TimestampDataset:
             
             block = TimestampBlock(
                 frame_number=int(data["frame_number"]),
+                simulation_time_s=float(data["simulation_time_s"]),
                 sampled_depths_m=data["sampled_depths_m"],
                 timestamps_clean_s=data["timestamps_clean_s"],
                 detection_mask=data["detection_mask"].astype(bool),
