@@ -123,40 +123,50 @@ def main():
         (240, (0.0,   0.0, -7.4)),
     ]
 
-    segment_names = [
+    translation_segment_names = [
         "Approach plane",
         "Plane to cube",
         "Cube to cylinder",
         "Cylinder to sphere",
         "Sphere exit",
     ]
+    
+    frame_rotations = [
+        (1,   (0.0, 0.0, 0.0)),
+        (45,  (0.0, 16.0, 0.0)),
+        (90,  (0.0, -16.0, 0.0)),
+        (135, (0.0, 14.0, 0.0)),
+        (180, (0.0, -14.0, 0.0)),
+        (240, (0.0, 0.0, 0.0)),
+    ]
+    
+    rotation_segment_names = [
+        "Turn toward plane",
+        "Turn from plane toward cube",
+        "Turn from cube toward cylinder",
+        "Turn from cylinder toward sphere",
+        "Return to forward heading",
+    ]
 
     sb.animate_camera_path(
         camera,
-        frame_locations=frame_locations,
-        interpolation="LINEAR",
+        frame_locations,
     )
 
     sb.animate_camera_rotation(
         camera,
-        frame_rotations_deg=[
-            (1,   (0.0,   0.0, 0.0)),
-            (45,  (0.0,  16.0, 0.0)),
-            (90,  (0.0, -16.0, 0.0)),
-            (135, (0.0,  14.0, 0.0)),
-            (180, (0.0, -14.0, 0.0)),
-            (240, (0.0,   0.0, 0.0)),
-        ],
-        interpolation="LINEAR",
+        frame_rotations,
     )
     
     sb.save_drone_path_config(
         name="drone_flyby",
         frame_locations=frame_locations,
-        segment_names=segment_names,
+        segment_names=translation_segment_names,
+        frame_rotations=frame_rotations,
+        rotation_segment_names=rotation_segment_names,
         description=(
-            "Microdrone flyby path through a plane, cube, "
-            "cylinder, and sphere obstacle course."
+            "Microdrone camera path through a rectangular room, "
+            "including translation and orientation keyframes."
         ),
     )
 

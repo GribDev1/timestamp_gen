@@ -387,11 +387,25 @@ def save_drone_path_config(
     name: str,
     frame_locations: list,
     segment_names: list[str] | None = None,
+    frame_rotations: list | None = None,
+    rotation_segment_names: list[str] | None = None,
     description: str = "",
     output_dir: str | Path = "configs/drone_paths",
 ):
     """
-    Save camera translation keyframes as a drone path YAML config.
+    Save camera translation and rotation keyframes to a reusable YAML file.
+
+    frame_locations:
+        [
+            (frame_number, (x, y, z)),
+            ...
+        ]
+
+    frame_rotations:
+        [
+            (frame_number, (rx_deg, ry_deg, rz_deg)),
+            ...
+        ]
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -400,27 +414,53 @@ def save_drone_path_config(
 
     if len(frame_locations) < 2:
         raise ValueError(
-            "Drone path must contain at least two camera keyframes."
+            "frame_locations must contain at least two keyframes."
         )
 
-    num_segments = len(frame_locations) - 1
+    num_translation_segments = len(frame_locations) - 1
 
     if segment_names is None:
         segment_names = [
-            f"Segment {index + 1}"
-            for index in range(num_segments)
+            f"Translation segment {index + 1}"
+            for index in range(num_translation_segments)
         ]
 
-    if len(segment_names) != num_segments:
+    if len(segment_names) != num_translation_segments:
         raise ValueError(
-            "segment_names must contain one name for each path segment."
+            "segment_names must contain one name for each "
+            "translation segment."
         )
+
+    if frame_rotations is None:
+        frame_rotations = []
+
+    if frame_rotations and len(frame_rotations) < 2:
+        raise ValueError(
+            "frame_rotations must contain at least two keyframes."
+        )
+
+    if frame_rotations:
+        num_rotation_segments = len(frame_rotations) - 1
+
+        if rotation_segment_names is None:
+            rotation_segment_names = [
+                f"Rotation segment {index + 1}"
+                for index in range(num_rotation_segments)
+            ]
+
+        if len(rotation_segment_names) != num_rotation_segments:
+            raise ValueError(
+                "rotation_segment_names must contain one name for "
+                "each rotation segment."
+            )
+    else:
+        rotation_segment_names = []
 
     lines = [
         f"name: {name}",
         "",
         "description: >",
-        f"  {description}" if description else "  Camera translation path.",
+        f"  {description}" if description else "  Camera motion path.",
         "",
         "camera_path:",
     ]
@@ -428,18 +468,53 @@ def save_drone_path_config(
     for frame, position in frame_locations:
         x, y, z = position
 
-        lines.extend([
-            f"  - frame: {frame}",
-            f"    position: [{x}, {y}, {z}]",
-        ])
+        lines.extend(
+            [
+                f"  - frame: {int(frame)}",
+                f"    position: [{float(x)}, {float(y)}, {float(z)}]",
+            ]
+        )
 
-    lines.extend([
-        "",
-        "segment_names:",
-    ])
+    lines.extend(
+        [
+            "",
+            "segment_names:",
+        ]
+    )
 
     for segment_name in segment_names:
         lines.append(f'  - "{segment_name}"')
+
+    if frame_rotations:
+        lines.extend(
+            [
+                "",
+                "camera_rotation:",
+            ]
+        )
+
+        for frame, rotation_deg in frame_rotations:
+            rx, ry, rz = rotation_deg
+
+            lines.extend(
+                [
+                    f"  - frame: {int(frame)}",
+                    (
+                        "    rotation_deg: "
+                        f"[{float(rx)}, {float(ry)}, {float(rz)}]"
+                    ),
+                ]
+            )
+
+        lines.extend(
+            [
+                "",
+                "rotation_segment_names:",
+            ]
+        )
+
+        for segment_name in rotation_segment_names:
+            lines.append(f'  - "{segment_name}"')
 
     output_path.write_text(
         "\n".join(lines) + "\n",

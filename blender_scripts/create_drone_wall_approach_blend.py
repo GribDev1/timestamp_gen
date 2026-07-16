@@ -105,19 +105,7 @@ def main():
             color=(0.50, 0.50, 0.50, 1.0),
         )
     )
-
-    # -------------------------
-    # Drone path
-    # -------------------------
-    # Room coordinates:
-    #   x = -5 left wall
-    #   x = +5 right wall
-    #   z = -5 front wall
-    #   z = +5 back wall
-    #
-    # The drone stays roughly 2 m away from each wall:
-    #   x = -3 or +3
-    #   z = -3 or +3
+    
     
     frame_locations = [
         (1,   (-3.0, 0.0,  3.0)),
@@ -128,7 +116,7 @@ def main():
         (300, ( 3.0, 0.0, -3.0)),
     ]
 
-    segment_names = [
+    translation_segment_names = [
         "Left wall toward front",
         "Front wall toward right",
         "Diagonal right-front to left-back",
@@ -136,61 +124,52 @@ def main():
         "Right wall toward front",
     ]
     
+    frame_rotations = [
+        (1, (0.0, 0.0, 0.0)),
+        (60, (0.0, 0.0, 0.0)),
+        (75, (0.0, -90.0, 0.0)),
+        (120, (0.0, -90.0, 0.0)),
+        (140, (0.0, -225.0, 0.0)),
+        (180, (0.0, -225.0, 0.0)),
+        (200, (0.0, -90.0, 0.0)),
+        (240, (0.0, -90.0, 0.0)),
+        (260, (0.0, 0.0, 0.0)),
+        (300, (0.0, 0.0, 0.0)),
+    ]
+    
+    rotation_segment_names = [
+        "Hold initial heading",
+        "Turn toward right wall",
+        "Hold right-wall heading",
+        "Turn toward rear diagonal",
+        "Hold rear-diagonal heading",
+        "Turn toward right wall",
+        "Hold right-wall heading",
+        "Turn toward front",
+        "Hold final heading",
+    ]
+    
+    # Drone path   
     sb.animate_camera_path(
         camera,
-        frame_locations=frame_locations,
-        interpolation="LINEAR",
+        frame_locations,
     )
 
-    # -------------------------
     # Camera orientation
-    # -------------------------
-    # Blender cameras look along local -Z.
-    #
-    # Approximate yaw convention using rotation around Y:
-    #   0 deg:    look toward -Z
-    #   -90 deg:  look toward +X
-    #   -225 deg: look diagonally toward -X/+Z
-    #   -90 deg:  look toward +X
-    #   0 deg:    look toward -Z
-    #
-    # This intentionally creates an opposite-direction 135-degree turn
-    # when going from wall 2 into the diagonal crossing.
     sb.animate_camera_rotation(
         camera,
-        frame_rotations_deg=[
-            # Move along wall 1, looking toward front wall.
-            (1,   (0.0,    0.0, 0.0)),
-            (60,  (0.0,    0.0, 0.0)),
-
-            # Turn right and move along wall 2.
-            (75,  (0.0,  -90.0, 0.0)),
-            (120, (0.0,  -90.0, 0.0)),
-
-            # Opposite-direction 135 degree turn into diagonal.
-            # From -90 to -225 is a -135 deg turn.
-            (140, (0.0, -225.0, 0.0)),
-            (180, (0.0, -225.0, 0.0)),
-
-            # Turn back in the opposite direction to follow back wall.
-            # From -225 to -90 is +135 deg.
-            (200, (0.0,  -90.0, 0.0)),
-            (240, (0.0,  -90.0, 0.0)),
-
-            # Turn to follow right wall.
-            (260, (0.0,    0.0, 0.0)),
-            (300, (0.0,    0.0, 0.0)),
-        ],
-        interpolation="LINEAR",
+        frame_rotations,
     )
     
     sb.save_drone_path_config(
         name="drone_wall_approach",
         frame_locations=frame_locations,
-        segment_names=segment_names,
+        segment_names=translation_segment_names,
+        frame_rotations=frame_rotations,
+        rotation_segment_names=rotation_segment_names,
         description=(
-            "Microdrone path following room walls and crossing "
-            "diagonally through an empty room."
+            "Microdrone camera path through a rectangular room, "
+            "including translation and orientation keyframes."
         ),
     )
 
