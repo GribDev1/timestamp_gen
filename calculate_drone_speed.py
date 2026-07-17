@@ -13,9 +13,6 @@ Examples:
     python calculate_drone_speed.py --path-config wall_approach \
         --fps-start 30 --fps-stop 240 --fps-step 30
 """
-
-from __future__ import annotations
-
 import argparse
 from pathlib import Path
 
@@ -178,6 +175,16 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=None,
         help="Step size for an FPS sweep.",
+    )
+    
+    parser.add_argument(
+        "--trace-samples-per-segment",
+        type=int,
+        default=100,
+        help=(
+            "Number of samples per keyframe segment for position and "
+            "velocity traces. Default: 100"
+        ),
     )
 
     return parser.parse_args()
@@ -351,6 +358,98 @@ def calculate_rotation_results(fps: float, camera_rotation: list[tuple],) -> lis
     return results
 
 
+def sample_position_trajectory(
+    fps: float,
+    camera_path: list[tuple[int, tuple[float, ...]]],
+    samples_per_segment: int = 100,
+) -> dict[str, np.ndarray]:
+    """
+    Sample camera position and translation velocity over time.
+
+    Assumes linear interpolation between camera position keyframes.
+
+    Time zero corresponds to the first camera-path keyframe.
+    """
+
+    if samples_per_segment < 2:
+        raise ValueError("samples_per_segment must be at least 2.")
+
+    first_frame = camera_path[0][0]
+
+    all_times = []
+    all_positions = []
+    all_velocities = []
+    all_segment_indices = []
+
+    for segment_idx in range(len(camera_path) - 1):
+        frame_start, position_start = camera_path[segment_idx]
+        frame_end, position_end = camera_path[segment_idx + 1]
+
+        p0 = np.asarray(position_start, dtype=np.float64)
+        p1 = np.asarray(position_end, dtype=np.float64)
+
+        time_start_s = (frame_start - first_frame) / fps
+        time_end_s = (frame_end - first_frame) / fps
+        duration_s = time_end_s - time_start_s
+
+        if duration_s <= 0:
+            raise ValueError(
+                "Camera path keyframes must be in increasing frame order."
+            )
+
+        # Avoid duplicating a shared endpoint between adjacent segments.
+        endpoint = segment_idx == len(camera_path) - 2
+
+        alpha = np.linspace(
+            0.0,
+            1.0,
+            samples_per_segment,
+            endpoint=endpoint,
+            dtype=np.float64,
+        )
+
+        times_s = time_start_s + alpha * duration_s
+
+        positions = (
+            (1.0 - alpha[:, None]) * p0[None, :]
+            + alpha[:, None] * p1[None, :]
+        )
+
+        # Linear interpolation gives constant velocity within each segment.
+        velocity = (p1 - p0) / duration_s
+        velocities = np.repeat(
+            velocity[None, :],
+            len(alpha),
+            axis=0,
+        )
+
+        all_times.append(times_s)
+        all_positions.append(positions)
+        all_velocities.append(velocities)
+        all_segment_indices.append(
+            np.full(len(alpha), segment_idx + 1, dtype=np.int32)
+        )
+
+    times_s = np.concatenate(all_times)
+    positions = np.concatenate(all_positions, axis=0)
+    velocities = np.concatenate(all_velocities, axis=0)
+    segment_indices = np.concatenate(all_segment_indices)
+
+    speeds_m_per_s = np.linalg.norm(velocities, axis=1)
+
+    return {
+        "time_s": times_s,
+        "position_x_m": positions[:, 0],
+        "position_y_m": positions[:, 1],
+        "position_z_m": positions[:, 2],
+        "velocity_x_m_per_s": velocities[:, 0],
+        "velocity_y_m_per_s": velocities[:, 1],
+        "velocity_z_m_per_s": velocities[:, 2],
+        "speed_m_per_s": speeds_m_per_s,
+        "segment": segment_indices,
+    }
+
+
 def summarize_fps(fps: float, results: list[dict], camera_path: list[tuple]) -> dict:
     total_distance_m = sum(row["distance_m"] for row in results)
 
@@ -515,6 +614,178 @@ def save_angular_velocity_plot(
     print(f"Saved angular-velocity plot: {path.resolve()}")
 
 
+def save_position_vs_time_plot(
+    path: Path,
+    trace: dict[str, np.ndarray],
+    path_name: str,
+) -> None:
+    """
+    Plot camera x, y, and z position versus elapsed scene time.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    time_ms = trace["time_s"] * 1e3
+
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(
+        time_ms,
+        trace["position_x_m"],
+        label="x position",
+        linewidth=1.5,
+    )
+    plt.plot(
+        time_ms,
+        trace["position_y_m"],
+        label="y position",
+        linewidth=1.5,
+    )
+    plt.plot(
+        time_ms,
+        trace["position_z_m"],
+        label="z position",
+        linewidth=1.5,
+    )
+
+    plt.xlabel("Simulation time (ms)")
+    plt.ylabel("Camera position (m)")
+    plt.title(f"Camera position versus time: {path_name}")
+    plt.grid(True, alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    print(f"Saved position trace: {path.resolve()}")
+    
+    
+def save_velocity_vs_time_plot(
+    path: Path,
+    trace: dict[str, np.ndarray],
+    path_name: str,
+) -> None:
+    """
+    Plot camera translation speed versus elapsed scene time.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    time_ms = trace["time_s"] * 1e3
+
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(
+        time_ms,
+        trace["speed_m_per_s"],
+        linewidth=1.5,
+    )
+
+    plt.xlabel("Simulation time (ms)")
+    plt.ylabel("Camera translation speed (m/s)")
+    plt.title(f"Camera speed versus time: {path_name}")
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    print(f"Saved velocity trace: {path.resolve()}")
+    
+    
+def save_velocity_components_vs_time_plot(
+    path: Path,
+    trace: dict[str, np.ndarray],
+    path_name: str,
+) -> None:
+    """
+    Plot x, y, and z translation velocity versus scene time.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    time_ms = trace["time_s"] * 1e3
+
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(
+        time_ms,
+        trace["velocity_x_m_per_s"],
+        label=r"$v_x$",
+        linewidth=1.5,
+    )
+    plt.plot(
+        time_ms,
+        trace["velocity_y_m_per_s"],
+        label=r"$v_y$",
+        linewidth=1.5,
+    )
+    plt.plot(
+        time_ms,
+        trace["velocity_z_m_per_s"],
+        label=r"$v_z$",
+        linewidth=1.5,
+    )
+
+    plt.xlabel("Simulation time (ms)")
+    plt.ylabel("Velocity component (m/s)")
+    plt.title(f"Camera velocity components: {path_name}")
+    plt.grid(True, alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    print(f"Saved velocity-component trace: {path.resolve()}")
+    
+    
+def save_position_3d_plot(
+    path: Path,
+    trace: dict[str, np.ndarray],
+    path_name: str,
+) -> None:
+    """
+    Plot the camera translation path in Blender coordinates.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    figure = plt.figure(figsize=(9, 7))
+    axis = figure.add_subplot(111, projection="3d")
+
+    axis.plot(
+        trace["position_x_m"],
+        trace["position_y_m"],
+        trace["position_z_m"],
+        linewidth=1.5,
+    )
+
+    axis.scatter(
+        trace["position_x_m"][0],
+        trace["position_y_m"][0],
+        trace["position_z_m"][0],
+        marker="o",
+        s=50,
+        label="Start",
+    )
+
+    axis.scatter(
+        trace["position_x_m"][-1],
+        trace["position_y_m"][-1],
+        trace["position_z_m"][-1],
+        marker="x",
+        s=60,
+        label="End",
+    )
+
+    axis.set_xlabel("x position (m)")
+    axis.set_ylabel("y position (m)")
+    axis.set_zlabel("z position (m)")
+    axis.set_title(f"Camera position trace: {path_name}")
+    axis.legend()
+
+    figure.tight_layout()
+    figure.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close(figure)
+
+    print(f"Saved 3D position trace: {path.resolve()}")
+
+
 def main() -> None:
     args = parse_args()
 
@@ -528,6 +799,14 @@ def main() -> None:
     rotation_segment_names = path_config["rotation_segment_names"]
 
     fps_values = resolve_fps_values(args)
+    
+    trace_fps = 240.0 if 240.0 in fps_values else max(fps_values)
+
+    trace = sample_position_trajectory(
+        fps=trace_fps,
+        camera_path=camera_path,
+        samples_per_segment=args.trace_samples_per_segment,
+    )
 
     all_results = []
     all_rotation_results = []
@@ -564,6 +843,32 @@ def main() -> None:
         all_rotation_results=all_rotation_results,
         path_name=path_name,
         rotation_segment_names=rotation_segment_names,
+    )
+    
+    trace_output_dir = Path("outputs") / "drone_path_analysis" / path_name
+
+    save_position_vs_time_plot(
+        path=trace_output_dir / f"{path_name}_position_vs_time.png",
+        trace=trace,
+        path_name=path_name,
+    )
+
+    save_velocity_vs_time_plot(
+        path=trace_output_dir / f"{path_name}_speed_vs_time.png",
+        trace=trace,
+        path_name=path_name,
+    )
+
+    save_velocity_components_vs_time_plot(
+        path=trace_output_dir / f"{path_name}_velocity_components_vs_time.png",
+        trace=trace,
+        path_name=path_name,
+    )
+
+    save_position_3d_plot(
+        path=trace_output_dir / f"{path_name}_position_trace_3d.png",
+        trace=trace,
+        path_name=path_name,
     )
 
 

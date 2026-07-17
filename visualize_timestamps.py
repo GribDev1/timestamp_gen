@@ -14,6 +14,7 @@ Example:
 
 from pathlib import Path
 import argparse
+import json
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -72,8 +73,41 @@ def parse_args():
         default=12,
         help="Frames per second for output GIFs. Default: 12",
     )
+    
+    parser.add_argument(
+        "--start-time-ms",
+        type=float,
+        default=None,
+        help="Optional beginning of timestamp plot window in milliseconds.",
+    )
+
+    parser.add_argument(
+        "--end-time-ms",
+        type=float,
+        default=None,
+        help="Optional end of timestamp plot window in milliseconds.",
+    )
+
+    parser.add_argument(
+        "--timestamp-marker-size",
+        type=float,
+        default=2.0,
+        help="Scatter marker size for timestamp-versus-time plot. Default: 2.0",
+    )
 
     return parser.parse_args()
+
+
+def load_metadata(dataset_dir: Path) -> dict:
+    metadata_path = dataset_dir / "metadata.json"
+
+    if not metadata_path.exists():
+        raise FileNotFoundError(
+            f"Metadata file not found: {metadata_path}"
+        )
+
+    with metadata_path.open("r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def save_depth_frame(tof_depths, frame_idx, output_path):
@@ -315,6 +349,159 @@ def save_center_pixel_histogram_gif(
 
     anim.save(output_path, writer=PillowWriter(fps=fps))
     plt.close(fig)
+    
+    
+def save_timestamps_vs_time(
+    dataset_dir,
+    metadata,
+    pixel_y,
+    pixel_x,
+    output_path,
+    start_time_ms=None,
+    end_time_ms=None,
+    marker_size=2.0,
+):
+    """
+    Plot raw detected photon timestamps versus real simulation time.
+
+    Horizontal axis:
+        Real pulse emission time within the simulated scene.
+
+    Vertical axis:
+        Round-trip photon timestamp/delay.
+
+    simulation_time_s stored in each frame is the END time of that block.
+    """
+
+    frames_dir = Path(dataset_dir) / "frames"
+    frame_files = sorted(frames_dir.glob("frame_*.npz"))
+
+    if not frame_files:
+        raise RuntimeError(
+            f"No raw timestamp frame files found in {frames_dir}"
+        )
+
+    laser_rate_hz = float(metadata["laser_rate_hz"])
+    block_size_L = int(metadata["block_size_L"])
+    block_duration_s = block_size_L / laser_rate_hz
+
+    start_time_s = (
+        start_time_ms * 1e-3
+        if start_time_ms is not None
+        else None
+    )
+
+    end_time_s = (
+        end_time_ms * 1e-3
+        if end_time_ms is not None
+        else None
+    )
+
+    all_pulse_times_s = []
+    all_timestamps_s = []
+
+    for frame_path in frame_files:
+        with np.load(frame_path) as frame:
+            frame_number = int(frame["frame_number"])
+
+            # New datasets store block END time directly.
+            if "simulation_time_s" in frame.files:
+                block_end_time_s = float(frame["simulation_time_s"])
+            else:
+                # Backward-compatible fallback.
+                block_end_time_s = (
+                    frame_number * float(metadata["dt_s"])
+                )
+
+            block_start_time_s = (
+                block_end_time_s - block_duration_s
+            )
+
+            # Skip blocks outside requested plot window.
+            if (
+                start_time_s is not None
+                and block_end_time_s < start_time_s
+            ):
+                continue
+
+            if (
+                end_time_s is not None
+                and block_start_time_s > end_time_s
+            ):
+                break
+
+            timestamps_s = frame[
+                "timestamps_noisy_s"
+            ][:, pixel_y, pixel_x]
+
+            valid = np.isfinite(timestamps_s)
+
+            if not np.any(valid):
+                continue
+
+            pulse_indices = np.arange(
+                block_size_L,
+                dtype=np.float64,
+            )
+
+            pulse_times_s = (
+                block_start_time_s
+                + pulse_indices / laser_rate_hz
+            )
+
+            valid &= (
+                True
+                if start_time_s is None
+                else pulse_times_s >= start_time_s
+            )
+
+            valid &= (
+                True
+                if end_time_s is None
+                else pulse_times_s <= end_time_s
+            )
+
+            if not np.any(valid):
+                continue
+
+            all_pulse_times_s.append(pulse_times_s[valid])
+            all_timestamps_s.append(timestamps_s[valid])
+
+    if not all_pulse_times_s:
+        raise RuntimeError(
+            "No detected timestamps were found in the selected "
+            "pixel and time range."
+        )
+
+    pulse_times_s = np.concatenate(all_pulse_times_s)
+    timestamps_s = np.concatenate(all_timestamps_s)
+
+    plt.figure(figsize=(10, 5))
+
+    plt.scatter(
+        pulse_times_s * 1e3,
+        timestamps_s * 1e9,
+        s=marker_size,
+        alpha=0.5,
+        linewidths=0,
+    )
+
+    plt.xlabel("Simulation time (ms)")
+    plt.ylabel("Photon round-trip timestamp (ns)")
+    plt.title(
+        "Detected timestamps versus simulation time\n"
+        f"ToF pixel y={pixel_y}, x={pixel_x}"
+    )
+
+    plt.grid(alpha=0.25)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+    print(
+        f"Timestamp plot contains "
+        f"{timestamps_s.size:,} detected photons."
+    )
 
 
 def main():
@@ -326,6 +513,9 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     data = np.load(args.input)
+    
+    dataset_dir = args.input.parent
+    metadata = load_metadata(dataset_dir)
 
     tof_depths = data["tof_depths"]
     all_I = data["all_I"]
@@ -386,6 +576,20 @@ def main():
         pixel_y,
         pixel_x,
         args.output_dir / f"histogram_block_{frame_idx:04d}_y{pixel_y}_x{pixel_x}.png",
+    )
+    
+    save_timestamps_vs_time(
+        dataset_dir=dataset_dir,
+        metadata=metadata,
+        pixel_y=pixel_y,
+        pixel_x=pixel_x,
+        output_path=(
+            args.output_dir
+            / f"timestamps_vs_time_y{pixel_y}_x{pixel_x}.png"
+        ),
+        start_time_ms=args.start_time_ms,
+        end_time_ms=args.end_time_ms,
+        marker_size=args.timestamp_marker_size,
     )
     
     if args.make_gifs:
