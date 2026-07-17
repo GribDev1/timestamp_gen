@@ -35,7 +35,7 @@ def main():
     camera = sb.add_camera(
         location=(0.0, 0.0, 0.0),
         rotation=(math.radians(-90.0), 0.0, 0.0),
-        lens=24,
+        lens=40.0,
     )
 
     sb.set_world_background(color=(0.8, 0.8, 0.8), strength=0.8)
