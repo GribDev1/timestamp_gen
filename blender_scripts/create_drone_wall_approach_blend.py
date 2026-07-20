@@ -24,7 +24,7 @@ import scene_builder as sb
 
 def main():
     render = sb.RenderConfig(
-        width=320,
+        width=160,
         height=160,
         fps=240,
         frame_start=1,
@@ -37,7 +37,7 @@ def main():
     camera = sb.add_camera(
         location=(-3.0, 0.0, 3.0),
         rotation=(0.0, 0.0, 0.0),
-        lens=40.0,
+        lens=35.0,
     )
 
     sb.add_light(location=(0.0, 0.0, 2.0), energy=800, size=8.0)
