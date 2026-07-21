@@ -396,76 +396,71 @@ def save_timestamps_vs_time(
         if end_time_ms is not None
         else None
     )
-
+    
     all_pulse_times_s = []
     all_timestamps_s = []
 
-    for frame_path in frame_files:
+    dt_s = float(metadata["dt_s"])
+    num_files = len(frame_files)
+
+    first_idx = 0
+    last_idx = num_files
+
+    if start_time_s is not None:
+        # Include one earlier block in case its physical pulse interval
+        # overlaps the requested starting time.
+        first_idx = max(
+            0,
+            int(np.floor(start_time_s / dt_s)) - 1,
+        )
+
+    if end_time_s is not None:
+        last_idx = min(
+            num_files,
+            int(np.ceil(end_time_s / dt_s)) + 1,
+        )
+
+    selected_frame_files = frame_files[first_idx:last_idx]
+
+    print(
+        f"Reading {len(selected_frame_files):,} of "
+        f"{num_files:,} timestamp block files."
+    )
+    
+    pulse_offset_s = np.arange(block_size_L, dtype=np.float64) / laser_rate_hz
+
+    for local_idx, frame_path in enumerate(
+        selected_frame_files,
+        start=first_idx,
+    ):
+        frame_number = local_idx + 1
+
+        block_end_time_s = frame_number * dt_s
+        block_start_time_s = block_end_time_s - block_duration_s
+
         with np.load(frame_path) as frame:
-            frame_number = int(frame["frame_number"])
-
-            # New datasets store block END time directly.
-            if "simulation_time_s" in frame.files:
-                block_end_time_s = float(frame["simulation_time_s"])
-            else:
-                # Backward-compatible fallback.
-                block_end_time_s = (
-                    frame_number * float(metadata["dt_s"])
-                )
-
-            block_start_time_s = (
-                block_end_time_s - block_duration_s
-            )
-
-            # Skip blocks outside requested plot window.
-            if (
-                start_time_s is not None
-                and block_end_time_s < start_time_s
-            ):
-                continue
-
-            if (
-                end_time_s is not None
-                and block_start_time_s > end_time_s
-            ):
-                break
-
             timestamps_s = frame[
                 "timestamps_noisy_s"
             ][:, pixel_y, pixel_x]
 
-            valid = np.isfinite(timestamps_s)
+        valid = np.isfinite(timestamps_s)
 
-            if not np.any(valid):
-                continue
+        if not np.any(valid):
+            continue
 
-            pulse_indices = np.arange(
-                block_size_L,
-                dtype=np.float64,
-            )
+        pulse_times_s = block_start_time_s + pulse_offset_s
 
-            pulse_times_s = (
-                block_start_time_s
-                + pulse_indices / laser_rate_hz
-            )
+        if start_time_s is not None:
+            valid &= pulse_times_s >= start_time_s
 
-            valid &= (
-                True
-                if start_time_s is None
-                else pulse_times_s >= start_time_s
-            )
+        if end_time_s is not None:
+            valid &= pulse_times_s <= end_time_s
 
-            valid &= (
-                True
-                if end_time_s is None
-                else pulse_times_s <= end_time_s
-            )
+        if not np.any(valid):
+            continue
 
-            if not np.any(valid):
-                continue
-
-            all_pulse_times_s.append(pulse_times_s[valid])
-            all_timestamps_s.append(timestamps_s[valid])
+        all_pulse_times_s.append(pulse_times_s[valid])
+        all_timestamps_s.append(timestamps_s[valid])
 
     if not all_pulse_times_s:
         raise RuntimeError(
