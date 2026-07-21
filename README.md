@@ -84,7 +84,7 @@ blender --background --python create_example_blend.py
 To render the animation via VisionSIM, you can then run the following command in wsl:
 
 ```bash
-visionsim blender.render-animation INPUT_FILE.blend output/OUTPUT_RENDERED_EXR_FILES   --render-config.depths   --render-config.normals   --render-config.no-debug   --render-config.width=320   --render-config.height=160   --render-config.device-type=cuda   --render-config.no-use-denoising   --render-config.max-samples=8   --render-config.adaptive-threshold=0.2   --render-config.no-allow-skips 
+visionsim blender.render-animation INPUT_FILE.blend output/OUTPUT_RENDERED_EXR_FILES   --render-config.depths   --render-config.normals   --render-config.no-debug   --render-config.width=160   --render-config.height=160   --render-config.device-type=cuda   --render-config.no-use-denoising   --render-config.max-samples=16   --render-config.adaptive-threshold=0.05   --render-config.no-allow-skips 
 ```
 
 From this point, you can copy the output folder from the previous command and paste it into the *timestamp_gen* directory.

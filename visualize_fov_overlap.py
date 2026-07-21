@@ -26,8 +26,8 @@ Example:
         --depth inputs/drone_flyby/depths/depth_000001.exr ^
         --normal inputs/drone_flyby/normals/normal_000001.exr ^
         --rgb inputs/drone_flyby/images/frame_000001.png ^
-        --blender-fov-x 73.7398 ^
-        --blender-fov-y 41.1121 ^
+        --blender-fov-x 54.4322 ^
+        --blender-fov-y 54.4322 ^
         --pixel-x 4 ^
         --output-dir outputs/examples/drone_flyby/fov_overlap
 
@@ -105,15 +105,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--blender-fov-x",
         type=float,
-        default=73.7398,
-        help="Blender horizontal FoV in degrees. Default: 73.7398",
+        default=54.4322,
+        help=(
+            "Blender horizontal FoV in degrees for a 35 mm lens, "
+            "36 mm sensor width, and square render. Default: 54.4322"
+        ),
     )
 
     parser.add_argument(
         "--blender-fov-y",
         type=float,
-        default=41.1121,
-        help="Blender vertical FoV in degrees. Default: 41.1121",
+        default=54.4322,
+        help=(
+            "Blender vertical FoV in degrees for a 35 mm lens, "
+            "36 mm sensor width, and 160x160 square render. Default: 54.4322"
+        ),
     )
 
     parser.add_argument(
