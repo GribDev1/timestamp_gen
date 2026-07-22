@@ -37,6 +37,22 @@ The goal is to bridge rendered depth scenes and timestamp-based ToF algorithms.
   * histogram bin centers
 * Saves timestamp datasets in a reusable `.npz` format with metadata.
 
+### Installing WSL (Windows users)
+
+The entire pipeline depends on being able to use a bash-based terminal. My preferred method is to use Windows Subsystem for Linux (wsl). Most desktops are able to do this by opening a terminal and entering the following commands:
+
+```powershell
+wsl --install -d Ubuntu
+```
+
+If this doesn't work for whatever reason, run the following commands and it should work:
+
+```powershell
+wsl --update --web-download
+wsl --install --web-download -d Ubuntu
+```
+
+
 ## General Pipeline
 
 ### 1. Creating Python Blender scripts
