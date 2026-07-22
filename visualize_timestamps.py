@@ -95,6 +95,46 @@ def parse_args():
         help="Scatter marker size for timestamp-versus-time plot. Default: 2.0",
     )
 
+    parser.add_argument(
+        "--ttc-window-ms",
+        type=float,
+        default=10.0,
+        help=(
+            "Causal smoothing/differencing window for time-to-contact in "
+            "milliseconds. Default: 10.0"
+        ),
+    )
+
+    parser.add_argument(
+        "--ttc-min-closing-speed",
+        type=float,
+        default=0.10,
+        help=(
+            "Minimum positive closing speed in m/s required for a valid "
+            "time-to-contact estimate. Default: 0.10"
+        ),
+    )
+
+    parser.add_argument(
+        "--ttc-max-s",
+        type=float,
+        default=10.0,
+        help=(
+            "Maximum TTC value retained and displayed, in seconds. "
+            "Larger values are stored as NaN. Default: 10.0"
+        ),
+    )
+
+    parser.add_argument(
+        "--ttc-warning-s",
+        type=float,
+        default=1.0,
+        help=(
+            "Warning threshold drawn on the selected-pixel TTC plot, "
+            "in seconds. Default: 1.0"
+        ),
+    )
+
     return parser.parse_args()
 
 
@@ -351,6 +391,223 @@ def save_center_pixel_histogram_gif(
     plt.close(fig)
     
     
+
+def build_block_times_s(data, metadata, num_blocks):
+    """
+    Return one representative acquisition time per timestamp block.
+
+    Newer datasets may store block_start_time_s and block_end_time_s in
+    timestamp_precomputed.npz. Older datasets fall back to metadata["dt_s"].
+    """
+    if "block_start_time_s" in data.files and "block_end_time_s" in data.files:
+        starts = np.asarray(data["block_start_time_s"], dtype=np.float64)
+        ends = np.asarray(data["block_end_time_s"], dtype=np.float64)
+
+        if starts.shape[0] != num_blocks or ends.shape[0] != num_blocks:
+            raise ValueError(
+                "Saved block timing arrays do not match tof_depths length."
+            )
+
+        return 0.5 * (starts + ends)
+
+    dt_s = float(metadata["dt_s"])
+    return (np.arange(num_blocks, dtype=np.float64) + 0.5) * dt_s
+
+
+def causal_nanmean(values, window_blocks):
+    """
+    Causal trailing mean along axis 0 while ignoring NaNs.
+
+    values shape: [time, ...]
+    """
+    if window_blocks <= 1:
+        return values.astype(np.float32, copy=True)
+
+    finite = np.isfinite(values)
+    sums = np.cumsum(np.where(finite, values, 0.0), axis=0, dtype=np.float64)
+    counts = np.cumsum(finite.astype(np.int32), axis=0, dtype=np.int64)
+
+    sums = np.concatenate([np.zeros_like(sums[:1]), sums], axis=0)
+    counts = np.concatenate([np.zeros_like(counts[:1]), counts], axis=0)
+
+    end_idx = np.arange(1, values.shape[0] + 1)
+    start_idx = np.maximum(0, end_idx - window_blocks)
+
+    window_sums = sums[end_idx] - sums[start_idx]
+    window_counts = counts[end_idx] - counts[start_idx]
+
+    result = np.full(values.shape, np.nan, dtype=np.float32)
+    np.divide(
+        window_sums,
+        window_counts,
+        out=result,
+        where=window_counts > 0,
+    )
+    return result
+
+
+def compute_time_to_contact(
+    tof_depths,
+    block_times_s,
+    window_ms=10.0,
+    min_closing_speed_mps=0.10,
+    max_ttc_s=10.0,
+):
+    """
+    Compute causal radial velocity, closing speed, and time-to-contact.
+
+    TTC is defined as:
+        TTC = depth / closing_speed
+
+    where closing_speed = -d(depth)/dt. A valid TTC is produced only when
+    the range is decreasing faster than min_closing_speed_mps.
+    """
+    if window_ms <= 0:
+        raise ValueError("--ttc-window-ms must be positive.")
+    if min_closing_speed_mps < 0:
+        raise ValueError("--ttc-min-closing-speed must be nonnegative.")
+    if max_ttc_s <= 0:
+        raise ValueError("--ttc-max-s must be positive.")
+    if tof_depths.shape[0] != block_times_s.shape[0]:
+        raise ValueError("block_times_s length must match tof_depths.")
+    if block_times_s.size < 2:
+        raise ValueError("At least two timestamp blocks are required for TTC.")
+
+    median_dt_s = float(np.median(np.diff(block_times_s)))
+    if not np.isfinite(median_dt_s) or median_dt_s <= 0:
+        raise ValueError("Block times must be finite and strictly increasing.")
+
+    window_blocks = max(1, int(round((window_ms * 1e-3) / median_dt_s)))
+    smoothed_depths = causal_nanmean(tof_depths, window_blocks)
+
+    radial_velocity = np.full_like(smoothed_depths, np.nan, dtype=np.float32)
+
+    # Compare each causal mean with the causal mean one window earlier.
+    lag = window_blocks
+    if lag < smoothed_depths.shape[0]:
+        dt = block_times_s[lag:] - block_times_s[:-lag]
+        valid_dt = np.isfinite(dt) & (dt > 0)
+
+        depth_delta = smoothed_depths[lag:] - smoothed_depths[:-lag]
+        velocity = np.full_like(depth_delta, np.nan, dtype=np.float32)
+        np.divide(
+            depth_delta,
+            dt[:, None, None],
+            out=velocity,
+            where=valid_dt[:, None, None],
+        )
+        radial_velocity[lag:] = velocity
+
+    closing_speed = -radial_velocity
+
+    valid_ttc = (
+        np.isfinite(smoothed_depths)
+        & np.isfinite(closing_speed)
+        & (smoothed_depths > 0)
+        & (closing_speed >= min_closing_speed_mps)
+    )
+
+    ttc = np.full_like(smoothed_depths, np.nan, dtype=np.float32)
+    np.divide(
+        smoothed_depths,
+        closing_speed,
+        out=ttc,
+        where=valid_ttc,
+    )
+
+    ttc[(ttc <= 0) | (ttc > max_ttc_s)] = np.nan
+
+    return {
+        "smoothed_depths_m": smoothed_depths,
+        "radial_velocity_mps": radial_velocity,
+        "closing_speed_mps": closing_speed,
+        "time_to_contact_s": ttc,
+        "window_blocks": window_blocks,
+        "median_dt_s": median_dt_s,
+    }
+
+
+def save_ttc_frame(ttc, frame_idx, output_path, max_ttc_s):
+    plt.figure(figsize=(8, 4))
+    plt.imshow(
+        ttc[frame_idx],
+        origin="upper",
+        vmin=0.0,
+        vmax=max_ttc_s,
+    )
+    plt.colorbar(label="Time-to-contact (s)")
+    plt.title(f"Time-to-contact, block {frame_idx}")
+    plt.xlabel("ToF pixel x")
+    plt.ylabel("ToF pixel y")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def save_pixel_ttc_over_time(
+    block_times_s,
+    ttc_results,
+    pixel_y,
+    pixel_x,
+    output_path,
+    warning_s,
+    max_ttc_s,
+):
+    ttc = ttc_results["time_to_contact_s"][:, pixel_y, pixel_x]
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(block_times_s * 1e3, ttc, linewidth=1.0)
+    plt.axhline(
+        warning_s,
+        linestyle="--",
+        linewidth=1.0,
+        label=f"Warning threshold = {warning_s:g} s",
+    )
+    plt.ylim(0.0, max_ttc_s)
+    plt.xlabel("Simulation time (ms)")
+    plt.ylabel("Time-to-contact (s)")
+    plt.title(f"Time-to-contact over time, ToF pixel y={pixel_y}, x={pixel_x}")
+    plt.grid(alpha=0.25)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def save_pixel_ttc_csv(
+    block_times_s,
+    ttc_results,
+    pixel_y,
+    pixel_x,
+    output_path,
+):
+    num_blocks = block_times_s.shape[0]
+    block_index = np.arange(num_blocks, dtype=np.int64)
+
+    table = np.column_stack(
+        [
+            block_index,
+            block_times_s,
+            ttc_results["smoothed_depths_m"][:, pixel_y, pixel_x],
+            ttc_results["radial_velocity_mps"][:, pixel_y, pixel_x],
+            ttc_results["closing_speed_mps"][:, pixel_y, pixel_x],
+            ttc_results["time_to_contact_s"][:, pixel_y, pixel_x],
+        ]
+    )
+
+    np.savetxt(
+        output_path,
+        table,
+        delimiter=",",
+        header=(
+            "block_index,time_s,smoothed_depth_m,radial_velocity_mps,"
+            "closing_speed_mps,time_to_contact_s"
+        ),
+        comments="",
+        fmt=["%d", "%.9f", "%.6f", "%.6f", "%.6f", "%.6f"],
+    )
+
+
 def save_timestamps_vs_time(
     dataset_dir,
     metadata,
@@ -519,6 +776,20 @@ def main():
 
     num_frames, tof_h, tof_w = tof_depths.shape
 
+    block_times_s = build_block_times_s(
+        data=data,
+        metadata=metadata,
+        num_blocks=num_frames,
+    )
+
+    ttc_results = compute_time_to_contact(
+        tof_depths=tof_depths,
+        block_times_s=block_times_s,
+        window_ms=args.ttc_window_ms,
+        min_closing_speed_mps=args.ttc_min_closing_speed,
+        max_ttc_s=args.ttc_max_s,
+    )
+
     frame_idx = args.frame
 
     if frame_idx < 0 or frame_idx >= num_frames:
@@ -541,6 +812,11 @@ def main():
     print(f"all_histograms shape: {all_histograms.shape}")
     print(f"Visualizing block {frame_idx}")
     print(f"Histogram pixel: y={pixel_y}, x={pixel_x}")
+    print(
+        "TTC window: "
+        f"{args.ttc_window_ms:.3f} ms "
+        f"({ttc_results['window_blocks']} blocks)"
+    )
 
     save_depth_frame(
         tof_depths,
@@ -585,6 +861,52 @@ def main():
         start_time_ms=args.start_time_ms,
         end_time_ms=args.end_time_ms,
         marker_size=args.timestamp_marker_size,
+    )
+
+    np.savez(
+        args.output_dir / "time_to_contact.npz",
+        block_times_s=block_times_s,
+        smoothed_depths_m=ttc_results["smoothed_depths_m"],
+        radial_velocity_mps=ttc_results["radial_velocity_mps"],
+        closing_speed_mps=ttc_results["closing_speed_mps"],
+        time_to_contact_s=ttc_results["time_to_contact_s"],
+        ttc_window_ms=np.array(args.ttc_window_ms, dtype=np.float64),
+        ttc_window_blocks=np.array(ttc_results["window_blocks"], dtype=np.int32),
+        min_closing_speed_mps=np.array(
+            args.ttc_min_closing_speed, dtype=np.float64
+        ),
+        max_ttc_s=np.array(args.ttc_max_s, dtype=np.float64),
+    )
+
+    save_ttc_frame(
+        ttc=ttc_results["time_to_contact_s"],
+        frame_idx=frame_idx,
+        output_path=args.output_dir / f"ttc_block_{frame_idx:04d}.png",
+        max_ttc_s=args.ttc_max_s,
+    )
+
+    save_pixel_ttc_over_time(
+        block_times_s=block_times_s,
+        ttc_results=ttc_results,
+        pixel_y=pixel_y,
+        pixel_x=pixel_x,
+        output_path=(
+            args.output_dir
+            / f"ttc_over_time_y{pixel_y}_x{pixel_x}.png"
+        ),
+        warning_s=args.ttc_warning_s,
+        max_ttc_s=args.ttc_max_s,
+    )
+
+    save_pixel_ttc_csv(
+        block_times_s=block_times_s,
+        ttc_results=ttc_results,
+        pixel_y=pixel_y,
+        pixel_x=pixel_x,
+        output_path=(
+            args.output_dir
+            / f"ttc_y{pixel_y}_x{pixel_x}.csv"
+        ),
     )
     
     if args.make_gifs:

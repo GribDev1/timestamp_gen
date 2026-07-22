@@ -1,5 +1,5 @@
 numpy
-opencv-python
+opencv-python==4.11.0.86
 matplotlib
 tqdm
 PyYAML>=6.0
