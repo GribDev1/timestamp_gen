@@ -1,4 +1,4 @@
-"""
+r"""
 Create a simple empty-room microdrone scene.
 
 The camera represents a drone flying through an empty rectangular room.
