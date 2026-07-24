@@ -37,6 +37,7 @@ Timestamp Generation:
         sort cumulative
         stats 40
 """
+from __future__ import annotations
 
 import os
 os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
