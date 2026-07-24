@@ -1,572 +1,572 @@
 Blender 4.0.2 (hash 9be62e85b727 built 2023-12-05 08:48:50)
-Read blend: "/home/grib6206/projects/timestamp_gen/test_flat_moving.blend"
-Fra:1 Mem:12.94M (Peak 14.03M) | Time:00:00.13 | Syncing ToF Camera
-Fra:1 Mem:12.94M (Peak 14.03M) | Time:00:00.13 | Syncing Area Light
-Fra:1 Mem:12.95M (Peak 14.03M) | Time:00:00.13 | Syncing Moving Flat Plane
-Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:00.16 | Rendering 1 / 64 samples
-Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:00.89 | Rendering 26 / 64 samples
-Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:01.11 | Rendering 51 / 64 samples
-Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:01.22 | Rendering 64 / 64 samples
-Fra:1 Mem:12.22M (Peak 14.03M) | Time:00:01.23 | Compositing
-Fra:1 Mem:12.22M (Peak 14.03M) | Time:00:01.23 | Compositing | Determining resolution
-Fra:1 Mem:12.22M (Peak 14.03M) | Time:00:01.23 | Compositing | Initializing execution
-Fra:1 Mem:13.17M (Peak 14.03M) | Time:00:01.23 | Compositing | Tile 1-1
-Fra:1 Mem:13.17M (Peak 14.03M) | Time:00:01.23 | Compositing | Tile 1-1
-Fra:1 Mem:13.17M (Peak 14.03M) | Time:00:01.24 | Compositing | Tile 1-1
-Fra:1 Mem:13.10M (Peak 14.03M) | Time:00:01.24 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000001.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000001.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000001.png'
-Time: 00:01.32 (Saving: 00:00.07)
+Read blend: "/beegfs/home/grib6206/projects/timestamp_gen/blend_files/test_flat_moving.blend"
+Fra:1 Mem:12.94M (Peak 14.03M) | Time:00:00.79 | Syncing ToF Camera
+Fra:1 Mem:12.94M (Peak 14.03M) | Time:00:00.79 | Syncing Area Light
+Fra:1 Mem:12.94M (Peak 14.03M) | Time:00:00.79 | Syncing Moving Flat Plane
+Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:01.21 | Rendering 1 / 64 samples
+Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:03.03 | Rendering 26 / 64 samples
+Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:03.19 | Rendering 51 / 64 samples
+Fra:1 Mem:13.01M (Peak 14.03M) | Time:00:03.28 | Rendering 64 / 64 samples
+Fra:1 Mem:12.22M (Peak 14.03M) | Time:00:03.28 | Compositing
+Fra:1 Mem:12.23M (Peak 14.03M) | Time:00:03.28 | Compositing | Determining resolution
+Fra:1 Mem:12.23M (Peak 14.03M) | Time:00:03.28 | Compositing | Initializing execution
+Fra:1 Mem:13.17M (Peak 14.03M) | Time:00:03.30 | Compositing | Tile 1-1
+Fra:1 Mem:13.17M (Peak 14.03M) | Time:00:03.30 | Compositing | Tile 1-1
+Fra:1 Mem:13.17M (Peak 14.03M) | Time:00:03.30 | Compositing | Tile 1-1
+Fra:1 Mem:13.10M (Peak 14.03M) | Time:00:03.31 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000001.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000001.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000001.png'
+Time: 00:03.38 (Saving: 00:00.06)
 
-Fra:2 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:2 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:2 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:2 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:2 Mem:13.01M (Peak 13.01M) | Time:00:00.71 | Rendering 26 / 64 samples
-Fra:2 Mem:13.01M (Peak 13.01M) | Time:00:00.92 | Rendering 51 / 64 samples
-Fra:2 Mem:13.01M (Peak 13.01M) | Time:00:01.03 | Rendering 64 / 64 samples
-Fra:2 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing
-Fra:2 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Determining resolution
-Fra:2 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Initializing execution
-Fra:2 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:2 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:2 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:2 Mem:13.10M (Peak 13.17M) | Time:00:01.05 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000002.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000002.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000002.png'
-Time: 00:01.05 (Saving: 00:00.00)
+Fra:2 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:2 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:2 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:2 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:2 Mem:13.02M (Peak 13.02M) | Time:00:00.70 | Rendering 26 / 64 samples
+Fra:2 Mem:13.02M (Peak 13.02M) | Time:00:00.87 | Rendering 51 / 64 samples
+Fra:2 Mem:13.02M (Peak 13.02M) | Time:00:00.95 | Rendering 64 / 64 samples
+Fra:2 Mem:12.22M (Peak 13.02M) | Time:00:00.96 | Compositing
+Fra:2 Mem:12.23M (Peak 13.02M) | Time:00:00.96 | Compositing | Determining resolution
+Fra:2 Mem:12.23M (Peak 13.02M) | Time:00:00.96 | Compositing | Initializing execution
+Fra:2 Mem:13.17M (Peak 13.17M) | Time:00:00.97 | Compositing | Tile 1-1
+Fra:2 Mem:13.17M (Peak 13.17M) | Time:00:00.97 | Compositing | Tile 1-1
+Fra:2 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:2 Mem:13.11M (Peak 13.17M) | Time:00:00.98 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000002.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000002.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000002.png'
+Time: 00:00.99 (Saving: 00:00.00)
 
-Fra:3 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:3 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:3 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:3 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:3 Mem:13.01M (Peak 13.01M) | Time:00:00.71 | Rendering 26 / 64 samples
-Fra:3 Mem:13.01M (Peak 13.01M) | Time:00:00.92 | Rendering 51 / 64 samples
-Fra:3 Mem:13.01M (Peak 13.01M) | Time:00:01.03 | Rendering 64 / 64 samples
-Fra:3 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing
-Fra:3 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Determining resolution
-Fra:3 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Initializing execution
-Fra:3 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:3 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:3 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:3 Mem:13.10M (Peak 13.17M) | Time:00:01.05 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000003.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000003.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000003.png'
-Time: 00:01.05 (Saving: 00:00.00)
+Fra:3 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:3 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:3 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:3 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:3 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:3 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:3 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:3 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:3 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:3 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:3 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:3 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:3 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:3 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000003.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000003.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000003.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:4 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:4 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:4 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:4 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:4 Mem:13.01M (Peak 13.01M) | Time:00:00.69 | Rendering 26 / 64 samples
-Fra:4 Mem:13.01M (Peak 13.01M) | Time:00:00.91 | Rendering 51 / 64 samples
-Fra:4 Mem:13.01M (Peak 13.01M) | Time:00:01.02 | Rendering 64 / 64 samples
-Fra:4 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing
-Fra:4 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Determining resolution
-Fra:4 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Initializing execution
-Fra:4 Mem:13.17M (Peak 13.17M) | Time:00:01.03 | Compositing | Tile 1-1
-Fra:4 Mem:13.17M (Peak 13.17M) | Time:00:01.03 | Compositing | Tile 1-1
-Fra:4 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:4 Mem:13.10M (Peak 13.17M) | Time:00:01.04 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000004.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000004.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000004.png'
+Fra:4 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:4 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:4 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:4 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:4 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:4 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:4 Mem:13.02M (Peak 13.02M) | Time:00:00.99 | Rendering 64 / 64 samples
+Fra:4 Mem:12.22M (Peak 13.02M) | Time:00:01.00 | Compositing
+Fra:4 Mem:12.23M (Peak 13.02M) | Time:00:01.00 | Compositing | Determining resolution
+Fra:4 Mem:12.23M (Peak 13.02M) | Time:00:01.00 | Compositing | Initializing execution
+Fra:4 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:4 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:4 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:4 Mem:13.11M (Peak 13.17M) | Time:00:01.02 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000004.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000004.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000004.png'
+Time: 00:01.03 (Saving: 00:00.00)
+
+Fra:5 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:5 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:5 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:5 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:5 Mem:13.02M (Peak 13.02M) | Time:00:00.73 | Rendering 26 / 64 samples
+Fra:5 Mem:13.02M (Peak 13.02M) | Time:00:00.89 | Rendering 51 / 64 samples
+Fra:5 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:5 Mem:12.22M (Peak 13.02M) | Time:00:00.98 | Compositing
+Fra:5 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Determining resolution
+Fra:5 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Initializing execution
+Fra:5 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:5 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:5 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:5 Mem:13.11M (Peak 13.17M) | Time:00:01.00 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000005.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000005.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000005.png'
+Time: 00:01.01 (Saving: 00:00.00)
+
+Fra:6 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:6 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:6 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:6 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:6 Mem:13.02M (Peak 13.02M) | Time:00:00.71 | Rendering 26 / 64 samples
+Fra:6 Mem:13.02M (Peak 13.02M) | Time:00:00.88 | Rendering 51 / 64 samples
+Fra:6 Mem:13.02M (Peak 13.02M) | Time:00:00.96 | Rendering 64 / 64 samples
+Fra:6 Mem:12.22M (Peak 13.02M) | Time:00:00.97 | Compositing
+Fra:6 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Determining resolution
+Fra:6 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Initializing execution
+Fra:6 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:6 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:6 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:6 Mem:13.11M (Peak 13.17M) | Time:00:00.99 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000006.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000006.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000006.png'
+Time: 00:01.00 (Saving: 00:00.00)
+
+Fra:7 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:7 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:7 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:7 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:7 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:7 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:7 Mem:13.02M (Peak 13.02M) | Time:00:00.99 | Rendering 64 / 64 samples
+Fra:7 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:7 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:7 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:7 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:7 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:7 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:7 Mem:13.11M (Peak 13.17M) | Time:00:01.02 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000007.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000007.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000007.png'
+Time: 00:01.03 (Saving: 00:00.00)
+
+Fra:8 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:8 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:8 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:8 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:8 Mem:13.02M (Peak 13.02M) | Time:00:00.72 | Rendering 26 / 64 samples
+Fra:8 Mem:13.02M (Peak 13.02M) | Time:00:00.88 | Rendering 51 / 64 samples
+Fra:8 Mem:13.02M (Peak 13.02M) | Time:00:00.96 | Rendering 64 / 64 samples
+Fra:8 Mem:12.22M (Peak 13.02M) | Time:00:00.97 | Compositing
+Fra:8 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Determining resolution
+Fra:8 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Initializing execution
+Fra:8 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:8 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:8 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:8 Mem:13.11M (Peak 13.17M) | Time:00:00.99 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000008.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000008.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000008.png'
+Time: 00:01.00 (Saving: 00:00.00)
+
+Fra:9 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:9 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:9 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:9 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:9 Mem:13.02M (Peak 13.02M) | Time:00:00.71 | Rendering 26 / 64 samples
+Fra:9 Mem:13.02M (Peak 13.02M) | Time:00:00.87 | Rendering 51 / 64 samples
+Fra:9 Mem:13.02M (Peak 13.02M) | Time:00:00.95 | Rendering 64 / 64 samples
+Fra:9 Mem:12.22M (Peak 13.02M) | Time:00:00.96 | Compositing
+Fra:9 Mem:12.23M (Peak 13.02M) | Time:00:00.96 | Compositing | Determining resolution
+Fra:9 Mem:12.23M (Peak 13.02M) | Time:00:00.96 | Compositing | Initializing execution
+Fra:9 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:9 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:9 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:9 Mem:13.11M (Peak 13.17M) | Time:00:00.98 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000009.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000009.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000009.png'
+Time: 00:00.99 (Saving: 00:00.00)
+
+Fra:10 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:10 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:10 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:10 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:10 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:10 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:10 Mem:13.02M (Peak 13.02M) | Time:00:00.99 | Rendering 64 / 64 samples
+Fra:10 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:10 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:10 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:10 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:10 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:10 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:10 Mem:13.11M (Peak 13.17M) | Time:00:01.02 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000010.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000010.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000010.png'
+Time: 00:01.02 (Saving: 00:00.00)
+
+Fra:11 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:11 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:11 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:11 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:11 Mem:13.02M (Peak 13.02M) | Time:00:00.71 | Rendering 26 / 64 samples
+Fra:11 Mem:13.02M (Peak 13.02M) | Time:00:00.88 | Rendering 51 / 64 samples
+Fra:11 Mem:13.02M (Peak 13.02M) | Time:00:00.96 | Rendering 64 / 64 samples
+Fra:11 Mem:12.22M (Peak 13.02M) | Time:00:00.97 | Compositing
+Fra:11 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Determining resolution
+Fra:11 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Initializing execution
+Fra:11 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:11 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:11 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:11 Mem:13.11M (Peak 13.17M) | Time:00:00.99 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000011.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000011.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000011.png'
+Time: 00:01.00 (Saving: 00:00.00)
+
+Fra:12 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:12 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:12 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:12 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:12 Mem:13.02M (Peak 13.02M) | Time:00:00.73 | Rendering 26 / 64 samples
+Fra:12 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:12 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:12 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:12 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:12 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:12 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:12 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:12 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:12 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000012.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000012.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000012.png'
+Time: 00:01.02 (Saving: 00:00.00)
+
+Fra:13 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:13 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:13 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:13 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:13 Mem:13.02M (Peak 13.02M) | Time:00:00.71 | Rendering 26 / 64 samples
+Fra:13 Mem:13.02M (Peak 13.02M) | Time:00:00.88 | Rendering 51 / 64 samples
+Fra:13 Mem:13.02M (Peak 13.02M) | Time:00:00.96 | Rendering 64 / 64 samples
+Fra:13 Mem:12.22M (Peak 13.02M) | Time:00:00.97 | Compositing
+Fra:13 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Determining resolution
+Fra:13 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Initializing execution
+Fra:13 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:13 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:13 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:13 Mem:13.11M (Peak 13.17M) | Time:00:00.99 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000013.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000013.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000013.png'
+Time: 00:01.00 (Saving: 00:00.00)
+
+Fra:14 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:14 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:14 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:14 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:14 Mem:13.02M (Peak 13.02M) | Time:00:00.75 | Rendering 26 / 64 samples
+Fra:14 Mem:13.02M (Peak 13.02M) | Time:00:00.91 | Rendering 51 / 64 samples
+Fra:14 Mem:13.02M (Peak 13.02M) | Time:00:01.00 | Rendering 64 / 64 samples
+Fra:14 Mem:12.22M (Peak 13.02M) | Time:00:01.01 | Compositing
+Fra:14 Mem:12.23M (Peak 13.02M) | Time:00:01.01 | Compositing | Determining resolution
+Fra:14 Mem:12.23M (Peak 13.02M) | Time:00:01.01 | Compositing | Initializing execution
+Fra:14 Mem:13.17M (Peak 13.17M) | Time:00:01.02 | Compositing | Tile 1-1
+Fra:14 Mem:13.17M (Peak 13.17M) | Time:00:01.02 | Compositing | Tile 1-1
+Fra:14 Mem:13.17M (Peak 13.17M) | Time:00:01.02 | Compositing | Tile 1-1
+Fra:14 Mem:13.11M (Peak 13.17M) | Time:00:01.03 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000014.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000014.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000014.png'
 Time: 00:01.04 (Saving: 00:00.00)
 
-Fra:5 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:5 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:5 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:5 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:5 Mem:13.01M (Peak 13.01M) | Time:00:00.69 | Rendering 26 / 64 samples
-Fra:5 Mem:13.01M (Peak 13.01M) | Time:00:00.91 | Rendering 51 / 64 samples
-Fra:5 Mem:13.01M (Peak 13.01M) | Time:00:01.02 | Rendering 64 / 64 samples
-Fra:5 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing
-Fra:5 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Determining resolution
-Fra:5 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Initializing execution
-Fra:5 Mem:13.17M (Peak 13.17M) | Time:00:01.03 | Compositing | Tile 1-1
-Fra:5 Mem:13.17M (Peak 13.17M) | Time:00:01.03 | Compositing | Tile 1-1
-Fra:5 Mem:13.17M (Peak 13.17M) | Time:00:01.03 | Compositing | Tile 1-1
-Fra:5 Mem:13.10M (Peak 13.17M) | Time:00:01.03 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000005.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000005.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000005.png'
-Time: 00:01.04 (Saving: 00:00.00)
+Fra:15 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:15 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:15 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:15 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:15 Mem:13.02M (Peak 13.02M) | Time:00:00.72 | Rendering 26 / 64 samples
+Fra:15 Mem:13.02M (Peak 13.02M) | Time:00:00.88 | Rendering 51 / 64 samples
+Fra:15 Mem:13.02M (Peak 13.02M) | Time:00:00.97 | Rendering 64 / 64 samples
+Fra:15 Mem:12.22M (Peak 13.02M) | Time:00:00.98 | Compositing
+Fra:15 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Determining resolution
+Fra:15 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Initializing execution
+Fra:15 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:15 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:15 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:15 Mem:13.11M (Peak 13.17M) | Time:00:01.00 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000015.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000015.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000015.png'
+Time: 00:01.01 (Saving: 00:00.00)
 
-Fra:6 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:6 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:6 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:6 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:6 Mem:13.01M (Peak 13.01M) | Time:00:00.69 | Rendering 26 / 64 samples
-Fra:6 Mem:13.01M (Peak 13.01M) | Time:00:00.91 | Rendering 51 / 64 samples
-Fra:6 Mem:13.01M (Peak 13.01M) | Time:00:01.02 | Rendering 64 / 64 samples
-Fra:6 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing
-Fra:6 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Determining resolution
-Fra:6 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Initializing execution
-Fra:6 Mem:13.17M (Peak 13.17M) | Time:00:01.03 | Compositing | Tile 1-1
-Fra:6 Mem:13.17M (Peak 13.17M) | Time:00:01.03 | Compositing | Tile 1-1
-Fra:6 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:6 Mem:13.10M (Peak 13.17M) | Time:00:01.04 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000006.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000006.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000006.png'
-Time: 00:01.04 (Saving: 00:00.00)
+Fra:16 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:16 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:16 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:16 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:16 Mem:13.02M (Peak 13.02M) | Time:00:00.73 | Rendering 26 / 64 samples
+Fra:16 Mem:13.02M (Peak 13.02M) | Time:00:00.89 | Rendering 51 / 64 samples
+Fra:16 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:16 Mem:12.22M (Peak 13.02M) | Time:00:00.98 | Compositing
+Fra:16 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Determining resolution
+Fra:16 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Initializing execution
+Fra:16 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:16 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:16 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:16 Mem:13.11M (Peak 13.17M) | Time:00:01.00 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000016.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000016.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000016.png'
+Time: 00:01.01 (Saving: 00:00.00)
 
-Fra:7 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:7 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:7 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:7 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:7 Mem:13.01M (Peak 13.01M) | Time:00:00.70 | Rendering 26 / 64 samples
-Fra:7 Mem:13.01M (Peak 13.01M) | Time:00:00.92 | Rendering 51 / 64 samples
-Fra:7 Mem:13.01M (Peak 13.01M) | Time:00:01.04 | Rendering 64 / 64 samples
-Fra:7 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing
-Fra:7 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Determining resolution
-Fra:7 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Initializing execution
-Fra:7 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:7 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:7 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:7 Mem:13.10M (Peak 13.17M) | Time:00:01.05 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000007.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000007.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000007.png'
-Time: 00:01.06 (Saving: 00:00.00)
+Fra:17 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:17 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:17 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:17 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:17 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:17 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:17 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:17 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:17 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:17 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:17 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:17 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:17 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:17 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000017.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000017.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000017.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:8 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:8 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:8 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:8 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:8 Mem:13.01M (Peak 13.01M) | Time:00:00.72 | Rendering 26 / 64 samples
-Fra:8 Mem:13.01M (Peak 13.01M) | Time:00:00.94 | Rendering 51 / 64 samples
-Fra:8 Mem:13.01M (Peak 13.01M) | Time:00:01.05 | Rendering 64 / 64 samples
-Fra:8 Mem:12.22M (Peak 13.01M) | Time:00:01.06 | Compositing
-Fra:8 Mem:12.22M (Peak 13.01M) | Time:00:01.06 | Compositing | Determining resolution
-Fra:8 Mem:12.22M (Peak 13.01M) | Time:00:01.06 | Compositing | Initializing execution
-Fra:8 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:8 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:8 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:8 Mem:13.10M (Peak 13.17M) | Time:00:01.07 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000008.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000008.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000008.png'
-Time: 00:01.07 (Saving: 00:00.00)
+Fra:18 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:18 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:18 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:18 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:18 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:18 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:18 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:18 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:18 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:18 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:18 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:18 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:18 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:18 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000018.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000018.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000018.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:9 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:9 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:9 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:9 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:9 Mem:13.01M (Peak 13.01M) | Time:00:00.69 | Rendering 26 / 64 samples
-Fra:9 Mem:13.01M (Peak 13.01M) | Time:00:00.91 | Rendering 51 / 64 samples
-Fra:9 Mem:13.01M (Peak 13.01M) | Time:00:01.02 | Rendering 64 / 64 samples
-Fra:9 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing
-Fra:9 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Determining resolution
-Fra:9 Mem:12.22M (Peak 13.01M) | Time:00:01.03 | Compositing | Initializing execution
-Fra:9 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:9 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:9 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:9 Mem:13.10M (Peak 13.17M) | Time:00:01.04 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000009.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000009.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000009.png'
-Time: 00:01.04 (Saving: 00:00.00)
+Fra:19 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:19 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:19 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:19 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:19 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:19 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:19 Mem:13.02M (Peak 13.02M) | Time:00:00.99 | Rendering 64 / 64 samples
+Fra:19 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:19 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:19 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:19 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:19 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:19 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:19 Mem:13.11M (Peak 13.17M) | Time:00:01.02 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000019.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000019.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000019.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:10 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:10 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:10 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:10 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:10 Mem:13.01M (Peak 13.01M) | Time:00:00.70 | Rendering 26 / 64 samples
-Fra:10 Mem:13.01M (Peak 13.01M) | Time:00:00.92 | Rendering 51 / 64 samples
-Fra:10 Mem:13.01M (Peak 13.01M) | Time:00:01.03 | Rendering 64 / 64 samples
-Fra:10 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing
-Fra:10 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Determining resolution
-Fra:10 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Initializing execution
-Fra:10 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:10 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:10 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:10 Mem:13.10M (Peak 13.17M) | Time:00:01.04 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000010.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000010.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000010.png'
-Time: 00:01.05 (Saving: 00:00.00)
+Fra:20 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:20 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:20 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:20 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:20 Mem:13.02M (Peak 13.02M) | Time:00:00.73 | Rendering 26 / 64 samples
+Fra:20 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:20 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:20 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:20 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:20 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:20 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:20 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:20 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:20 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000020.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000020.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000020.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:11 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:11 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:11 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:11 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:11 Mem:13.01M (Peak 13.01M) | Time:00:00.72 | Rendering 26 / 64 samples
-Fra:11 Mem:13.01M (Peak 13.01M) | Time:00:00.94 | Rendering 51 / 64 samples
-Fra:11 Mem:13.01M (Peak 13.01M) | Time:00:01.06 | Rendering 64 / 64 samples
-Fra:11 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing
-Fra:11 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Determining resolution
-Fra:11 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Initializing execution
-Fra:11 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:11 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:11 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:11 Mem:13.10M (Peak 13.17M) | Time:00:01.07 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000011.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000011.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000011.png'
-Time: 00:01.08 (Saving: 00:00.00)
+Fra:21 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:21 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:21 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:21 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:21 Mem:13.02M (Peak 13.02M) | Time:00:00.73 | Rendering 26 / 64 samples
+Fra:21 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:21 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:21 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:21 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:21 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:21 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:21 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:21 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:21 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000021.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000021.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000021.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:12 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:12 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:12 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:12 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:12 Mem:13.01M (Peak 13.01M) | Time:00:00.71 | Rendering 26 / 64 samples
-Fra:12 Mem:13.01M (Peak 13.01M) | Time:00:00.94 | Rendering 51 / 64 samples
-Fra:12 Mem:13.01M (Peak 13.01M) | Time:00:01.06 | Rendering 64 / 64 samples
-Fra:12 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing
-Fra:12 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Determining resolution
-Fra:12 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Initializing execution
-Fra:12 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:12 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:12 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:12 Mem:13.10M (Peak 13.17M) | Time:00:01.07 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000012.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000012.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000012.png'
-Time: 00:01.08 (Saving: 00:00.00)
+Fra:22 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:22 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:22 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:22 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:22 Mem:13.02M (Peak 13.02M) | Time:00:00.72 | Rendering 26 / 64 samples
+Fra:22 Mem:13.02M (Peak 13.02M) | Time:00:00.88 | Rendering 51 / 64 samples
+Fra:22 Mem:13.02M (Peak 13.02M) | Time:00:00.97 | Rendering 64 / 64 samples
+Fra:22 Mem:12.22M (Peak 13.02M) | Time:00:00.97 | Compositing
+Fra:22 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Determining resolution
+Fra:22 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Initializing execution
+Fra:22 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:22 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:22 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:22 Mem:13.11M (Peak 13.17M) | Time:00:01.00 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000022.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000022.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000022.png'
+Time: 00:01.00 (Saving: 00:00.00)
 
-Fra:13 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:13 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:13 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:13 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:13 Mem:13.01M (Peak 13.01M) | Time:00:00.71 | Rendering 26 / 64 samples
-Fra:13 Mem:13.01M (Peak 13.01M) | Time:00:00.93 | Rendering 51 / 64 samples
-Fra:13 Mem:13.01M (Peak 13.01M) | Time:00:01.04 | Rendering 64 / 64 samples
-Fra:13 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing
-Fra:13 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Determining resolution
-Fra:13 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Initializing execution
-Fra:13 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:13 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:13 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:13 Mem:13.10M (Peak 13.17M) | Time:00:01.06 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000013.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000013.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000013.png'
-Time: 00:01.06 (Saving: 00:00.00)
+Fra:23 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:23 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:23 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:23 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:23 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:23 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:23 Mem:13.02M (Peak 13.02M) | Time:00:00.99 | Rendering 64 / 64 samples
+Fra:23 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:23 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:23 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:23 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:23 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:23 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:23 Mem:13.11M (Peak 13.17M) | Time:00:01.02 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000023.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000023.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000023.png'
+Time: 00:01.03 (Saving: 00:00.00)
 
-Fra:14 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:14 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:14 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:14 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:14 Mem:13.01M (Peak 13.01M) | Time:00:00.72 | Rendering 26 / 64 samples
-Fra:14 Mem:13.01M (Peak 13.01M) | Time:00:00.96 | Rendering 51 / 64 samples
-Fra:14 Mem:13.01M (Peak 13.01M) | Time:00:01.08 | Rendering 64 / 64 samples
-Fra:14 Mem:12.22M (Peak 13.01M) | Time:00:01.09 | Compositing
-Fra:14 Mem:12.22M (Peak 13.01M) | Time:00:01.09 | Compositing | Determining resolution
-Fra:14 Mem:12.22M (Peak 13.01M) | Time:00:01.09 | Compositing | Initializing execution
-Fra:14 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:14 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:14 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:14 Mem:13.10M (Peak 13.17M) | Time:00:01.09 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000014.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000014.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000014.png'
-Time: 00:01.10 (Saving: 00:00.00)
+Fra:24 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:24 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:24 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:24 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:24 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:24 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:24 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:24 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:24 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:24 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:24 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:24 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:24 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:24 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000024.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000024.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000024.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:15 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:15 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:15 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:15 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:15 Mem:13.01M (Peak 13.01M) | Time:00:00.71 | Rendering 26 / 64 samples
-Fra:15 Mem:13.01M (Peak 13.01M) | Time:00:00.93 | Rendering 51 / 64 samples
-Fra:15 Mem:13.01M (Peak 13.01M) | Time:00:01.04 | Rendering 64 / 64 samples
-Fra:15 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing
-Fra:15 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Determining resolution
-Fra:15 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Initializing execution
-Fra:15 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:15 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:15 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:15 Mem:13.10M (Peak 13.17M) | Time:00:01.06 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000015.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000015.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000015.png'
-Time: 00:01.06 (Saving: 00:00.00)
+Fra:25 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:25 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:25 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:25 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:25 Mem:13.02M (Peak 13.02M) | Time:00:00.73 | Rendering 26 / 64 samples
+Fra:25 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:25 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:25 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:25 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:25 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:25 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:25 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:25 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:25 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000025.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000025.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000025.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:16 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:16 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:16 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:16 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:16 Mem:13.01M (Peak 13.01M) | Time:00:00.70 | Rendering 26 / 64 samples
-Fra:16 Mem:13.01M (Peak 13.01M) | Time:00:00.92 | Rendering 51 / 64 samples
-Fra:16 Mem:13.01M (Peak 13.01M) | Time:00:01.04 | Rendering 64 / 64 samples
-Fra:16 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing
-Fra:16 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Determining resolution
-Fra:16 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Initializing execution
-Fra:16 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:16 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:16 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:16 Mem:13.10M (Peak 13.17M) | Time:00:01.05 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000016.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000016.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000016.png'
-Time: 00:01.06 (Saving: 00:00.00)
+Fra:26 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:26 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:26 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:26 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:26 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:26 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:26 Mem:13.02M (Peak 13.02M) | Time:00:00.99 | Rendering 64 / 64 samples
+Fra:26 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:26 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:26 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:26 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:26 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:26 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:26 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000026.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000026.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000026.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:17 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:17 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:17 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:17 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:17 Mem:13.01M (Peak 13.01M) | Time:00:00.69 | Rendering 26 / 64 samples
-Fra:17 Mem:13.01M (Peak 13.01M) | Time:00:00.92 | Rendering 51 / 64 samples
-Fra:17 Mem:13.01M (Peak 13.01M) | Time:00:01.03 | Rendering 64 / 64 samples
-Fra:17 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing
-Fra:17 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Determining resolution
-Fra:17 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Initializing execution
-Fra:17 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:17 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:17 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:17 Mem:13.10M (Peak 13.17M) | Time:00:01.05 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000017.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000017.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000017.png'
-Time: 00:01.05 (Saving: 00:00.00)
+Fra:27 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:27 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:27 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:27 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:27 Mem:13.02M (Peak 13.02M) | Time:00:00.74 | Rendering 26 / 64 samples
+Fra:27 Mem:13.02M (Peak 13.02M) | Time:00:00.90 | Rendering 51 / 64 samples
+Fra:27 Mem:13.02M (Peak 13.02M) | Time:00:00.98 | Rendering 64 / 64 samples
+Fra:27 Mem:12.22M (Peak 13.02M) | Time:00:00.99 | Compositing
+Fra:27 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Determining resolution
+Fra:27 Mem:12.23M (Peak 13.02M) | Time:00:00.99 | Compositing | Initializing execution
+Fra:27 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:27 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:27 Mem:13.17M (Peak 13.17M) | Time:00:01.01 | Compositing | Tile 1-1
+Fra:27 Mem:13.11M (Peak 13.17M) | Time:00:01.01 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000027.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000027.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000027.png'
+Time: 00:01.02 (Saving: 00:00.00)
 
-Fra:18 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:18 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:18 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:18 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:18 Mem:13.01M (Peak 13.01M) | Time:00:00.69 | Rendering 26 / 64 samples
-Fra:18 Mem:13.01M (Peak 13.01M) | Time:00:00.92 | Rendering 51 / 64 samples
-Fra:18 Mem:13.01M (Peak 13.01M) | Time:00:01.03 | Rendering 64 / 64 samples
-Fra:18 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing
-Fra:18 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Determining resolution
-Fra:18 Mem:12.22M (Peak 13.01M) | Time:00:01.04 | Compositing | Initializing execution
-Fra:18 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:18 Mem:13.17M (Peak 13.17M) | Time:00:01.04 | Compositing | Tile 1-1
-Fra:18 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:18 Mem:13.10M (Peak 13.17M) | Time:00:01.05 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000018.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000018.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000018.png'
-Time: 00:01.05 (Saving: 00:00.00)
+Fra:28 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:28 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:28 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:28 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:28 Mem:13.02M (Peak 13.02M) | Time:00:00.70 | Rendering 26 / 64 samples
+Fra:28 Mem:13.02M (Peak 13.02M) | Time:00:00.87 | Rendering 51 / 64 samples
+Fra:28 Mem:13.02M (Peak 13.02M) | Time:00:00.95 | Rendering 64 / 64 samples
+Fra:28 Mem:12.22M (Peak 13.02M) | Time:00:00.96 | Compositing
+Fra:28 Mem:12.23M (Peak 13.02M) | Time:00:00.96 | Compositing | Determining resolution
+Fra:28 Mem:12.23M (Peak 13.02M) | Time:00:00.96 | Compositing | Initializing execution
+Fra:28 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:28 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:28 Mem:13.17M (Peak 13.17M) | Time:00:00.98 | Compositing | Tile 1-1
+Fra:28 Mem:13.11M (Peak 13.17M) | Time:00:00.98 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000028.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000028.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000028.png'
+Time: 00:00.99 (Saving: 00:00.00)
 
-Fra:19 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:19 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:19 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:19 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:19 Mem:13.01M (Peak 13.01M) | Time:00:00.70 | Rendering 26 / 64 samples
-Fra:19 Mem:13.01M (Peak 13.01M) | Time:00:00.94 | Rendering 51 / 64 samples
-Fra:19 Mem:13.01M (Peak 13.01M) | Time:00:01.06 | Rendering 64 / 64 samples
-Fra:19 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing
-Fra:19 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Determining resolution
-Fra:19 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Initializing execution
-Fra:19 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:19 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:19 Mem:13.17M (Peak 13.17M) | Time:00:01.08 | Compositing | Tile 1-1
-Fra:19 Mem:13.10M (Peak 13.17M) | Time:00:01.08 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000019.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000019.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000019.png'
-Time: 00:01.08 (Saving: 00:00.00)
+Fra:29 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:29 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:29 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:29 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:29 Mem:13.02M (Peak 13.02M) | Time:00:00.72 | Rendering 26 / 64 samples
+Fra:29 Mem:13.02M (Peak 13.02M) | Time:00:00.89 | Rendering 51 / 64 samples
+Fra:29 Mem:13.02M (Peak 13.02M) | Time:00:00.97 | Rendering 64 / 64 samples
+Fra:29 Mem:12.22M (Peak 13.02M) | Time:00:00.98 | Compositing
+Fra:29 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Determining resolution
+Fra:29 Mem:12.23M (Peak 13.02M) | Time:00:00.98 | Compositing | Initializing execution
+Fra:29 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:29 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:29 Mem:13.17M (Peak 13.17M) | Time:00:01.00 | Compositing | Tile 1-1
+Fra:29 Mem:13.11M (Peak 13.17M) | Time:00:01.00 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000029.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000029.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000029.png'
+Time: 00:01.01 (Saving: 00:00.00)
 
-Fra:20 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:20 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:20 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:20 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:20 Mem:13.01M (Peak 13.01M) | Time:00:00.74 | Rendering 26 / 64 samples
-Fra:20 Mem:13.01M (Peak 13.01M) | Time:00:00.99 | Rendering 51 / 64 samples
-Fra:20 Mem:13.01M (Peak 13.01M) | Time:00:01.11 | Rendering 64 / 64 samples
-Fra:20 Mem:12.22M (Peak 13.01M) | Time:00:01.12 | Compositing
-Fra:20 Mem:12.22M (Peak 13.01M) | Time:00:01.12 | Compositing | Determining resolution
-Fra:20 Mem:12.22M (Peak 13.01M) | Time:00:01.12 | Compositing | Initializing execution
-Fra:20 Mem:13.17M (Peak 13.17M) | Time:00:01.13 | Compositing | Tile 1-1
-Fra:20 Mem:13.17M (Peak 13.17M) | Time:00:01.13 | Compositing | Tile 1-1
-Fra:20 Mem:13.17M (Peak 13.17M) | Time:00:01.13 | Compositing | Tile 1-1
-Fra:20 Mem:13.10M (Peak 13.17M) | Time:00:01.13 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000020.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000020.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000020.png'
-Time: 00:01.14 (Saving: 00:00.00)
-
-Fra:21 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:21 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:21 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:21 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:21 Mem:13.01M (Peak 13.01M) | Time:00:00.81 | Rendering 26 / 64 samples
-Fra:21 Mem:13.01M (Peak 13.01M) | Time:00:01.04 | Rendering 51 / 64 samples
-Fra:21 Mem:13.01M (Peak 13.01M) | Time:00:01.17 | Rendering 64 / 64 samples
-Fra:21 Mem:12.22M (Peak 13.01M) | Time:00:01.18 | Compositing
-Fra:21 Mem:12.22M (Peak 13.01M) | Time:00:01.18 | Compositing | Determining resolution
-Fra:21 Mem:12.22M (Peak 13.01M) | Time:00:01.18 | Compositing | Initializing execution
-Fra:21 Mem:13.17M (Peak 13.17M) | Time:00:01.18 | Compositing | Tile 1-1
-Fra:21 Mem:13.17M (Peak 13.17M) | Time:00:01.18 | Compositing | Tile 1-1
-Fra:21 Mem:13.17M (Peak 13.17M) | Time:00:01.18 | Compositing | Tile 1-1
-Fra:21 Mem:13.10M (Peak 13.17M) | Time:00:01.18 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000021.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000021.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000021.png'
-Time: 00:01.19 (Saving: 00:00.00)
-
-Fra:22 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:22 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:22 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:22 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:22 Mem:13.01M (Peak 13.01M) | Time:00:00.76 | Rendering 26 / 64 samples
-Fra:22 Mem:13.01M (Peak 13.01M) | Time:00:01.00 | Rendering 51 / 64 samples
-Fra:22 Mem:13.01M (Peak 13.01M) | Time:00:01.12 | Rendering 64 / 64 samples
-Fra:22 Mem:12.22M (Peak 13.01M) | Time:00:01.13 | Compositing
-Fra:22 Mem:12.22M (Peak 13.01M) | Time:00:01.13 | Compositing | Determining resolution
-Fra:22 Mem:12.22M (Peak 13.01M) | Time:00:01.13 | Compositing | Initializing execution
-Fra:22 Mem:13.17M (Peak 13.17M) | Time:00:01.14 | Compositing | Tile 1-1
-Fra:22 Mem:13.17M (Peak 13.17M) | Time:00:01.14 | Compositing | Tile 1-1
-Fra:22 Mem:13.17M (Peak 13.17M) | Time:00:01.14 | Compositing | Tile 1-1
-Fra:22 Mem:13.10M (Peak 13.17M) | Time:00:01.14 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000022.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000022.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000022.png'
-Time: 00:01.14 (Saving: 00:00.00)
-
-Fra:23 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:23 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:23 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:23 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:23 Mem:13.01M (Peak 13.01M) | Time:00:00.73 | Rendering 26 / 64 samples
-Fra:23 Mem:13.01M (Peak 13.01M) | Time:00:00.95 | Rendering 51 / 64 samples
-Fra:23 Mem:13.01M (Peak 13.01M) | Time:00:01.07 | Rendering 64 / 64 samples
-Fra:23 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing
-Fra:23 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing | Determining resolution
-Fra:23 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing | Initializing execution
-Fra:23 Mem:13.17M (Peak 13.17M) | Time:00:01.08 | Compositing | Tile 1-1
-Fra:23 Mem:13.17M (Peak 13.17M) | Time:00:01.08 | Compositing | Tile 1-1
-Fra:23 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:23 Mem:13.10M (Peak 13.17M) | Time:00:01.09 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000023.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000023.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000023.png'
-Time: 00:01.09 (Saving: 00:00.00)
-
-Fra:24 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:24 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:24 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:24 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:24 Mem:13.01M (Peak 13.01M) | Time:00:00.71 | Rendering 26 / 64 samples
-Fra:24 Mem:13.01M (Peak 13.01M) | Time:00:00.93 | Rendering 51 / 64 samples
-Fra:24 Mem:13.01M (Peak 13.01M) | Time:00:01.05 | Rendering 64 / 64 samples
-Fra:24 Mem:12.22M (Peak 13.01M) | Time:00:01.06 | Compositing
-Fra:24 Mem:12.22M (Peak 13.01M) | Time:00:01.06 | Compositing | Determining resolution
-Fra:24 Mem:12.22M (Peak 13.01M) | Time:00:01.06 | Compositing | Initializing execution
-Fra:24 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:24 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:24 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:24 Mem:13.10M (Peak 13.17M) | Time:00:01.06 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000024.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000024.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000024.png'
-Time: 00:01.07 (Saving: 00:00.00)
-
-Fra:25 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:25 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:25 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:25 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:25 Mem:13.01M (Peak 13.01M) | Time:00:00.70 | Rendering 26 / 64 samples
-Fra:25 Mem:13.01M (Peak 13.01M) | Time:00:00.93 | Rendering 51 / 64 samples
-Fra:25 Mem:13.01M (Peak 13.01M) | Time:00:01.04 | Rendering 64 / 64 samples
-Fra:25 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing
-Fra:25 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Determining resolution
-Fra:25 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Initializing execution
-Fra:25 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:25 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:25 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:25 Mem:13.10M (Peak 13.17M) | Time:00:01.06 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000025.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000025.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000025.png'
-Time: 00:01.06 (Saving: 00:00.00)
-
-Fra:26 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:26 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:26 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:26 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:26 Mem:13.01M (Peak 13.01M) | Time:00:00.70 | Rendering 26 / 64 samples
-Fra:26 Mem:13.01M (Peak 13.01M) | Time:00:00.93 | Rendering 51 / 64 samples
-Fra:26 Mem:13.01M (Peak 13.01M) | Time:00:01.04 | Rendering 64 / 64 samples
-Fra:26 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing
-Fra:26 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Determining resolution
-Fra:26 Mem:12.22M (Peak 13.01M) | Time:00:01.05 | Compositing | Initializing execution
-Fra:26 Mem:13.17M (Peak 13.17M) | Time:00:01.05 | Compositing | Tile 1-1
-Fra:26 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:26 Mem:13.17M (Peak 13.17M) | Time:00:01.06 | Compositing | Tile 1-1
-Fra:26 Mem:13.10M (Peak 13.17M) | Time:00:01.06 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000026.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000026.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000026.png'
-Time: 00:01.06 (Saving: 00:00.00)
-
-Fra:27 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:27 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:27 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:27 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:27 Mem:13.01M (Peak 13.01M) | Time:00:00.72 | Rendering 26 / 64 samples
-Fra:27 Mem:13.01M (Peak 13.01M) | Time:00:00.94 | Rendering 51 / 64 samples
-Fra:27 Mem:13.01M (Peak 13.01M) | Time:00:01.06 | Rendering 64 / 64 samples
-Fra:27 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing
-Fra:27 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Determining resolution
-Fra:27 Mem:12.22M (Peak 13.01M) | Time:00:01.07 | Compositing | Initializing execution
-Fra:27 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:27 Mem:13.17M (Peak 13.17M) | Time:00:01.07 | Compositing | Tile 1-1
-Fra:27 Mem:13.17M (Peak 13.17M) | Time:00:01.08 | Compositing | Tile 1-1
-Fra:27 Mem:13.10M (Peak 13.17M) | Time:00:01.08 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000027.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000027.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000027.png'
-Time: 00:01.08 (Saving: 00:00.00)
-
-Fra:28 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:28 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:28 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:28 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:28 Mem:13.01M (Peak 13.01M) | Time:00:00.73 | Rendering 26 / 64 samples
-Fra:28 Mem:13.01M (Peak 13.01M) | Time:00:00.96 | Rendering 51 / 64 samples
-Fra:28 Mem:13.01M (Peak 13.01M) | Time:00:01.08 | Rendering 64 / 64 samples
-Fra:28 Mem:12.22M (Peak 13.01M) | Time:00:01.09 | Compositing
-Fra:28 Mem:12.22M (Peak 13.01M) | Time:00:01.09 | Compositing | Determining resolution
-Fra:28 Mem:12.22M (Peak 13.01M) | Time:00:01.09 | Compositing | Initializing execution
-Fra:28 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:28 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:28 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:28 Mem:13.10M (Peak 13.17M) | Time:00:01.10 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000028.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000028.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000028.png'
-Time: 00:01.10 (Saving: 00:00.00)
-
-Fra:29 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:29 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:29 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:29 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:29 Mem:13.01M (Peak 13.01M) | Time:00:00.72 | Rendering 26 / 64 samples
-Fra:29 Mem:13.01M (Peak 13.01M) | Time:00:00.95 | Rendering 51 / 64 samples
-Fra:29 Mem:13.01M (Peak 13.01M) | Time:00:01.07 | Rendering 64 / 64 samples
-Fra:29 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing
-Fra:29 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing | Determining resolution
-Fra:29 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing | Initializing execution
-Fra:29 Mem:13.17M (Peak 13.17M) | Time:00:01.08 | Compositing | Tile 1-1
-Fra:29 Mem:13.17M (Peak 13.17M) | Time:00:01.08 | Compositing | Tile 1-1
-Fra:29 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:29 Mem:13.10M (Peak 13.17M) | Time:00:01.09 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000029.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000029.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000029.png'
-Time: 00:01.09 (Saving: 00:00.00)
-
-Fra:30 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing ToF Camera
-Fra:30 Mem:13.00M (Peak 13.00M) | Time:00:00.02 | Syncing Area Light
-Fra:30 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Syncing Moving Flat Plane
-Fra:30 Mem:13.01M (Peak 13.01M) | Time:00:00.02 | Rendering 1 / 64 samples
-Fra:30 Mem:13.01M (Peak 13.01M) | Time:00:00.71 | Rendering 26 / 64 samples
-Fra:30 Mem:13.01M (Peak 13.01M) | Time:00:00.95 | Rendering 51 / 64 samples
-Fra:30 Mem:13.01M (Peak 13.01M) | Time:00:01.07 | Rendering 64 / 64 samples
-Fra:30 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing
-Fra:30 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing | Determining resolution
-Fra:30 Mem:12.22M (Peak 13.01M) | Time:00:01.08 | Compositing | Initializing execution
-Fra:30 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:30 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:30 Mem:13.17M (Peak 13.17M) | Time:00:01.09 | Compositing | Tile 1-1
-Fra:30 Mem:13.10M (Peak 13.17M) | Time:00:01.09 | Compositing | De-initializing execution
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000030.exr
-Saved: /home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000030.exr
-Saved: '/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000030.png'
-Time: 00:01.09 (Saving: 00:00.00)
+Fra:30 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing ToF Camera
+Fra:30 Mem:13.00M (Peak 13.00M) | Time:00:00.00 | Syncing Area Light
+Fra:30 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Syncing Moving Flat Plane
+Fra:30 Mem:13.01M (Peak 13.01M) | Time:00:00.00 | Rendering 1 / 64 samples
+Fra:30 Mem:13.02M (Peak 13.02M) | Time:00:00.72 | Rendering 26 / 64 samples
+Fra:30 Mem:13.02M (Peak 13.02M) | Time:00:00.88 | Rendering 51 / 64 samples
+Fra:30 Mem:13.02M (Peak 13.02M) | Time:00:00.96 | Rendering 64 / 64 samples
+Fra:30 Mem:12.22M (Peak 13.02M) | Time:00:00.97 | Compositing
+Fra:30 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Determining resolution
+Fra:30 Mem:12.23M (Peak 13.02M) | Time:00:00.97 | Compositing | Initializing execution
+Fra:30 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:30 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:30 Mem:13.17M (Peak 13.17M) | Time:00:00.99 | Compositing | Tile 1-1
+Fra:30 Mem:13.11M (Peak 13.17M) | Time:00:00.99 | Compositing | De-initializing execution
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/depths/depth_000030.exr
+Saved: /beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/normals/normal_000030.exr
+Saved: '/beegfs/home/grib6206/projects/timestamp_gen/inputs/flat_moving/frames/frame_000030.png'
+Time: 00:01.00 (Saving: 00:00.00)
 
