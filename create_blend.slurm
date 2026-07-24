@@ -10,11 +10,11 @@
 
 set -euxo pipefail
 
-module purge
-module load blender
-
 PROJECT_DIR="$HOME/projects/timestamp_gen"
 SCRIPT_PATH="$PROJECT_DIR/blender_scripts/create_moving_plane_blend.py"
+
+# Replace this with your actual Blender executable path.
+BLENDER="$HOME/software/blender-4.0.2-linux-x64/blender"
 
 cd "$PROJECT_DIR"
 mkdir -p logs blend_files
@@ -26,10 +26,14 @@ export LIBGL_ALWAYS_SOFTWARE=1
 export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
 
 echo "Host: $(hostname)"
-echo "Blender: $(which blender)"
-blender --version
+echo "Blender executable: $BLENDER"
 
-blender \
+test -x "$BLENDER"
+test -f "$SCRIPT_PATH"
+
+"$BLENDER" --version
+
+"$BLENDER" \
     --background \
     --factory-startup \
     --python "$SCRIPT_PATH"
