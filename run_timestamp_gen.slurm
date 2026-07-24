@@ -24,5 +24,4 @@ python timestamp_gen.py \
     --sensor vl53l8ch \
     --render-dir inputs/flat_moving \
     --output-dir outputs/flat_moving \
-    --render-fps 240 \
-    --no-full-dataset
+    --render-fps 240
