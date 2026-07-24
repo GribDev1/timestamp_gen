@@ -11,22 +11,26 @@
 set -euxo pipefail
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
-SCRIPT_PATH="$PROJECT_DIR/blender_scripts/create_moving_plane_blend.py"
-
-# Replace this with your actual Blender executable path.
+VENV="$PROJECT_DIR/.venv"
 BLENDER="$HOME/software/blender-4.0.2-linux-x64/blender"
 
+SCRIPT_PATH="$PROJECT_DIR/blender_scripts/create_moving_plane_blend.py"
+GENERATED_BLEND="$PROJECT_DIR/test_flat_moving.blend"
+FINAL_BLEND="$PROJECT_DIR/blend_files/test_flat_moving.blend"
+
 cd "$PROJECT_DIR"
-mkdir -p logs blend_files
+source "$VENV/bin/activate"
+
+mkdir -p blend_files
 
 unset DISPLAY
 unset WAYLAND_DISPLAY
-
 export LIBGL_ALWAYS_SOFTWARE=1
 export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
 
 echo "Host: $(hostname)"
-echo "Blender executable: $BLENDER"
+echo "Python: $(which python)"
+echo "Blender: $BLENDER"
 
 test -x "$BLENDER"
 test -f "$SCRIPT_PATH"
@@ -38,10 +42,7 @@ test -f "$SCRIPT_PATH"
     --factory-startup \
     --python "$SCRIPT_PATH"
 
-test -f "$PROJECT_DIR/test_flat_moving.blend"
+test -s "$GENERATED_BLEND"
+mv -f "$GENERATED_BLEND" "$FINAL_BLEND"
 
-mv -f \
-    "$PROJECT_DIR/test_flat_moving.blend" \
-    "$PROJECT_DIR/blend_files/test_flat_moving.blend"
-
-ls -lh "$PROJECT_DIR/blend_files/test_flat_moving.blend"
+ls -lh "$FINAL_BLEND"
