@@ -45,13 +45,8 @@ test -s "$BLEND_FILE"
 
 mkdir -p "$PROJECT_DIR/inputs"
 
-if [ -e "$RENDER_DIR" ]; then
-    echo "ERROR: Render directory already exists:"
-    echo "  $RENDER_DIR"
-    echo
-    echo "Rename or remove it before starting a new render."
-    exit 1
-fi
+rm -rf "$RENDER_DIR"
+mkdir -p "$RENDER_DIR"
 
 visionsim blender.render-animation \
     "$BLEND_FILE" \
