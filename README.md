@@ -1,43 +1,137 @@
 # Timestamp Generator
 
-*timestamp_gen* is an open-source Python tool for generating simulated single-photon timestamp data from rendered depth and normal maps.
+`timestamp_gen` is an open-source Python pipeline for generating simulated
+single-photon direct time-of-flight data from Blender and VisionSIM renders.
 
-This project converts VisionSIM/Blender rendered scenes into timestamp datasets that can be used for downstream ToF research, event-style depth sensing experiments, and quantitative comparisons between timestamp-based and frame-based depth methods.
+The project converts high-resolution depth and surface-normal animations into
+pulse-rate photon timestamps, block-rate depth estimates, histograms, detection
+statistics, and motion-related diagnostic data.
+
+It is intended for:
+
+- dynamic direct-ToF research
+- SPAD timestamp simulation
+- frame-based versus timestamp-based sensing comparisons
+- low-latency depth and motion experiments
+- occlusion and multi-surface analysis
+- drone and robotics simulations
+- downstream token-based or event-driven ToF processing
 
 ## Overview
 
-The timestamp generator takes rendered depth and normal EXR files and simulates a single-photon ToF sensor pipeline.
+The pipeline has four main stages:
 
-For each rendered frame, the tool:
+1. Create an animated Blender scene.
+2. Render depth and normal EXR sequences using VisionSIM.
+3. Simulate single-photon ToF timestamp blocks.
+4. Visualize or process the resulting timestamp data.
 
-1. Loads high-resolution depth and normal maps.
-2. Divides the image into a lower-resolution ToF sensor grid.
-3. Samples sub-pixel depth values inside each ToF pixel footprint.
-4. Converts sampled depths into clean photon timestamps.
-5. Applies a Bernoulli detection model to simulate missed photons.
-6. Adds Gaussian timing jitter to detected timestamps.
-7. Saves clean and noisy timestamp blocks.
-8. Optionally computes timestamp-derived diagnostic data such as histograms, depth estimates, and valid detection fraction.
+For each ToF acquisition block, the timestamp generator:
 
-The goal is to bridge rendered depth scenes and timestamp-based ToF algorithms.
+1. Loads the two rendered frames surrounding the block time.
+2. Determines the scene state at the block acquisition time.
+3. Interpolates same-surface geometry between rendered frames.
+4. Uses visibility switching for likely occlusion or surface changes.
+5. Maps rendered camera rays into a lower-resolution ToF sensor grid.
+6. Samples sub-pixel geometric ranges within each ToF pixel.
+7. Optionally weights samples using surface incidence and inverse-square
+   distance falloff.
+8. Converts range measurements into round-trip photon timestamps.
+9. Applies Bernoulli missed-detection sampling.
+10. Applies Gaussian timing jitter.
+11. Builds a mini-histogram for each ToF pixel.
+12. Computes block-rate depth and valid-detection estimates.
+13. Saves raw and/or precomputed results.
 
 ## Features
 
-* Converts rendered depth maps into photon timestamp streams.
-* Supports clean and noisy timestamp models.
-* Simulates missed detections using a Bernoulli detection probability.
-* Adds Gaussian timing jitter.
-* Supports weighted depth sampling using surface normals and distance falloff.
-* Preserves sub-pixel depth mixtures at object boundaries and occlusions.
-* Supports interpolated visibility switching between rendered frames.
-* Computes timestamp-derived diagnostic data:
-  * per-frame mini-histograms
-  * block-rate depth estimates
-  * valid detection fraction I
-  * histogram bin centers
-* Saves timestamp datasets in a reusable `.npz` format with metadata.
+### Scene generation
 
-### Installing WSL (Windows users)
+- Reusable Blender scene-building utilities.
+- Camera position and rotation animation.
+- Plane, cube, cylinder, sphere, and custom wavy-surface geometry.
+- Linear and constant keyframe interpolation.
+- Support for Blender 4.x and newer animation APIs.
+- Example drone flyby, wall-approach, and landing scenes.
+
+### VisionSIM rendering
+
+- Depth EXR rendering.
+- Surface-normal EXR rendering.
+- Configurable render resolution and frame rate.
+- CUDA rendering where supported.
+- Headless rendering for WSL, Linux, and Slurm environments.
+
+### Timestamp simulation
+
+- Configurable ToF sensor resolution.
+- Configurable laser repetition rate and pulses per block.
+- Continuous generation at the ToF block rate.
+- Clean round-trip timestamp generation.
+- Bernoulli photon-detection model.
+- Gaussian timing jitter.
+- Sub-pixel surface-mixture preservation.
+- Range correction using rendered camera-ray direction.
+- Surface-normal and inverse-square distance weighting.
+- Same-surface temporal interpolation.
+- Hard visibility switching for likely occlusions.
+- Reproducible simulation using a random seed.
+
+### Precomputed diagnostics
+
+- Mini-histograms for every ToF pixel and acquisition block.
+- Histogram-centroid depth estimates.
+- Valid photon-detection fraction.
+- Timestamp and depth histogram bin centers.
+- Explicit ToF block timing.
+
+### Visualization and analysis
+
+- Depth maps at selected blocks.
+- Valid-detection fraction maps.
+- Pixel histograms.
+- Mean depth and valid-detection fraction over time.
+- Raw photon timestamp-versus-simulation-time plots.
+- Animated depth, detection-fraction, and histogram GIFs.
+- Radial velocity and closing-speed estimates.
+- Time-to-contact maps, plots, CSV files, and NPZ output.
+- Blender-camera and ToF-sensor FoV overlap visualization.
+- Top-row and bottom-row ToF-zone ray fans.
+- Per-rendered-ray expected photon-contribution maps.
+
+
+## Requirements
+
+The pipeline is primarily intended for Linux or WSL and requires:
+
+- Python 3.10 or newer
+- Blender
+- VisionSIM
+- OpenCV with OpenEXR support
+- NumPy
+- Matplotlib
+- tqdm
+- PyYAML
+- Pillow
+
+Optional:
+
+- CUDA-capable GPU for VisionSIM rendering
+- Slurm for cluster execution
+
+## Clone and create the Python environment
+
+```bash
+git clone <repository-url>
+cd timestamp_gen
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+## Installing WSL (Windows users)
 
 The entire pipeline depends on being able to use a bash-based terminal. My preferred method is to use Windows Subsystem for Linux (wsl). Most desktops are able to do this by opening a terminal and entering the following commands:
 
@@ -52,14 +146,28 @@ wsl --update --web-download
 wsl --install --web-download -d Ubuntu
 ```
 
-
 ## General Pipeline
 
-### 1. Creating Python Blender scripts
+## 1. Create an animated Blender scene
 
-In this directory, there is a folder named blender_scripts. In this folder, there are multiple examples of python scripts to generate Blender files for rendering use.
+Example Blender scene scripts are located in `blender_scripts/`.
 
-To help simplify the process, I created a scene_builder class so you can add simple elements to your Blender files. For reference, I recommend looking that the example files included in this repository.
+The shared `scene_builder.py` module includes helpers for:
+
+- configuring resolution, frame rate, and frame range
+- adding cameras and lights
+- adding basic geometry
+- creating custom wavy landing surfaces
+- animating object or camera position
+- animating object or camera rotation
+- selecting linear or constant interpolation
+- saving the generated `.blend` file
+
+Generate a scene using Blender in background mode:
+
+```bash
+blender --background --python blender_scripts/create_TEST_NAME_blend.py
+```
 
 ### 2. Rendering animations using VisionSIM (depth EXR and normal EXR files)
 
@@ -120,8 +228,6 @@ There are also a set of command-line methods to change the output:
 | `--output-dir` | Path where timestamp outputs will be saved. |
 | `--random-seed` | Sets the random seed for reproducible simulations. |
 | `--render-fps` | Sets the frame rate of the rendered input sequence. |
-| `--interpolation-steps` | Sets how many timestamp blocks are generated between each rendered frame pair. |
-| `--no-interpolation` | Disables interpolated visibility switching. |
 | `--hist-bins` | Sets the number of timestamp histogram bins. |
 | `--hist-depth-min` | Sets the minimum histogram depth in meters. |
 | `--hist-depth-max` | Sets the maximum histogram depth in meters. |
@@ -133,6 +239,14 @@ If you prefer to see this table in the terminal window, you can use the followin
 
 ```powershell
 python timestamp_gen.py --help
+```
+
+For an example of a command:
+
+```powershell
+python timestamp_gen.py --sensor vl53l8ch 
+--render-dir inputs/OUTPUT_RENDERED_EXR_FILES --output-dir outputs/TEST_NAME 
+--render-fps 240
 ```
 
 ## Input Format
@@ -169,40 +283,95 @@ timestamp_output/
     └── ...
 ```
 
+# Metadata
+
 ### `metadata.json`
 
-Stores simulation settings such as:
+The metadata file stores:
 
-* ToF sensor resolution
-* block size
-* laser rate
-* detection probability
-* timing jitter
-* effective frame rate
-* valid depth range
-* timestamp units
-* depth units
+- ToF sensor height and width
+- laser repetition rate
+- pulses per block
+- ToF block rate
+- ToF block duration
+- detection probability
+- timing-jitter standard deviation
+- minimum and maximum valid range
+- timestamp and depth units
+- missed-detection representation
+- whether normal- and distance-weighted sampling was enabled
 
-### Per-frame `.npz` files
+## Timestamp-generation command-line options
 
-Each frame file contains:
-
-| Array | Shape | Description |
-|---|---|---|
-| `sampled_depths_m` | `[L, H, W]` | Sampled geometric ranges in meters. |
-| `timestamps_clean_s` | `[L, H, W]` | Ideal timestamps before missed detections and jitter. |
-| `detection_mask` | `[L, H, W]` | Boolean mask showing detected photons. |
-| `timestamps_noisy_s` | `[L, H, W]` | Noisy detected timestamps, with `NaN` for missed detections. |
-
+| Option | Description |
+|---|---|
+| `--sensor` | Sensor YAML preset name from `configs/sensors/`. |
+| `--render-dir` | Directory containing `depths/` and `normals/`. |
+| `--output-dir` | Directory where generated files are saved. |
+| `--random-seed` | Seed for reproducible random timestamp generation. |
+| `--render-fps` | Frame rate used when the EXR animation was rendered. |
+| `--hist-bins` | Number of bins in each per-pixel mini-histogram. |
+| `--hist-depth-min` | Minimum histogram depth in meters. |
+| `--hist-depth-max` | Maximum histogram depth in meters. |
+| `--no-full-dataset` | Skip saving individual raw timestamp block files. |
+| `--no-precomputed` | Skip saving `timestamp_precomputed.npz`. |
+| `--no-progress` | Disable the progress bar. |
 
 ### `timestamp_precomputed.npz`
 
-The optional precomputed file contains timestamp-derived diagnostic arrays:
+| Array | Shape | Description |
+|---|---:|---|
+| `tof_depths` | `[B,H,W]` | Histogram-derived depth estimate for each ToF block. |
+| `all_I` | `[B,H,W]` | Valid detection fraction for each pixel and block. |
+| `all_histograms` | `[B,H,W,N]` | Mini-histogram counts. |
+| `tof_block_times_s` | `[B]` | Acquisition time associated with each block. |
+| `hist_bin_centers_tau` | `[N]` | Histogram bin centers in timestamp seconds. |
+| `hist_bin_centers_depth_m` | `[N]` | Histogram bin centers converted to meters. |
 
-| Array	| Description |
-|---|---|
-| `tof_depths` |	Block-rate depth estimates from timestamp histograms. | 
-| `all_I` |	Valid detection fraction per pixel. |
-| `all_histograms` | Per-frame mini-histograms. |
-| `hist_bin_centers_tau` | Histogram bin centers in timestamp units. |
-| `hist_bin_centers_depth_m` | Histogram bin centers converted to depth. |
+Where:
+
+- `B` is the number of timestamp blocks
+- `L` is the number of laser pulses per block
+- `H × W` is the ToF sensor resolution
+- `N` is the number of histogram bins
+
+## Visualizing timestamp results
+
+Generate standard diagnostic plots:
+
+```bash
+python visualize_timestamps.py \
+    --input outputs/drone_flyby/timestamp_precomputed.npz \
+    --output-dir outputs/drone_flyby/figures \
+    --pixel-y 4 \
+    --pixel-x 4
+```
+
+# Miscellaneous
+
+## Dataset size and performance
+
+Timestamp datasets can become very large.
+
+For a sensor with:
+
+- \(H \times W\) pixels
+- \(L\) pulses per block
+- \(B\) blocks
+
+the raw number of timestamp samples is:
+
+\[
+N = B L H W
+\]
+
+For a 10 MHz laser with 256 pulses per block, the block rate is approximately
+39.1 kHz. Even a one-second 8 × 8 simulation contains:
+
+\[
+39{,}062 \times 256 \times 8 \times 8
+\approx 640\text{ million samples}
+\]
+
+Use `--no-full-dataset` when only histogram, depth, or valid-detection outputs
+are required.
