@@ -355,7 +355,7 @@ Timestamp datasets can become very large.
 
 For a sensor with:
 
-- \(H \times W\) pixels
+- \(H x W\) pixels
 - \(L\) pulses per block
 - \(B\) blocks
 
@@ -369,8 +369,7 @@ For a 10 MHz laser with 256 pulses per block, the block rate is approximately
 39.1 kHz. Even a one-second 8 × 8 simulation contains:
 
 \[
-39{,}062 \times 256 \times 8 \times 8
-\approx 640\text{ million samples}
+39,062 x 256 x 8 x 8 ~= 640 million samples
 \]
 
 Use `--no-full-dataset` when only histogram, depth, or valid-detection outputs
