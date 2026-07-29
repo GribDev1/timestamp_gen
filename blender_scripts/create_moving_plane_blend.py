@@ -44,7 +44,7 @@ motion = {
 }
 
 build_basic_scene(
-    output_path="test_flat_moving.blend",
+    output_path="moving_plane.blend",
     render_config=render,
     foreground_plane=foreground,
     foreground_motion=motion,

@@ -28,7 +28,7 @@ background = PlaneConfig(
 )
 
 build_basic_scene(
-    output_path="test_occlusion.blend",
+    output_path="occlusion.blend",
     render_config=render,
     foreground_plane=foreground,
     foreground_motion=None,

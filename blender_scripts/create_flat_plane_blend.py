@@ -20,7 +20,7 @@ foreground = PlaneConfig(
 )
 
 build_basic_scene(
-    output_path="test_flat_stationary.blend",
+    output_path="flat_plane.blend",
     render_config=render,
     foreground_plane=foreground,
     foreground_motion=None,

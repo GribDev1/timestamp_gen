@@ -116,7 +116,7 @@ def main():
         interpolation="LINEAR",
     )
 
-    save_blend("test_two_flat_reflective.blend")
+    save_blend("two_flat_reflective.blend")
 
 
 if __name__ == "__main__":

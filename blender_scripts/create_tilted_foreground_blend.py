@@ -97,7 +97,7 @@ def main():
         interpolation="LINEAR",
     )
     
-    save_blend("test_tilted_foreground.blend")
+    save_blend("tilted_foreground.blend")
     
 
 if __name__ == "__main__":

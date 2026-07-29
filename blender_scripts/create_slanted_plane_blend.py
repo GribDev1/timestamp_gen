@@ -21,7 +21,7 @@ foreground = PlaneConfig(
 )
 
 build_basic_scene(
-    output_path="test_slanted_stationary.blend",
+    output_path="slanted_plane.blend",
     render_config=render,
     foreground_plane=foreground,
     foreground_motion=None
