@@ -1,5 +1,5 @@
 Failed to create secure directory (/run/user/100027/pulse): No such file or directory
-Started listening on 0.0.0.0:37303
+Started listening on 0.0.0.0:37427
 Successfully connected to BlenderClient instance.
 EGL Error (0x3001): EGL_NOT_INITIALIZED: EGL is not initialized, or could not be initialized, for the specified EGL display connection.
 
