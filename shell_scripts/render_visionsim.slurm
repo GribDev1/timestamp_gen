@@ -36,7 +36,7 @@ BLENDER_DIR="$HOME/software/blender-4.0.2-linux-x64"
 SOURCE_BLEND="$PROJECT_DIR/blend_files/${SCENE_NAME}.blend"
 
 SEGMENT_SCRIPT="$PROJECT_DIR/blender_scripts/create_segment_blend.py"
-VALIDATION_SCRIPT="$PROJECT_DIR/shell_scripts/validate_visionsim_outputs.sh"
+VALIDATION_SCRIPT="$PROJECT_DIR/shell_scripts/validate_visionsim_output.sh"
 
 SEGMENT_ROOT="$PROJECT_DIR/inputs/${SCENE_NAME}_segments"
 TEMP_ROOT="$PROJECT_DIR/tmp/visionsim_${SLURM_ARRAY_JOB_ID}"
