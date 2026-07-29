@@ -1,10 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=create_blend
-#SBATCH --partition=cpu
 #SBATCH --time=00:10:00
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=4G
+#SBATCH --mem=4g
+#SBATCH --mail-type=NONE
+#SBATCH --mail-user=grib6206@stthomas.edu
 #SBATCH --output=logs/create_blend_%j.out
 #SBATCH --error=logs/create_blend_%j.err
 
@@ -19,8 +18,6 @@ GENERATED_BLEND="$PROJECT_DIR/test_flat_moving.blend"
 FINAL_BLEND="$PROJECT_DIR/blend_files/test_flat_moving.blend"
 
 cd "$PROJECT_DIR"
-source "$VENV/bin/activate"
-
 mkdir -p blend_files
 
 unset DISPLAY
@@ -35,12 +32,7 @@ echo "Blender: $BLENDER"
 test -x "$BLENDER"
 test -f "$SCRIPT_PATH"
 
-"$BLENDER" --version
-
-"$BLENDER" \
-    --background \
-    --factory-startup \
-    --python "$SCRIPT_PATH"
+"$BLENDER" --background --factory-startup --python "$SCRIPT_PATH"
 
 test -s "$GENERATED_BLEND"
 mv -f "$GENERATED_BLEND" "$FINAL_BLEND"
