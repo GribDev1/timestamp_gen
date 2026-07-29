@@ -11,7 +11,7 @@ import numpy as np
 import yaml
 
 
-CONFIG_DIR = Path(__file__).resolve().parent / "configs" / "sensors"
+CONFIG_DIR = Path(__file__).resolve().parent / "sensors"
 
 
 @dataclass(frozen=True)
