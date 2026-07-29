@@ -48,7 +48,7 @@ import cv2
 from tqdm import tqdm
 import argparse
 
-from sensor_presets import get_sensor_preset
+from configs.sensor_presets import get_sensor_preset
 from timestamp_dataset import TimestampBlock, TimestampDataset, TimestampMetadata
 
 # =========================

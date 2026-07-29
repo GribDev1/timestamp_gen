@@ -54,7 +54,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
 
-from sensor_presets import get_sensor_preset
+from configs.sensor_presets import get_sensor_preset
 
 
 @dataclass(frozen=True)
