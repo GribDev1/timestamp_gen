@@ -1,4 +1,5 @@
 #!/bin/bash
+#SBATCH --job-name=create_blend
 #SBATCH --time=00:10:00
 #SBATCH --ntasks=1
 #SBATCH --mem=4g
