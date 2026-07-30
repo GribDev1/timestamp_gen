@@ -34,7 +34,7 @@ TASK_ID="${SLURM_ARRAY_TASK_ID:?This script must run as a Slurm array}"
 PIXEL_Y=$((TASK_ID / TOF_WIDTH))
 PIXEL_X=$((TASK_ID % TOF_WIDTH))
 
-if ((PIXEL_Y >= TOF_HEIGHT)); then
+if (( PIXEL_Y >= TOF_HEIGHT )); then
     echo "ERROR: Task $TASK_ID maps outside ${TOF_HEIGHT}x${TOF_WIDTH} grid." >&2
     exit 1
 fi
@@ -52,7 +52,7 @@ mkdir -p "$PIXEL_OUTPUT_DIR"
 echo "Scene: $SCENE_NAME"
 echo "Sensor: $SENSOR_NAME"
 echo "Task: $TASK_ID"
-echo "Pixel: y=$PIXEL_y, x=$PIXEL_X"
+echo "Pixel: y=$PIXEL_Y, x=$PIXEL_X"
 echo "Host: $(hostname)"
 echo "Start: $(date)"
 
@@ -65,12 +65,13 @@ python "$TIMESTAMP_SCRIPT" \
     --pixel-x "$PIXEL_X" \
     --no-full-dataset
 
-PIXEL_FILE="$PIXEL_OUTPUT_DIR/pixel_y${PIXEL_Y}_x{PIXEL_X}.npz"
+PIXEL_FILE="$PIXEL_OUTPUT_DIR/pixel_y${PIXEL_Y}_x${PIXEL_X}.npz"
 
-if [[! -s "$PIXEL_FILE"]]; then
+if [[ ! -s "$PIXEL_FILE" ]]; then
     echo "ERROR: Missing pixel output: $PIXEL_FILE" >&2
     exit 1
 fi
 
 echo "Pixel generation completed."
+echo "Output: $PIXEL_FILE"
 echo "Finished: $(date)"
