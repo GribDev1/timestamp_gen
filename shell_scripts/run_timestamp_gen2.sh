@@ -26,8 +26,6 @@ mkdir -p logs
 
 PIXEL_COUNT=$((TOF_WIDTH * TOF_HEIGHT))
 LAST_TASK=$((PIXEL_COUNT - 1))
-
-# Limit concurrent tasks to avoid excessive shared-filesystem traffic.
 MAX_CONCURRENT=8
 
 PIXEL_JOB_ID=$(
@@ -52,9 +50,8 @@ MERGE_JOB_ID=$(
         "$TOF_HEIGHT"
 )
 
-echo "Timestamp pipeline submitted."
-echo "Scene:             $SCENE_NAME"
-echo "Pixel count:       $PIXEL_COUNT"
-echo "Pixel array job:   $PIXEL_JOB_ID"
-echo "Merge job:         $MERGE_JOB_ID"
-echo "Max simultaneous:  $MAX_CONCURRENT"
+MERGE_JOB_ID="${MERGE_JOB_ID%%;*}"
+
+echo "Pixel array submitted: $PIXEL_JOB_ID"
+echo "Merge job submitted:   $MERGE_JOB_ID"
+echo "The merge will begin after every pixel task succeeds."
