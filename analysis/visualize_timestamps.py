@@ -9,7 +9,7 @@ This script loads timestamp_precomputed.npz and creates diagnostic figures:
     - one example pixel histogram
 
 Example:
-    python visualize_timestamps.py --input timestamp_output/timestamp_precomputed.npz --output-dir timestamp_output/figures
+    python analysis/visualize_timestamps.py --input timestamp_output/timestamp_precomputed.npz --output-dir timestamp_output/figures
 """
 
 from pathlib import Path
@@ -132,6 +132,15 @@ def parse_args():
         help=(
             "Warning threshold drawn on the selected-pixel TTC plot, "
             "in seconds. Default: 1.0"
+        ),
+    )
+
+    parser.add_argument(
+        "--skip-raw-timestamps",
+        action="store_true",
+        help=(
+            "Skip the raw timestamps-versus-time plot. Required when "
+            "the dataset was generated with --no-full-dataset."
         ),
     )
 
@@ -399,6 +408,19 @@ def build_block_times_s(data, metadata, num_blocks):
     Newer datasets may store block_start_time_s and block_end_time_s in
     timestamp_precomputed.npz. Older datasets fall back to metadata["dt_s"].
     """
+    if "tof_block_times_s" in data.files:
+        times = np.asarray(
+            data["tof_block_times_s"],
+            dtype=np.float64,
+        )
+
+        if times.shape != (num_blocks,):
+            raise ValueError(
+                "tof_block_times_s length does not match tof_depths."
+            )
+
+        return times
+
     if "block_start_time_s" in data.files and "block_end_time_s" in data.files:
         starts = np.asarray(data["block_start_time_s"], dtype=np.float64)
         ends = np.asarray(data["block_end_time_s"], dtype=np.float64)
@@ -409,6 +431,12 @@ def build_block_times_s(data, metadata, num_blocks):
             )
 
         return 0.5 * (starts + ends)
+
+    if metadata is None:
+        raise FileNotFoundError(
+            "No saved block timing array was found and metadata.json "
+            "is unavailable."
+        )
 
     dt_s = float(metadata["dt_s"])
     return (np.arange(num_blocks, dtype=np.float64) + 0.5) * dt_s
@@ -767,7 +795,17 @@ def main():
     data = np.load(args.input)
     
     dataset_dir = args.input.parent
-    metadata = load_metadata(dataset_dir)
+
+    metadata = None
+
+    metadata_path = dataset_dir / "metadata.json"
+
+    if metadata_path.exists():
+        metadata = load_metadata(dataset_dir)
+    elif not args.skip_raw_timestamps:
+        raise FileNotFoundError(
+            f"Raw timestamp visualization requires: {metadata_path}"
+        )
 
     tof_depths = data["tof_depths"]
     all_I = data["all_I"]
@@ -849,19 +887,22 @@ def main():
         args.output_dir / f"histogram_block_{frame_idx:04d}_y{pixel_y}_x{pixel_x}.png",
     )
     
-    save_timestamps_vs_time(
-        dataset_dir=dataset_dir,
-        metadata=metadata,
-        pixel_y=pixel_y,
-        pixel_x=pixel_x,
-        output_path=(
-            args.output_dir
-            / f"timestamps_vs_time_y{pixel_y}_x{pixel_x}.png"
-        ),
-        start_time_ms=args.start_time_ms,
-        end_time_ms=args.end_time_ms,
-        marker_size=args.timestamp_marker_size,
-    )
+    if not args.skip_raw_timestamps:
+        save_timestamps_vs_time(
+            dataset_dir=dataset_dir,
+            metadata=metadata,
+            pixel_y=pixel_y,
+            pixel_x=pixel_x,
+            output_path=(
+                args.output_dir
+                / f"timestamps_vs_time_y{pixel_y}_x{pixel_x}.png"
+            ),
+            start_time_ms=args.start_time_ms,
+            end_time_ms=args.end_time_ms,
+            marker_size=args.timestamp_marker_size,
+        )
+    else:
+        print("Skipping raw timestamps-versus-time plot.")
 
     np.savez(
         args.output_dir / "time_to_contact.npz",
