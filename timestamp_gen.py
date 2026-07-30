@@ -758,8 +758,13 @@ def main():
 
     single_pixel_mode = (
         args.pixel_y is not None
-        and args.pixel.x is not None
+        and args.pixel_x is not None
     )
+
+    if single_pixel_mode and not args.no_full_dataset:
+            raise ValueError(
+                "Single-pixel mode currently requires --no-full-dataset."
+            )
 
     if single_pixel_mode:
         if not (0 <= args.pixel_y < SENSOR.tof_h):
@@ -767,7 +772,7 @@ def main():
                 f"--pixel-y must be between 0 and {SENSOR.tof_h - 1}"
             )
 
-        if not (0 <= args.pixel_y < SENSOR.tof_w):
+        if not (0 <= args.pixel_x < SENSOR.tof_w):
                     raise ValueError(
                         f"--pixel-x must be between 0 and {SENSOR.tof_w - 1}"
                     )
@@ -1045,9 +1050,14 @@ def main():
             f"but expected {expected_blocks}."
         )
 
-    tof_depths = np.stack(tof_depths, axis=0)
-    all_I = np.stack(all_I, axis=0)
-    all_histograms = np.stack(all_histograms, axis=0)
+    if single_pixel_mode:
+        tof_depths = np.asarray(tof_depths, dtype=np.float32)
+        all_I = np.asarray(all_I, dtype=np.float32)
+        all_histograms = np.stack(all_histograms, axis=0).astype(np.uint16)
+    else:
+        tof_depths = np.stack(tof_depths, axis=0)
+        all_I = np.stack(all_I, axis=0)
+        all_histograms = np.stack(all_histograms, axis=0)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1103,11 +1113,6 @@ def main():
         print(
             "Saved precomputed timestamp/histogram data to: "
             f"{precomputed_path}"
-        )
-
-    if single_pixel_mode and not args.no_full_dataset:
-        raise ValueError(
-            "Single-pixel mode currently requires --no-full-dataset."
         )
 
     if save_full_timestamp_dataset:
