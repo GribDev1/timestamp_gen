@@ -1,115 +1,165 @@
 #!/bin/bash
-#SBATCH --job-name=timestamp_viz
+#SBATCH --job-name=visual_submit
 #SBATCH --partition=cpu
-#SBATCH --time=04:00:00
+#SBATCH --time=00:10:00
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=2
-#SBATCH --mem=40g
-#SBATCH --output=logs/visualize_%j.out
-#SBATCH --error=logs/visualize_%j.err
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
+#SBATCH --output=logs/visual_submit_%j.out
+#SBATCH --error=logs/visual_submit_%j.err
 
-set -euxo pipefail
+set -euo pipefail
 
 # Usage:
 #   sbatch shell_scripts/run_visualizations.slurm \
-#       <scene_name> [frame] [pixel_y] [pixel_x] [make_gifs] [gif_stride]
+#       <scene_name> [frame] [make_gifs] [gif_stride]
 #
-# Example without GIFs:
+# Example:
 #   sbatch shell_scripts/run_visualizations.slurm \
-#       drone_flyby 10000 4 4 false 100
-#
-# Example with GIFs:
-#   sbatch shell_scripts/run_visualizations.slurm \
-#       drone_flyby 10000 4 4 true 100
+#       drone_flyby 10000 true 100
 
 SCENE_NAME="${1:?Missing scene name}"
 FRAME_INDEX="${2:-0}"
-PIXEL_Y="${3:-4}"
-PIXEL_X="${4:-4}"
-MAKE_GIFS="${5:-false}"
-GIF_STRIDE="${6:-100}"
+MAKE_GIFS="${3:-false}"
+GIF_STRIDE="${4:-100}"
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
-VENV="$PROJECT_DIR/.venv"
+PYTHON="$PROJECT_DIR/.venv/bin/python"
 
-VISUALIZATION_SCRIPT="$PROJECT_DIR/analysis/visualize_timestamps.py"
 INPUT_FILE="$PROJECT_DIR/outputs/$SCENE_NAME/timestamp_precomputed.npz"
-OUTPUT_DIR="$PROJECT_DIR/outputs/$SCENE_NAME/figures"
+
+SUMMARY_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_summary.slurm"
+PIXEL_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_pixel.slurm"
+GLOBAL_GIF_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_global_gif.slurm"
+HISTOGRAM_GIF_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_histogram_gif.slurm"
 
 cd "$PROJECT_DIR"
-source "$VENV/bin/activate"
 
-export MPLBACKEND=Agg
-export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-1}"
-export OPENBLAS_NUM_THREADS="${SLURM_CPUS_PER_TASK:-1}"
-export MKL_NUM_THREADS="${SLURM_CPUS_PER_TASK:-1}"
-
-if [[ ! -f "$VISUALIZATION_SCRIPT" ]]; then
-    echo "ERROR: Visualization script not found:" >&2
-    echo "       $VISUALIZATION_SCRIPT" >&2
+if [[ ! -x "$PYTHON" ]]; then
+    echo "ERROR: Python executable not found: $PYTHON" >&2
     exit 1
 fi
 
 if [[ ! -s "$INPUT_FILE" ]]; then
-    echo "ERROR: Input file not found or empty:" >&2
-    echo "       $INPUT_FILE" >&2
+    echo "ERROR: Input file not found or empty: $INPUT_FILE" >&2
     exit 1
 fi
 
-if (( GIF_STRIDE <= 0 )); then
-    echo "ERROR: GIF stride must be greater than zero." >&2
+if [[ "$MAKE_GIFS" != "true" && "$MAKE_GIFS" != "false" ]]; then
+    echo "ERROR: make_gifs must be true or false." >&2
     exit 1
 fi
 
-mkdir -p "$OUTPUT_DIR"
+if ! [[ "$GIF_STRIDE" =~ ^[1-9][0-9]*$ ]]; then
+    echo "ERROR: gif_stride must be a positive integer." >&2
+    exit 1
+fi
 
-echo "========================================"
-echo "Timestamp visualization"
-echo "========================================"
-echo "Job ID:       ${SLURM_JOB_ID:-manual}"
-echo "Host:         $(hostname)"
-echo "Scene:        $SCENE_NAME"
-echo "Input:        $INPUT_FILE"
-echo "Output:       $OUTPUT_DIR"
-echo "Frame/block:  $FRAME_INDEX"
-echo "Pixel:        y=$PIXEL_Y, x=$PIXEL_X"
-echo "Make GIFs:    $MAKE_GIFS"
-echo "GIF stride:   $GIF_STRIDE"
-echo "Started:      $(date)"
-echo
+for script in \
+    "$SUMMARY_SCRIPT" \
+    "$PIXEL_SCRIPT" \
+    "$GLOBAL_GIF_SCRIPT" \
+    "$HISTOGRAM_GIF_SCRIPT"
+do
+    if [[ ! -f "$script" ]]; then
+        echo "ERROR: Worker script not found: $script" >&2
+        exit 1
+    fi
+done
 
-COMMAND=(
-    python
-    "$VISUALIZATION_SCRIPT"
-    --input "$INPUT_FILE"
-    --output-dir "$OUTPUT_DIR"
-    --frame "$FRAME_INDEX"
-    --pixel-y "$PIXEL_Y"
-    --pixel-x "$PIXEL_X"
-    --ttc-window-ms 10
-    --ttc-min-closing-speed 0.10
-    --ttc-max-s 10
-    --ttc-warning-s 1
-    --skip-raw-timestamps
-    --gif-stride "$GIF_STRIDE"
+# Read the sensor dimensions directly from the merged dataset.
+read -r TOF_HEIGHT TOF_WIDTH < <(
+    "$PYTHON" - "$INPUT_FILE" <<'PY'
+import sys
+import numpy as np
+
+input_path = sys.argv[1]
+
+with np.load(input_path) as data:
+    shape = data["tof_depths"].shape
+
+if len(shape) != 3:
+    raise RuntimeError(
+        f"Expected tof_depths shape [blocks, height, width], got {shape}"
+    )
+
+print(shape[1], shape[2])
+PY
 )
 
+NUM_PIXELS=$((TOF_HEIGHT * TOF_WIDTH))
+LAST_PIXEL_TASK=$((NUM_PIXELS - 1))
+
+echo "========================================"
+echo "Visualization pipeline submission"
+echo "========================================"
+echo "Scene:          $SCENE_NAME"
+echo "Frame/block:    $FRAME_INDEX"
+echo "Sensor grid:    ${TOF_HEIGHT}x${TOF_WIDTH}"
+echo "Pixel tasks:    $NUM_PIXELS"
+echo "Make GIFs:      $MAKE_GIFS"
+echo "GIF stride:     $GIF_STRIDE"
+echo
+
+SUMMARY_SUBMISSION=$(
+    sbatch --parsable \
+        "$SUMMARY_SCRIPT" \
+        "$SCENE_NAME" \
+        "$FRAME_INDEX"
+)
+
+SUMMARY_JOB_ID="${SUMMARY_SUBMISSION%%;*}"
+
+echo "Summary job: $SUMMARY_JOB_ID"
+
+PIXEL_SUBMISSION=$(
+    sbatch --parsable \
+        --dependency="afterok:$SUMMARY_JOB_ID" \
+        --array="0-${LAST_PIXEL_TASK}%8" \
+        "$PIXEL_SCRIPT" \
+        "$SCENE_NAME" \
+        "$FRAME_INDEX" \
+        "$TOF_HEIGHT" \
+        "$TOF_WIDTH"
+)
+
+PIXEL_JOB_ID="${PIXEL_SUBMISSION%%;*}"
+
+echo "Pixel PNG array: $PIXEL_JOB_ID"
+
 if [[ "$MAKE_GIFS" == "true" ]]; then
-    COMMAND+=(--make-gifs --gif-fps 12)
-elif [[ "$MAKE_GIFS" != "false" ]]; then
-    echo "ERROR: make_gifs must be either true or false." >&2
-    exit 1
+    GLOBAL_GIF_SUBMISSION=$(
+        sbatch --parsable \
+            --dependency="afterok:$SUMMARY_JOB_ID" \
+            --array="0-1" \
+            "$GLOBAL_GIF_SCRIPT" \
+            "$SCENE_NAME" \
+            "$GIF_STRIDE"
+    )
+
+    GLOBAL_GIF_JOB_ID="${GLOBAL_GIF_SUBMISSION%%;*}"
+
+    HISTOGRAM_GIF_SUBMISSION=$(
+        sbatch --parsable \
+            --dependency="afterok:$SUMMARY_JOB_ID" \
+            --array="0-${LAST_PIXEL_TASK}%8" \
+            "$HISTOGRAM_GIF_SCRIPT" \
+            "$SCENE_NAME" \
+            "$GIF_STRIDE" \
+            "$TOF_HEIGHT" \
+            "$TOF_WIDTH"
+    )
+
+    HISTOGRAM_GIF_JOB_ID="${HISTOGRAM_GIF_SUBMISSION%%;*}"
+
+    echo "Global GIF array:    $GLOBAL_GIF_JOB_ID"
+    echo "Histogram GIF array: $HISTOGRAM_GIF_JOB_ID"
+else
+    echo "GIF jobs disabled."
 fi
 
-"${COMMAND[@]}"
-
 echo
-echo "Visualization completed successfully."
-echo "Finished: $(date)"
+echo "Submission complete."
 echo
-
-find "$OUTPUT_DIR" \
-    -maxdepth 1 \
-    -type f \
-    -printf "%f %k KB\n" \
-    | sort
+echo "Monitor with:"
+echo "  squeue -u $USER"
