@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=viz_hist_gif
+#SBATCH --job-name=visual_hist_gif
 #SBATCH --partition=cpu
 #SBATCH --time=04:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=4G
-#SBATCH --output=logs/viz_hist_gif_%A_%a.out
-#SBATCH --error=logs/viz_hist_gif_%A_%a.err
+#SBATCH --output=logs/visual_hist_gif_%A_%a.out
+#SBATCH --error=logs/visual_hist_gif_%A_%a.err
 
 set -euo pipefail
 
