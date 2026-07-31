@@ -32,6 +32,8 @@ SUMMARY_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_summary.slurm"
 PIXEL_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_pixel.slurm"
 GLOBAL_GIF_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_global_gif.slurm"
 HISTOGRAM_GIF_SCRIPT="$PROJECT_DIR/shell_scripts/visualization_histogram_gif.slurm"
+MERGE_HISTOGRAM_GIF_SCRIPT="$PROJECT_DIR/shell_scripts/merge_histogram_gifs.slurm"
+
 
 cd "$PROJECT_DIR"
 
@@ -59,7 +61,8 @@ for script in \
     "$SUMMARY_SCRIPT" \
     "$PIXEL_SCRIPT" \
     "$GLOBAL_GIF_SCRIPT" \
-    "$HISTOGRAM_GIF_SCRIPT"
+    "$HISTOGRAM_GIF_SCRIPT" \
+    "$MERGE_HISTOGRAM_GIF_SCRIPT"
 do
     if [[ ! -f "$script" ]]; then
         echo "ERROR: Worker script not found: $script" >&2
@@ -152,8 +155,22 @@ if [[ "$MAKE_GIFS" == "true" ]]; then
 
     HISTOGRAM_GIF_JOB_ID="${HISTOGRAM_GIF_SUBMISSION%%;*}"
 
+    MERGE_HISTOGRAM_GIF_SUBMISSION=$(
+        sbatch --parsable \
+            --dependency="afterok:$HISTOGRAM_GIF_JOB_ID" \
+            "$MERGE_HISTOGRAM_GIF_SCRIPT" \
+            "$SCENE_NAME" \
+            "$TOF_HEIGHT" \
+            "$TOF_WIDTH" \
+            "0.5"
+    )
+
+    MERGE_HISTOGRAM_GIF_JOB_ID="${
+        MERGE_HISTOGRAM_GIF_SUBMISSION%%;*
+    }"
     echo "Global GIF array:    $GLOBAL_GIF_JOB_ID"
     echo "Histogram GIF array: $HISTOGRAM_GIF_JOB_ID"
+    echo "Histogram merge job: $MERGE_HISTOGRAM_GIF_JOB_ID"
 else
     echo "GIF jobs disabled."
 fi
