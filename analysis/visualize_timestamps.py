@@ -184,8 +184,8 @@ def main() -> None:
                 "Timestamp-versus-time mode requires metadata.json."
             )
 
-        tof_h = metadata.tof_h
-        tof_w = metadata.tof_w
+        tof_h = int(metadata["tof_h"])
+        tof_w = int(metadata["tof_w"])
 
         pixel_y, pixel_x = validate_pixel(
             args.pixel_y,
