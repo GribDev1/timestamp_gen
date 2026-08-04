@@ -1,0 +1,143 @@
+#!/bin/bash
+#SBATCH --job-name=timestamp_plots
+#SBATCH --partition=cpu
+#SBATCH --time=02:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
+#SBATCH --output=logs/timestamp_plots_%A_%a.out
+#SBATCH --error=logs/timestamp_plots_%A_%a.err
+
+set -euo pipefail
+
+# Usage:
+#   sbatch --array=0-63%8 \
+#       shell_scripts/run_timestamp_visualizations.slurm \
+#       <scene_name> [tof_width] [tof_height] \
+#       [start_time_ms] [end_time_ms]
+#
+# Examples:
+#
+# Plot the complete scene:
+#   sbatch --array=0-63%8 \
+#       shell_scripts/run_timestamp_visualizations.slurm \
+#       drone_wall_approach 8 8
+#
+# Plot only 0–100 ms:
+#   sbatch --array=0-63%8 \
+#       shell_scripts/run_timestamp_visualizations.slurm \
+#       drone_wall_approach 8 8 0 100
+
+SCENE_NAME="${1:?Missing scene name}"
+TOF_WIDTH="${2:-8}"
+TOF_HEIGHT="${3:-8}"
+START_TIME_MS="${4:-}"
+END_TIME_MS="${5:-}"
+
+PROJECT_DIR="$HOME/projects/timestamp_gen"
+VENV="$PROJECT_DIR/.venv"
+
+DATASET_DIR="$PROJECT_DIR/outputs/$SCENE_NAME"
+FRAMES_DIR="$DATASET_DIR/frames"
+METADATA_PATH="$DATASET_DIR/metadata.json"
+
+FIGURES_DIR="$DATASET_DIR/figures/timestamps_vs_time"
+
+TASK_ID="${SLURM_ARRAY_TASK_ID:?This script requires a Slurm array}"
+
+PIXEL_Y=$((TASK_ID / TOF_WIDTH))
+PIXEL_X=$((TASK_ID % TOF_WIDTH))
+
+if (( PIXEL_Y >= TOF_HEIGHT )); then
+    echo "ERROR: Task $TASK_ID is outside the ${TOF_HEIGHT}x${TOF_WIDTH} grid." >&2
+    exit 1
+fi
+
+cd "$PROJECT_DIR"
+source "$VENV/bin/activate"
+
+export MPLBACKEND=Agg
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+
+if [[ ! -d "$FRAMES_DIR" ]]; then
+    echo "ERROR: Frames directory not found:" >&2
+    echo "$FRAMES_DIR" >&2
+    exit 1
+fi
+
+if [[ ! -f "$METADATA_PATH" ]]; then
+    echo "ERROR: Metadata file not found:" >&2
+    echo "$METADATA_PATH" >&2
+    exit 1
+fi
+
+FRAME_COUNT=$(
+    find "$FRAMES_DIR" \
+        -maxdepth 1 \
+        -type f \
+        -name 'frame_*.npz' \
+        | wc -l
+)
+
+if (( FRAME_COUNT == 0 )); then
+    echo "ERROR: No frame NPZ files found in $FRAMES_DIR" >&2
+    exit 1
+fi
+
+PIXEL_OUTPUT_DIR="$FIGURES_DIR/pixel_y${PIXEL_Y}_x${PIXEL_X}"
+mkdir -p "$PIXEL_OUTPUT_DIR"
+
+COMMAND=(
+    python
+    -m analysis.visualize_timestamps
+    --mode timestamps
+    --input "$METADATA_PATH"
+    --output-dir "$PIXEL_OUTPUT_DIR"
+    --pixel-y "$PIXEL_Y"
+    --pixel-x "$PIXEL_X"
+    --timestamp-marker-size 2.0
+)
+
+if [[ -n "$START_TIME_MS" ]]; then
+    COMMAND+=(
+        --start-time-ms "$START_TIME_MS"
+    )
+fi
+
+if [[ -n "$END_TIME_MS" ]]; then
+    COMMAND+=(
+        --end-time-ms "$END_TIME_MS"
+    )
+fi
+
+echo "=================================================="
+echo "Timestamp-versus-time visualization"
+echo "=================================================="
+echo "Scene:          $SCENE_NAME"
+echo "Task ID:        $TASK_ID"
+echo "Pixel:          y=$PIXEL_Y, x=$PIXEL_X"
+echo "Frame files:    $FRAME_COUNT"
+echo "Dataset:        $DATASET_DIR"
+echo "Output:         $PIXEL_OUTPUT_DIR"
+echo "Start time ms:  ${START_TIME_MS:-complete scene}"
+echo "End time ms:    ${END_TIME_MS:-complete scene}"
+echo "Host:           $(hostname)"
+echo "Started:        $(date)"
+echo
+
+"${COMMAND[@]}"
+
+EXPECTED_OUTPUT="$PIXEL_OUTPUT_DIR/timestamps_vs_time_y${PIXEL_Y}_x${PIXEL_X}.png"
+
+if [[ ! -s "$EXPECTED_OUTPUT" ]]; then
+    echo "ERROR: Expected visualization was not created:" >&2
+    echo "$EXPECTED_OUTPUT" >&2
+    exit 1
+fi
+
+echo
+echo "Timestamp visualization completed."
+echo "Output: $EXPECTED_OUTPUT"
+echo "Finished: $(date)"

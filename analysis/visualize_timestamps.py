@@ -167,6 +167,53 @@ def validate_pixel(
 def main() -> None:
     args = parse_args()
 
+    dataset_dir = args.input.parent
+    metadata_path = dataset_dir / "metadata.json"
+
+    metadata = (
+        load_metadata(dataset_dir)
+        if metadata_path.exists()
+        else None
+    )
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.mode == "timestamps":
+        if metadata is None:
+            raise FileNotFoundError(
+                "Timestamp-versus-time mode requires metadata.json."
+            )
+
+        tof_h = metadata.tof_h
+        tof_w = metadata.tof_w
+
+        pixel_y, pixel_x = validate_pixel(
+            args.pixel_y,
+            args.pixel_x,
+            tof_h,
+            tof_w,
+        )
+
+        output_path = (
+            args.output_dir
+            / f"timestamps_vs_time_y{pixel_y}_x{pixel_x}.png"
+        )
+
+        save_timestamps_vs_time(
+            dataset_dir=dataset_dir,
+            metadata=metadata,
+            pixel_y=pixel_y,
+            pixel_x=pixel_x,
+            output_path=output_path,
+            start_time_ms=args.start_time_ms,
+            end_time_ms=args.end_time_ms,
+            marker_size=args.timestamp_marker_size,
+        )
+
+        print(f"Completed visualization mode: {args.mode}")
+        print(f"Output directory: {args.output_dir}")
+        return
+
     data = load_timestamp_data(args.input)
 
     tof_depths = data["tof_depths"]
@@ -184,22 +231,11 @@ def main() -> None:
             f"0 to {num_blocks - 1}."
         )
 
-    dataset_dir = args.input.parent
-    metadata_path = dataset_dir / "metadata.json"
-
-    metadata = (
-        load_metadata(dataset_dir)
-        if metadata_path.exists()
-        else None
-    )
-
     block_times_s = build_block_times_s(
         data=data,
         metadata=metadata,
         num_blocks=num_blocks,
     )
-
-    args.output_dir.mkdir(parents=True, exist_ok=True)
 
     if args.mode == "summary":
         ttc_results = compute_time_to_contact(
@@ -295,35 +331,6 @@ def main() -> None:
             output_dir=args.output_dir,
             warning_s=args.ttc_warning_s,
             max_ttc_s=args.ttc_max_s,
-        )
-
-    elif args.mode == "timestamps":
-        pixel_y, pixel_x = validate_pixel(
-            args.pixel_y,
-            args.pixel_x,
-            tof_h,
-            tof_w,
-        )
-
-        if metadata is None:
-            raise FileNotFoundError(
-                "Timestamp-versus-time mode requires metadata.json."
-            )
-
-        output_path = (
-            args.output_dir
-            / f"timestamps_vs_time_y{pixel_y}_x{pixel_x}.png"
-        )
-
-        save_timestamps_vs_time(
-            dataset_dir=dataset_dir,
-            metadata=metadata,
-            pixel_y=pixel_y,
-            pixel_x=pixel_x,
-            output_path=output_path,
-            start_time_ms=args.start_time_ms,
-            end_time_ms=args.end_time_ms,
-            marker_size=args.timestamp_marker_size,
         )
 
     elif args.mode == "depth-gif":
