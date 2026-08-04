@@ -130,23 +130,3 @@ echo "Array tasks:        $TASK_COUNT"
 echo "Array range:        0-$LAST_TASK"
 echo "Maximum concurrent: $MAX_CONCURRENT"
 echo
-
-JOB_ID=$(
-    sbatch \
-        --parsable \
-        --array="0-${LAST_TASK}%${MAX_CONCURRENT}" \
-        "$BLOCK_SLURM" \
-        "$SCENE_NAME" \
-        "$SENSOR_NAME" \
-        "$RENDER_FPS" \
-        "$BLOCKS_PER_TASK"
-)
-
-JOB_ID="${JOB_ID%%;*}"
-
-echo "Submitted timestamp block array: $JOB_ID"
-echo "Frames will be written to:"
-echo "$PROJECT_DIR/outputs/$SCENE_NAME/frames"
-echo
-echo "Monitor with:"
-echo "squeue -j $JOB_ID"
