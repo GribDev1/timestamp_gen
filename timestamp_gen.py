@@ -43,13 +43,16 @@ import os
 os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 
 from pathlib import Path
+from dataclasses import asdict
+import json
+
 import numpy as np
 import cv2
 from tqdm import tqdm
 import argparse
 
 from configs.sensor_presets import get_sensor_preset
-from timestamp_dataset import TimestampBlock, TimestampDataset, TimestampMetadata
+from timestamp_dataset import TimestampBlock, TimestampMetadata
 
 # =========================
 # User settings
@@ -737,6 +740,26 @@ def parse_args():
         help="Process only one ToF pixel column.",
     )
 
+    parser.add_argument(
+        "--start-block",
+        type=int,
+        default=0,
+        help=(
+            "First zero-based timestamp block to generate. "
+            "Default: 0"
+        ),
+    )
+
+    parser.add_argument(
+        "--end-block",
+        type=int,
+        default=None,
+        help=(
+            "Exclusive zero-based timestamp block at which to stop. "
+            "Default: generate through the end of the scene."
+        ),
+    )
+
     return parser.parse_args()
 
 
@@ -805,6 +828,44 @@ def main():
     save_precomputed_data = not args.no_precomputed
 
     switch_dist_thresh_m = MAX_SAME_SURFACE_SPEED_M_PER_S * render_dt
+
+    frames_dir = output_dir / "frames"
+
+    if save_full_timestamp_dataset:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        frames_dir.mkdir(parents=True, exist_ok=True)
+
+        if args.start_block == 0:
+            metadata = TimestampMetadata(
+                tof_h=SENSOR.tof_h,
+                tof_w=SENSOR.tof_w,
+                block_size_L=SENSOR.block_size_L,
+                laser_rate_hz=SENSOR.laser_rate_hz,
+                detection_probability_rho=SENSOR.detection_probability_rho,
+                timing_jitter_std_s=SENSOR.timing_jitter_std_s,
+                fps=block_rate_hz,
+                dt_s=block_duration_s,
+                c_light=SENSOR.c_light,
+                min_valid_depth_m=SENSOR.min_valid_depth_m,
+                max_valid_depth_m=SENSOR.max_valid_depth_m,
+                use_weighted_depth_sampling=USE_WEIGHTED_DEPTH_SAMPLING,
+            )
+
+            metadata_path = output_dir / "metadata.json"
+
+            with metadata_path.open(
+                "w",
+                encoding="utf-8",
+            ) as file:
+                json.dump(
+                    asdict(metadata),
+                    file,
+                    indent=4,
+                )
+
+            print(f"Saved metadata to: {metadata_path}")
+
+        print(f"Saving full timestamp blocks to: {frames_dir}")
     
     print(f"Using sensor preset: {SENSOR.name}")
     print(f"Sensor grid: {SENSOR.tof_h} x {SENSOR.tof_w}")
@@ -854,6 +915,39 @@ def main():
         np.floor(scene_duration_s / block_duration_s)
     )
 
+    start_block = args.start_block
+    end_block = args.end_block
+
+    if start_block < 0:
+        raise ValueError("--start-block must be at least 0.")
+
+    if end_block is None:
+        end_block = expected_blocks
+
+    if end_block < 0:
+        raise ValueError("--end-block must be at least 0.")
+
+    if start_block >= expected_blocks:
+        raise ValueError(
+            f"--start-block {start_block} is outside the scene. "
+            f"The scene has {expected_blocks} blocks."
+        )
+
+    end_block = min(end_block, expected_blocks)
+
+    if end_block <= start_block:
+        raise ValueError(
+            "--end-block must be greater than --start-block."
+        )
+
+    task_block_count = end_block - start_block
+
+    print(
+        f"Generating block range: "
+        f"[{start_block}, {end_block})"
+    )
+    print(f"Blocks assigned to this task: {task_block_count}")
+
     samples_per_block_per_pixel = SENSOR.block_size_L
     samples_per_block_all_pixels = (
         SENSOR.block_size_L * SENSOR.tof_h * SENSOR.tof_w
@@ -895,7 +989,6 @@ def main():
     print(f"Expected detected samples/all pixels: {expected_detected_samples_all_pixels:,.2f}")
     print()
 
-    blocks = [] if save_full_timestamp_dataset else None
     tof_depths = []
     all_I = []
     all_histograms = []
@@ -913,27 +1006,64 @@ def main():
 
     def process_block(block):
         if save_full_timestamp_dataset:
-            blocks.append(block)
+            frame_path = frames_dir / f"frame_{block.frame_number:06d}.npz"
 
-        timestamps = block.timestamps_noisy_s
+            np.savez_compressed(
+                frame_path,
+                frame_number=np.array(
+                    block.frame_number,
+                    dtype=np.int32,
+                ),
+                simulation_time_s=np.array(
+                    block.simulation_time_s,
+                    dtype=np.float64,
+                ),
+                sampled_depths_m=block.sampled_depths_m.astype(
+                    np.float32,
+                    copy=False,
+                ),
+                timestamps_clean_s=block.timestamps_clean_s.astype(
+                    np.float32,
+                    copy=False,
+                ),
+                detection_mask = block.detection_mask.astype(
+                    bool,
+                    copy=False,
+                ),
+                timestamps_noisy_s=block.timestamps_noisy_s.astype(
+                    np.float32,
+                    copy=False,
+                ),
+                source_depth_file=np.array(
+                    block.source_depth_file,
+                ),
+                source_normal_file=np.array(
+                    block.source_normal_file,
+                ),
+            )
 
-        curr_tau_hat, histograms = block_depth_estimate_histogram(
-            timestamps=timestamps,
-            tau_edges=tau_edges,
-            bin_centers_tau=hist_bin_centers_tau,
-        )
+        if save_precomputed_data:
+            timestamps = block.timestamps_noisy_s
 
-        tof_depth_hist = SENSOR.timestamp_to_depth(curr_tau_hat)
+            curr_tau_hat, histograms = block_depth_estimate_histogram(
+                timestamps=timestamps,
+                tau_edges=tau_edges,
+                bin_centers_tau=hist_bin_centers_tau,
+            )
 
-        I = compute_valid_detection_fraction(timestamps)
+            tof_depth_hist = SENSOR.timestamp_to_depth(
+                curr_tau_hat
+            )
 
-        tof_depths.append(tof_depth_hist)
-        all_I.append(I)
-        all_histograms.append(histograms)
-        tof_block_times_s.append(block.simulation_time_s)
+            I = compute_valid_detection_fraction(timestamps)
+
+            tof_depths.append(tof_depth_hist)
+            all_I.append(I)
+            all_histograms.append(histograms)
+            tof_block_times_s.append(block.simulation_time_s)
 
     with tqdm(
-        total=expected_blocks,
+        total=task_block_count,
         desc="Generating timestamp blocks",
         unit="block",
         disable=args.no_progress,
@@ -946,7 +1076,10 @@ def main():
         normals1 = None
         normals2 = None
 
-        for block_idx in range(expected_blocks):
+        for block_idx in range(start_block, end_block):
+            block_seed = args.random_seed + block_idx
+            np.random.seed(block_seed)
+
             # Start and end time of this ToF acquisition block.
             block_start_time_s = block_idx * block_duration_s
             block_end_time_s = (block_idx + 1) * block_duration_s
@@ -1005,10 +1138,11 @@ def main():
                     np.mean(np.isfinite(timestamps))
                 )
 
-                tof_depths.append(depth_estimate)
-                all_I.append(valid_fraction)
-                all_histograms.append(histogram)
-                tof_block_times_s.append(block_end_time_s)
+                if save_precomputed_data:
+                    tof_depths.append(depth_estimate)
+                    all_I.append(valid_fraction)
+                    all_histograms.append(histogram)
+                    tof_block_times_s.append(block_end_time_s)
 
             else:
                 block = simulate_timestamp_block(
@@ -1040,24 +1174,25 @@ def main():
 
                 process_block(block)
             pbar.update(1)
-            
-    if len(tof_depths) == 0:
-        raise RuntimeError("No timestamp blocks were generated.")
-    
-    if len(tof_depths) != expected_blocks:
-        raise RuntimeError(
-            f"Generated {len(tof_depths)} timestamp blocks, "
-            f"but expected {expected_blocks}."
-        )
 
-    if single_pixel_mode:
-        tof_depths = np.asarray(tof_depths, dtype=np.float32)
-        all_I = np.asarray(all_I, dtype=np.float32)
-        all_histograms = np.stack(all_histograms, axis=0).astype(np.uint16)
-    else:
-        tof_depths = np.stack(tof_depths, axis=0)
-        all_I = np.stack(all_I, axis=0)
-        all_histograms = np.stack(all_histograms, axis=0)
+    if save_precomputed_data:
+        if len(tof_depths) == 0:
+            raise RuntimeError("No timestamp blocks were generated.")
+        
+        if len(tof_depths) != task_block_count:
+            raise RuntimeError(
+                f"Generated {len(tof_depths)} timestamp blocks, "
+                f"but this task expected {task_block_count}."
+            )
+
+        if single_pixel_mode:
+            tof_depths = np.asarray(tof_depths, dtype=np.float32)
+            all_I = np.asarray(all_I, dtype=np.float32)
+            all_histograms = np.stack(all_histograms, axis=0).astype(np.uint16)
+        else:
+            tof_depths = np.stack(tof_depths, axis=0)
+            all_I = np.stack(all_I, axis=0)
+            all_histograms = np.stack(all_histograms, axis=0)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1114,25 +1249,6 @@ def main():
             "Saved precomputed timestamp/histogram data to: "
             f"{precomputed_path}"
         )
-
-    if save_full_timestamp_dataset:
-        metadata = TimestampMetadata(
-            tof_h=SENSOR.tof_h,
-            tof_w=SENSOR.tof_w,
-            block_size_L=SENSOR.block_size_L,
-            laser_rate_hz=SENSOR.laser_rate_hz,
-            detection_probability_rho=SENSOR.detection_probability_rho,
-            timing_jitter_std_s=SENSOR.timing_jitter_std_s,
-            fps=block_rate_hz,
-            dt_s=block_duration_s,
-            c_light=SENSOR.c_light,
-            min_valid_depth_m=SENSOR.min_valid_depth_m,
-            max_valid_depth_m=SENSOR.max_valid_depth_m,
-            use_weighted_depth_sampling=USE_WEIGHTED_DEPTH_SAMPLING,
-        )
-
-        dataset = TimestampDataset(blocks=blocks, metadata=metadata)
-        dataset.save(output_dir)
 
     print("Done.")
     

@@ -19,7 +19,10 @@ from analysis.visualization_io import (
     load_ttc_results,
     save_ttc_results,
 )
-from analysis.visualization_pixels import save_pixel_outputs
+from analysis.visualization_pixels import (
+    save_pixel_outputs,
+    save_timestamps_vs_time,
+)
 from analysis.visualization_summary import (
     save_block_dashboard,
     save_summary_over_time,
@@ -36,6 +39,7 @@ def parse_args() -> argparse.Namespace:
         choices=(
             "summary",
             "pixel",
+            "timestamps",
             "depth-gif",
             "valid-gif",
             "histogram-gif",
@@ -113,6 +117,24 @@ def parse_args() -> argparse.Namespace:
         "--ttc-warning-s",
         type=float,
         default=1.0,
+    )
+
+    parser.add_argument(
+        "--start-time-ms",
+        type=float,
+        default=None,
+    )
+
+    parser.add_argument(
+        "--end-time-ms",
+        type=float,
+        default=None,
+    )
+
+    parser.add_argument(
+        "--timestamp-marker-size",
+        type=float,
+        default=2.0,
     )
 
     return parser.parse_args()
@@ -273,6 +295,35 @@ def main() -> None:
             output_dir=args.output_dir,
             warning_s=args.ttc_warning_s,
             max_ttc_s=args.ttc_max_s,
+        )
+
+    elif args.mode == "timestamps":
+        pixel_y, pixel_x = validate_pixel(
+            args.pixel_y,
+            args.pixel_x,
+            tof_h,
+            tof_w,
+        )
+
+        if metadata is None:
+            raise FileNotFoundError(
+                "Timestamp-versus-time mode requires metadata.json."
+            )
+
+        output_path = (
+            args.output_dir
+            / f"timestamps_vs_time_y{pixel_y}_x{pixel_x}.png"
+        )
+
+        save_timestamps_vs_time(
+            dataset_dir=dataset_dir,
+            metadata=metadata,
+            pixel_y=pixel_y,
+            pixel_x=pixel_x,
+            output_path=output_path,
+            start_time_ms=args.start_time_ms,
+            end_time_ms=args.end_time_ms,
+            marker_size=args.timestamp_marker_size,
         )
 
     elif args.mode == "depth-gif":

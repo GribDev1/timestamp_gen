@@ -62,8 +62,7 @@ python "$TIMESTAMP_SCRIPT" \
     --output-dir "$OUTPUT_DIR" \
     --render-fps "$RENDER_FPS" \
     --pixel-y "$PIXEL_Y" \
-    --pixel-x "$PIXEL_X" \
-    --no-full-dataset
+    --pixel-x "$PIXEL_X"
 
 PIXEL_FILE="$PIXEL_OUTPUT_DIR/pixel_y${PIXEL_Y}_x${PIXEL_X}.npz"
 
