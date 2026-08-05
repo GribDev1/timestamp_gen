@@ -86,15 +86,14 @@ if (( FRAME_COUNT == 0 )); then
     exit 1
 fi
 
-PIXEL_OUTPUT_DIR="$FIGURES_DIR/pixel_y${PIXEL_Y}_x${PIXEL_X}"
-mkdir -p "$PIXEL_OUTPUT_DIR"
+mkdir -p "$FIGURES_DIR"
 
 COMMAND=(
     python
     -m analysis.visualize_timestamps
     --mode timestamps
     --input "$METADATA_PATH"
-    --output-dir "$PIXEL_OUTPUT_DIR"
+    --output-dir "$FIGURES_DIR"
     --pixel-y "$PIXEL_Y"
     --pixel-x "$PIXEL_X"
     --timestamp-marker-size 2.0
@@ -120,7 +119,7 @@ echo "Task ID:        $TASK_ID"
 echo "Pixel:          y=$PIXEL_Y, x=$PIXEL_X"
 echo "Frame files:    $FRAME_COUNT"
 echo "Dataset:        $DATASET_DIR"
-echo "Output:         $PIXEL_OUTPUT_DIR"
+echo "Output:         $FIGURES_DIR"
 echo "Start time ms:  ${START_TIME_MS:-complete scene}"
 echo "End time ms:    ${END_TIME_MS:-complete scene}"
 echo "Host:           $(hostname)"
@@ -129,7 +128,7 @@ echo
 
 "${COMMAND[@]}"
 
-EXPECTED_OUTPUT="$PIXEL_OUTPUT_DIR/timestamps_vs_time_y${PIXEL_Y}_x${PIXEL_X}.png"
+EXPECTED_OUTPUT="$FIGURES_DIR/timestamps_vs_time_y${PIXEL_Y}_x${PIXEL_X}.png"
 
 if [[ ! -s "$EXPECTED_OUTPUT" ]]; then
     echo "ERROR: Expected visualization was not created:" >&2
