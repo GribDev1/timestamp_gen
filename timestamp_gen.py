@@ -1219,61 +1219,63 @@ def main():
     if save_precomputed_data:
         if single_pixel_mode:
             pixel_output_dir = output_dir / "pixels"
-            pixel_output_dir.mkdir(parents=True, exist_ok=True)
-
-            if start_block == 0 and end_block == expected_blocks:
-                precomputed_path = (
-                    output_dir / "timestamp_precomputed.npz"
-                )
-            else:
-                shard_dir = output_dir / "precomputed_shards"
-                shard_dir.mkdir(parents=True, exist_ok=True)
-
-                precomputed_path = (
-                    shard_dir
-                    / (
-                        f"blocks_{start_block:06d}_"
-                        f"{end_block:06d}.npz"
-                    )
-                )
-
-            np.savez(
-                precomputed_path,
-                tof_depths=tof_depths,
-                all_I=all_I,
-                all_histograms=all_histograms,
-                tof_block_times_s=np.asarray(
-                    tof_block_times_s,
-                    dtype=np.float64,
-                ),
-                hist_bin_centers_tau=hist_bin_centers_tau,
-                hist_bin_centers_depth_m=(
-                    hist_bin_centers_depth_m
-                ),
-                start_block=np.array(
-                    start_block,
-                    dtype=np.int64,
-                ),
-                end_block=np.array(
-                    end_block,
-                    dtype=np.int64,
-                ),
+            pixel_output_dir.mkdir(
+                parents=True,
+                exist_ok=True,
             )
 
-        else:
+            precomputed_path = (
+                pixel_output_dir
+                / (
+                    f"pixel_y{args.pixel_y}_"
+                    f"x{args.pixel_x}.npz"
+                )
+            )
+
+        elif start_block == 0 and end_block == expected_blocks:
+            # A non-array run covering the complete scene.
             precomputed_path = (
                 output_dir / "timestamp_precomputed.npz"
             )
 
-            np.savez(
-                precomputed_path,
-                tof_depths=tof_depths,
-                all_I=all_I,
-                all_histograms=all_histograms,
-                tof_block_times_s=tof_block_times_s,
-                hist_bin_centers_tau=hist_bin_centers_tau,
-                hist_bin_centers_depth_m=hist_bin_centers_depth_m,
+        else:
+            # One uniquely named output from each block-array task.
+            shard_dir = output_dir / "precomputed_shards"
+            shard_dir.mkdir(
+                parents=True,
+                exist_ok=True,
             )
+
+            precomputed_path = (
+                shard_dir
+                / (
+                    f"blocks_{start_block:09d}_"
+                    f"{end_block:09d}.npz"
+                )
+            )
+
+        np.savez(
+            precomputed_path,
+            tof_depths=tof_depths,
+            all_I=all_I,
+            all_histograms=all_histograms,
+            tof_block_times_s=np.asarray(
+                tof_block_times_s,
+                dtype=np.float64,
+            ),
+            hist_bin_centers_tau=hist_bin_centers_tau,
+            hist_bin_centers_depth_m=(
+                hist_bin_centers_depth_m
+            ),
+            start_block=np.array(
+                start_block,
+                dtype=np.int64,
+            ),
+            end_block=np.array(
+                end_block,
+                dtype=np.int64,
+            ),
+        )
 
         print(
             "Saved precomputed timestamp/histogram data to: "
