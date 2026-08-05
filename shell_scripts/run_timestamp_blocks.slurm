@@ -15,12 +15,13 @@ set -euo pipefail
 # Usage:
 #   sbatch --array=0-38%8 \
 #       shell_scripts/run_timestamp_blocks.slurm \
-#       <scene_name> [sensor_name] [render_fps] [blocks_per_task]
+#       <scene_name> [sensor_name] [render_fps] \
+#       [blocks_per_task] [block_size]
 #
 # Example:
 #   sbatch --array=0-38%8 \
 #       shell_scripts/run_timestamp_blocks.slurm \
-#       drone_flyby vl53l8ch 240 1000
+#       drone_flyby vl53l8ch 240 1000 256
 #
 # Block ranges are zero-based and end-exclusive:
 #   task 0 -> [0, 1000)
@@ -33,6 +34,7 @@ SCENE_NAME="${1:?Missing scene name}"
 SENSOR_NAME="${2:-vl53l8ch}"
 RENDER_FPS="${3:-240}"
 BLOCKS_PER_TASK="${4:-1000}"
+BLOCK_SIZE="${5:-}"
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
 VENV="$PROJECT_DIR/.venv"
@@ -82,7 +84,8 @@ fi
 mkdir -p "$OUTPUT_DIR" "$FRAMES_DIR"
 
 TOTAL_BLOCKS=$(
-    python - "$SENSOR_NAME" "$DEPTH_DIR" "$RENDER_FPS" <<'PY'
+    python - "$SENSOR_NAME" "$DEPTH_DIR" "$RENDER_FPS" "$BLOCK_SIZE" <<'PY'
+import math
 import sys
 from pathlib import Path
 
@@ -91,30 +94,39 @@ from configs.sensor_presets import get_sensor_preset
 sensor_name = sys.argv[1]
 depth_dir = Path(sys.argv[2])
 render_fps = float(sys.argv[3])
+block_size_arg = sys.argv[4]
 
 if render_fps <= 0:
     raise SystemExit("render_fps must be positive")
 
 sensor = get_sensor_preset(sensor_name)
 
+block_size = (
+    int(block_size_arg)
+    if block_size_arg
+    else sensor.block_size_L
+)
+
+if block_size <= 0:
+    raise SystemExit("block size must be positive")
+
 depth_files = sorted(depth_dir.glob("*.exr"))
 
 if len(depth_files) < 2:
     raise SystemExit(
-        f"At least two depth EXR files are required; found {len(depth_files)}"
+        "At least two depth EXR files are required; "
+        f"found {len(depth_files)}"
     )
 
 render_intervals = len(depth_files) - 1
 scene_duration_s = render_intervals / render_fps
 
 block_duration_s = (
-    sensor.block_size_L
-    / sensor.laser_rate_hz
+    block_size / sensor.laser_rate_hz
 )
 
 total_blocks = int(
-    scene_duration_s
-    // block_duration_s
+    math.floor(scene_duration_s / block_duration_s)
 )
 
 print(total_blocks)
@@ -174,15 +186,25 @@ echo "Host:              $(hostname)"
 echo "Started:           $(date)"
 echo
 
-python "$TIMESTAMP_SCRIPT" \
-    --sensor "$SENSOR_NAME" \
-    --render-dir "$RENDER_DIR" \
-    --output-dir "$OUTPUT_DIR" \
-    --render-fps "$RENDER_FPS" \
-    --start-block "$START_BLOCK" \
-    --end-block "$END_BLOCK" \
-    --no-precomputed \
+COMMAND=(
+    python
+    "$TIMESTAMP_SCRIPT"
+    --sensor "$SENSOR_NAME"
+    --render-dir "$RENDER_DIR"
+    --output-dir "$OUTPUT_DIR"
+    --render-fps "$RENDER_FPS"
+    --start-block "$START_BLOCK"
+    --end-block "$END_BLOCK"
     --no-progress
+)
+
+if [[ -n "$BLOCK_SIZE" ]]; then
+    COMMAND+=(
+        --block-size "$BLOCK_SIZE"
+    )
+fi
+
+"${COMMAND[@]}"
 
 echo
 echo "Verifying task output..."

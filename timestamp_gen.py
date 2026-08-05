@@ -330,7 +330,7 @@ def simulate_timestamp_pixel(
 
     return timestamps_noisy
        
-        
+    
 def simulate_timestamp_block(
     depth1: np.ndarray,
     depth2: np.ndarray,
@@ -760,6 +760,17 @@ def parse_args():
         ),
     )
 
+    parser.add_argument(
+        "--block-size",
+        type=int,
+        default=256,
+        help=(
+            "Number of laser pulses per timestamp block. "
+            "Overrides the sensor preset value. "
+            "Default: use the sensor preset."
+        ),
+    )
+
     return parser.parse_args()
 
 
@@ -773,6 +784,15 @@ def main():
     args = parse_args()
 
     SENSOR = get_sensor_preset(args.sensor)
+
+    block_size_L = (
+        args.block_size
+        if args.block_size is not None
+        else SENSOR.block_size_L
+    )
+
+    if block_size_L <= 0:
+        raise ValueError("--block-size must be greater than 0.")
 
     if (args.pixel_y is None) != (args.pixel_x is None):
         raise ValueError(
@@ -817,8 +837,8 @@ def main():
     
     render_dt = 1.0 / render_fps
 
-    block_duration_s = SENSOR.block_size_L / SENSOR.laser_rate_hz
-    block_rate_hz = SENSOR.laser_rate_hz / SENSOR.block_size_L
+    block_duration_s = block_size_L / SENSOR.laser_rate_hz
+    block_rate_hz = SENSOR.laser_rate_hz / block_size_L
 
     hist_depth_min_m = args.hist_depth_min
     hist_depth_max_m = args.hist_depth_max
@@ -839,7 +859,7 @@ def main():
             metadata = TimestampMetadata(
                 tof_h=SENSOR.tof_h,
                 tof_w=SENSOR.tof_w,
-                block_size_L=SENSOR.block_size_L,
+                block_size_L=block_size_L,
                 laser_rate_hz=SENSOR.laser_rate_hz,
                 detection_probability_rho=SENSOR.detection_probability_rho,
                 timing_jitter_std_s=SENSOR.timing_jitter_std_s,
@@ -870,10 +890,10 @@ def main():
     print(f"Using sensor preset: {SENSOR.name}")
     print(f"Sensor grid: {SENSOR.tof_h} x {SENSOR.tof_w}")
     print(f"Laser rate: {SENSOR.laser_rate_hz:.3g} Hz")
-    print(f"Block size: {SENSOR.block_size_L} pulses")
+    print(f"Block size: {block_size_L} pulses")
     print(
         "Expected detections/pixel/block: "
-        f"{SENSOR.block_size_L * SENSOR.detection_probability_rho:.2f}"
+        f"{block_size_L * SENSOR.detection_probability_rho:.2f}"
     )
 
     if single_pixel_mode:
@@ -948,13 +968,13 @@ def main():
     )
     print(f"Blocks assigned to this task: {task_block_count}")
 
-    samples_per_block_per_pixel = SENSOR.block_size_L
+    samples_per_block_per_pixel = block_size_L
     samples_per_block_all_pixels = (
-        SENSOR.block_size_L * SENSOR.tof_h * SENSOR.tof_w
+        block_size_L * SENSOR.tof_h * SENSOR.tof_w
     )
-    total_samples_per_pixel = expected_blocks * SENSOR.block_size_L
+    total_samples_per_pixel = expected_blocks * block_size_L
     total_samples_all_pixels = (
-        expected_blocks * SENSOR.block_size_L * SENSOR.tof_h * SENSOR.tof_w
+        expected_blocks * block_size_L * SENSOR.tof_h * SENSOR.tof_w
     )
 
     active_tof_time_per_pixel_s = total_samples_per_pixel / SENSOR.laser_rate_hz
@@ -1121,7 +1141,7 @@ def main():
                     switch_dist_thresh_m=switch_dist_thresh_m,
                     tof_h=SENSOR.tof_h,
                     tof_w=SENSOR.tof_w,
-                    L=SENSOR.block_size_L,
+                    L=block_size_L,
                     rho=SENSOR.detection_probability_rho,
                     jitter_std=SENSOR.timing_jitter_std_s,
                 )
@@ -1166,7 +1186,7 @@ def main():
                     ray_dirs_full=ray_dirs_full,
                     tof_h=SENSOR.tof_h,
                     tof_w=SENSOR.tof_w,
-                    L=SENSOR.block_size_L,
+                    L=block_size_L,
                     rho=SENSOR.detection_probability_rho,
                     jitter_std=SENSOR.timing_jitter_std_s,
                     switch_dist_thresh_m=switch_dist_thresh_m,
@@ -1201,33 +1221,43 @@ def main():
             pixel_output_dir = output_dir / "pixels"
             pixel_output_dir.mkdir(parents=True, exist_ok=True)
 
-            precomputed_path = (
-                pixel_output_dir
-                / f"pixel_y{args.pixel_y}_x{args.pixel_x}.npz"
-            )
+            if start_block == 0 and end_block == expected_blocks:
+                precomputed_path = (
+                    output_dir / "timestamp_precomputed.npz"
+                )
+            else:
+                shard_dir = output_dir / "precomputed_shards"
+                shard_dir.mkdir(parents=True, exist_ok=True)
+
+                precomputed_path = (
+                    shard_dir
+                    / (
+                        f"blocks_{start_block:06d}_"
+                        f"{end_block:06d}.npz"
+                    )
+                )
 
             np.savez(
                 precomputed_path,
-                pixel_y=np.array(args.pixel_y, dtype=np.int16),
-                pixel_x=np.array(args.pixel_x, dtype=np.int16),
-                tof_depths=np.asarray(
-                    tof_depths,
-                    dtype=np.float32,
-                ),
-                all_I=np.asarray(
-                    all_I,
-                    dtype=np.float32,
-                ),
-                all_histograms=np.asarray(
-                    all_histograms,
-                    dtype=np.uint16,
-                ),
+                tof_depths=tof_depths,
+                all_I=all_I,
+                all_histograms=all_histograms,
                 tof_block_times_s=np.asarray(
                     tof_block_times_s,
                     dtype=np.float64,
                 ),
                 hist_bin_centers_tau=hist_bin_centers_tau,
-                hist_bin_centers_depth_m=hist_bin_centers_depth_m,
+                hist_bin_centers_depth_m=(
+                    hist_bin_centers_depth_m
+                ),
+                start_block=np.array(
+                    start_block,
+                    dtype=np.int64,
+                ),
+                end_block=np.array(
+                    end_block,
+                    dtype=np.int64,
+                ),
             )
 
         else:
