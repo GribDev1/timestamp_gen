@@ -195,6 +195,9 @@ COMMAND=(
     --render-fps "$RENDER_FPS"
     --start-block "$START_BLOCK"
     --end-block "$END_BLOCK"
+    --hist-depth-min 0.02
+    --hist-depth-max 4.0
+    --hist-bins 32
     --no-progress
 )
 
