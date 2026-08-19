@@ -3,12 +3,12 @@
 set -euo pipefail
 
 # Usage:
-#   ./shell_scripts/submit_timestamp_blocks_gen.sh \
+#   shell_scripts/submit_timestamp_blocks_gen.sh \
 #       <scene_name> [sensor_name] [render_fps] \
 #       [blocks_per_task] [max_concurrent] [block_size]
 #
 # Example:
-#   ./shell_scripts/submit_timestamp_blocks_gen.sh \
+#   shell_scripts/submit_timestamp_blocks_gen.sh \
 #       drone_flyby vl53l8ch 240 1000 8 256
 
 SCENE_NAME="${1:?Missing scene name}"

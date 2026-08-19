@@ -10,7 +10,12 @@
 set -euo pipefail
 
 # Usage:
-#   sbatch merge_visionsim.slurm <scene_name> <first_frame> <last_frame>
+#   sbatch shell_scripts/merge_visionsim.slurm \
+#       <scene_name> <first_frame> <last_frame>
+#
+# Example:
+#   sbatch shell_scripts/merge_visionsim.slurm \
+#       drone_flyby 1 240
 
 SCENE_NAME="${1:?Missing scene name}"
 FIRST_FRAME="${2:?Missing first frame}"
@@ -30,6 +35,13 @@ echo "Merging VisionSIM segments"
 echo "Scene: $SCENE_NAME"
 echo "Frames: $FIRST_FRAME to $LAST_FRAME"
 echo "Started: $(date)"
+
+# Remove any previous merged output for this scene.
+if [[ -d "$OUTPUT_DIR" ]]; then
+    echo "Removing existing merged scene directory:"
+    echo " $OUTPUT_DIR"
+    rm -rf -- "$OUTPUT_DIR"
+fi
 
 "$MERGE_SCRIPT" \
     "$SCENE_NAME" \
