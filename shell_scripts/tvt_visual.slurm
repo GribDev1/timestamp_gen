@@ -12,7 +12,7 @@ set -euo pipefail
 
 # Usage:
 #   sbatch --array=0-63%8 \
-#       shell_scripts/run_timestamp_visualizations.slurm \
+#       shell_scripts/tvt_visual.slurm \
 #       <scene_name> [tof_width] [tof_height] \
 #       [start_time_ms] [end_time_ms]
 #
@@ -20,12 +20,12 @@ set -euo pipefail
 #
 # Plot the complete scene:
 #   sbatch --array=0-63%8 \
-#       shell_scripts/run_timestamp_visualizations.slurm \
+#       shell_scripts/tvt_visual.slurm \
 #       drone_wall_approach 8 8
 #
 # Plot only 0–100 ms:
 #   sbatch --array=0-63%8 \
-#       shell_scripts/run_timestamp_visualizations.slurm \
+#       shell_scripts/tvt_visual.slurm \
 #       drone_wall_approach 8 8 0 100
 
 SCENE_NAME="${1:?Missing scene name}"
