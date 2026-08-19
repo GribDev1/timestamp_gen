@@ -31,6 +31,8 @@ if [[ ! -x "$MERGE_SCRIPT" ]]; then
     exit 1
 fi
 
+OUTPUT_DIR="$PROJECT_DIR/inputs/$SCENE_NAME"
+
 echo "Merging VisionSIM segments"
 echo "Scene: $SCENE_NAME"
 echo "Frames: $FIRST_FRAME to $LAST_FRAME"
