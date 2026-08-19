@@ -119,7 +119,11 @@ def save_timestamps_vs_time(
         Real pulse emission time within the simulated scene.
 
     Vertical axis:
-        Round-trip photon timestamp/delay.
+        Photon round-trip timestamp in nanoseconds.
+
+    The y-axis is normalized to the sensor's configured detectable
+    depth range by converting min/max valid depth into equivalent
+    round-trip timestamp limits.
 
     simulation_time_s stored in each frame is the END time of that block.
     """
@@ -136,6 +140,27 @@ def save_timestamps_vs_time(
     block_size_L = int(metadata["block_size_L"])
     block_duration_s = block_size_L / laser_rate_hz
 
+    c_light = float(
+        metadata.get("c_light", 299_792_458.0)
+    )
+
+    min_depth_m = float(
+        metadata["min_valid_depth_m"]
+    )
+
+    max_depth_m = float(
+        metadata["max_valid_depth_m"]
+    )
+
+    # Convert sensor detectable depth range into round-trip ToF.
+    tau_min_ns = (
+        2.0 * min_depth_m / c_light
+    ) * 1e9
+
+    tau_max_ns = (
+        2.0 * max_depth_m / c_light
+    ) * 1e9
+
     start_time_s = (
         start_time_ms * 1e-3
         if start_time_ms is not None
@@ -147,7 +172,7 @@ def save_timestamps_vs_time(
         if end_time_ms is not None
         else None
     )
-    
+
     all_pulse_times_s = []
     all_timestamps_s = []
 
@@ -158,7 +183,7 @@ def save_timestamps_vs_time(
     last_idx = num_files
 
     if start_time_s is not None:
-        # Include one earlier block in case its physical pulse interval
+        # Include one earlier block in case its pulse interval
         # overlaps the requested starting time.
         first_idx = max(
             0,
@@ -171,14 +196,22 @@ def save_timestamps_vs_time(
             int(np.ceil(end_time_s / dt_s)) + 1,
         )
 
-    selected_frame_files = frame_files[first_idx:last_idx]
+    selected_frame_files = frame_files[
+        first_idx:last_idx
+    ]
 
     print(
         f"Reading {len(selected_frame_files):,} of "
         f"{num_files:,} timestamp block files."
     )
-    
-    pulse_offset_s = np.arange(block_size_L, dtype=np.float64) / laser_rate_hz
+
+    pulse_offset_s = (
+        np.arange(
+            block_size_L,
+            dtype=np.float64,
+        )
+        / laser_rate_hz
+    )
 
     for local_idx, frame_path in enumerate(
         selected_frame_files,
@@ -186,8 +219,14 @@ def save_timestamps_vs_time(
     ):
         frame_number = local_idx + 1
 
-        block_end_time_s = frame_number * dt_s
-        block_start_time_s = block_end_time_s - block_duration_s
+        block_end_time_s = (
+            frame_number * dt_s
+        )
+
+        block_start_time_s = (
+            block_end_time_s
+            - block_duration_s
+        )
 
         with np.load(frame_path) as frame:
             timestamps_s = frame[
@@ -199,19 +238,31 @@ def save_timestamps_vs_time(
         if not np.any(valid):
             continue
 
-        pulse_times_s = block_start_time_s + pulse_offset_s
+        pulse_times_s = (
+            block_start_time_s
+            + pulse_offset_s
+        )
 
         if start_time_s is not None:
-            valid &= pulse_times_s >= start_time_s
+            valid &= (
+                pulse_times_s >= start_time_s
+            )
 
         if end_time_s is not None:
-            valid &= pulse_times_s <= end_time_s
+            valid &= (
+                pulse_times_s <= end_time_s
+            )
 
         if not np.any(valid):
             continue
 
-        all_pulse_times_s.append(pulse_times_s[valid])
-        all_timestamps_s.append(timestamps_s[valid])
+        all_pulse_times_s.append(
+            pulse_times_s[valid]
+        )
+
+        all_timestamps_s.append(
+            timestamps_s[valid]
+        )
 
     if not all_pulse_times_s:
         raise RuntimeError(
@@ -219,34 +270,59 @@ def save_timestamps_vs_time(
             "pixel and time range."
         )
 
-    pulse_times_s = np.concatenate(all_pulse_times_s)
-    timestamps_s = np.concatenate(all_timestamps_s)
+    pulse_times_s = np.concatenate(
+        all_pulse_times_s
+    )
+
+    timestamps_s = np.concatenate(
+        all_timestamps_s
+    )
+
+    timestamps_ns = timestamps_s * 1e9
 
     plt.figure(figsize=(10, 5))
 
     plt.scatter(
         pulse_times_s * 1e3,
-        timestamps_s * 1e9,
+        timestamps_ns,
         s=marker_size,
         alpha=0.5,
         linewidths=0,
     )
 
     plt.xlabel("Simulation time (ms)")
-    plt.ylabel("Photon round-trip timestamp (ns)")
+    plt.ylabel(
+        "Photon round-trip timestamp (ns)"
+    )
+
     plt.title(
         "Detected timestamps versus simulation time\n"
         f"ToF pixel y={pixel_y}, x={pixel_x}"
     )
 
+    # Keep every pixel plot on the same sensor-based ToF scale.
+    plt.ylim(
+        tau_min_ns,
+        tau_max_ns,
+    )
+
     plt.grid(alpha=0.25)
     plt.tight_layout()
-    plt.savefig(output_path, dpi=200)
+    plt.savefig(
+        output_path,
+        dpi=200,
+    )
     plt.close()
 
     print(
         f"Timestamp plot contains "
         f"{timestamps_s.size:,} detected photons."
+    )
+
+    print(
+        "Timestamp y-axis range: "
+        f"{tau_min_ns:.3f} to "
+        f"{tau_max_ns:.3f} ns"
     )
 
 
