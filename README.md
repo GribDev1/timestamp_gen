@@ -1,11 +1,6 @@
 # Timestamp Generator
 
-`timestamp_gen` is an open-source Python pipeline for generating simulated
-single-photon direct time-of-flight data from Blender and VisionSIM renders.
-
-The project converts high-resolution depth and surface-normal animations into
-pulse-rate photon timestamps, block-rate depth estimates, histograms, detection
-statistics, and motion-related diagnostic data.
+`timestamp_gen` is an open-source Python pipeline for generating simulated single-photon direct time-of-flight data from Blender and VisionSIM renders. The project converts high-resolution depth and surface-normal animations into pulse-rate photon timestamps, block-rate depth estimates, histograms, detection statistics, and motion-related diagnostic data.
 
 It is intended for:
 
@@ -98,6 +93,41 @@ For each ToF acquisition block, the timestamp generator:
 - Blender-camera and ToF-sensor FoV overlap visualization.
 - Top-row and bottom-row ToF-zone ray fans.
 - Per-rendered-ray expected photon-contribution maps.
+
+
+## Running Main Pipeline on Supercomputer
+
+One of the main bottlenecks of this tool is the time it takes to both render scenes and simulate timestamps. One of the provided solutions at UST is taking advantage of the supercomputer's ability to split the task into many parts. Once given access to the supercomputer, a couple files in the shell_scripts folder may be used to run the entire pipeline faster. 
+
+The main files to use are:
+
+1. create_blend.slurm 
+
+Used to convert python scripts into blend files. This process is already resource efficient and fast without the supercomputer, but the goal is to keep everything together and simple.
+
+2. render_visionsim.slurm
+
+Used to convert blend files into depth and normal maps. The way that the supercomputer simplifies this is by separating the blend file into frame chunks that multiple tasks can operate on. This results in map segments that can be merged.
+
+3. merge_visionsim.slurm
+
+The slurm file that merges segments together into singular depth folder and normal folder.
+
+4. submit_timestamp_blocks_gen.sh
+
+The main file that converts depth and normal maps into simulated timestamps. The supercomputer simplifies this by splitting tasks into desirable blocks, 1000 blocks per task for example.
+
+5. run_visualizations.slurm
+
+This file runs a majority of the visualizations for each test.
+
+6. tvt_visual.slurm
+
+This creates the timestamp vs time graphs for each pixel of a test.
+
+7. merge_tvt_grid.slurm
+
+This merges the timestamp vs time graphs from each pixel into a grid. For the vl53l8ch sensor preset, this would make an 8x8 grid.
 
 
 ## Requirements
@@ -219,7 +249,7 @@ Once the rendered EXR files are available, place the render folder in the `times
 
 There are also a set of command-line methods to change the output:
 
-### Common command-line options
+### Timestamp-generator command-line options
 
 | Option | Description |
 |---|---|
@@ -231,9 +261,14 @@ There are also a set of command-line methods to change the output:
 | `--hist-bins` | Sets the number of timestamp histogram bins. |
 | `--hist-depth-min` | Sets the minimum histogram depth in meters. |
 | `--hist-depth-max` | Sets the maximum histogram depth in meters. |
-| `--adaptive-gate-m` | Sets the adaptive time-gate half-width in meters. |
 | `--no-full-dataset` | Skips saving the full per-frame timestamp dataset. |
 | `--no-precomputed` | Skips saving `timestamp_precomputed.npz`. |
+| `--no-progress` | Disables timestamp generation progress bar. |
+| `--pixel-y` | Process only one ToF pixel row. |
+| `--pixel-x` | Process only one ToF pixel column. |
+| `--start-block` | First zero-based to generate. Default: 0 |
+| `--end-block` | Exclusive zero-based timestamp block at which to stop. Default: generate to end scene |
+| `--block-size` | Number of laser pulses per timestamp block. Overrides sensor preset value. |
 
 If you prefer to see this table in the terminal window, you can use the following command:
 
@@ -300,22 +335,6 @@ The metadata file stores:
 - timestamp and depth units
 - missed-detection representation
 - whether normal- and distance-weighted sampling was enabled
-
-## Timestamp-generation command-line options
-
-| Option | Description |
-|---|---|
-| `--sensor` | Sensor YAML preset name from `configs/sensors/`. |
-| `--render-dir` | Directory containing `depths/` and `normals/`. |
-| `--output-dir` | Directory where generated files are saved. |
-| `--random-seed` | Seed for reproducible random timestamp generation. |
-| `--render-fps` | Frame rate used when the EXR animation was rendered. |
-| `--hist-bins` | Number of bins in each per-pixel mini-histogram. |
-| `--hist-depth-min` | Minimum histogram depth in meters. |
-| `--hist-depth-max` | Maximum histogram depth in meters. |
-| `--no-full-dataset` | Skip saving individual raw timestamp block files. |
-| `--no-precomputed` | Skip saving `timestamp_precomputed.npz`. |
-| `--no-progress` | Disable the progress bar. |
 
 ### `timestamp_precomputed.npz`
 
