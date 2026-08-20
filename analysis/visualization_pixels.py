@@ -140,27 +140,6 @@ def save_timestamps_vs_time(
     block_size_L = int(metadata["block_size_L"])
     block_duration_s = block_size_L / laser_rate_hz
 
-    c_light = float(
-        metadata.get("c_light", 299_792_458.0)
-    )
-
-    min_depth_m = float(
-        metadata["min_valid_depth_m"]
-    )
-
-    max_depth_m = float(
-        metadata["max_valid_depth_m"]
-    )
-
-    # Convert sensor detectable depth range into round-trip ToF.
-    tau_min_ns = (
-        2.0 * min_depth_m / c_light
-    ) * 1e9
-
-    tau_max_ns = (
-        2.0 * max_depth_m / c_light
-    ) * 1e9
-
     start_time_s = (
         start_time_ms * 1e-3
         if start_time_ms is not None
@@ -302,8 +281,8 @@ def save_timestamps_vs_time(
 
     # Keep every pixel plot on the same sensor-based ToF scale.
     plt.ylim(
-        tau_min_ns,
-        tau_max_ns,
+        13.0,
+        19.0,
     )
 
     plt.grid(alpha=0.25)
@@ -317,12 +296,6 @@ def save_timestamps_vs_time(
     print(
         f"Timestamp plot contains "
         f"{timestamps_s.size:,} detected photons."
-    )
-
-    print(
-        "Timestamp y-axis range: "
-        f"{tau_min_ns:.3f} to "
-        f"{tau_max_ns:.3f} ns"
     )
 
 
