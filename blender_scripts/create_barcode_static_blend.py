@@ -133,7 +133,7 @@ def main():
 
     bar_depth = -2.0
     bar_thickness = 0.03
-    band_height = 0.42
+    band_height = 0.5
 
     # Band 1: Widest bars
     add_barcode_band(
