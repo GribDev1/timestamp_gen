@@ -6,15 +6,15 @@ description: >
 camera_path:
   - frame: 1
     position: [0.0, 0.0, 0.0]
-  - frame: 45
+  - frame: 112
     position: [0.65, 0.0, -1.8]
-  - frame: 90
+  - frame: 225
     position: [-0.65, 0.0, -3.2]
-  - frame: 135
+  - frame: 337
     position: [0.6, 0.0, -4.6]
-  - frame: 180
+  - frame: 450
     position: [-0.6, 0.0, -6.0]
-  - frame: 240
+  - frame: 600
     position: [0.0, 0.0, -7.4]
 
 segment_names:
@@ -27,15 +27,15 @@ segment_names:
 camera_rotation:
   - frame: 1
     rotation_deg: [0.0, 0.0, 0.0]
-  - frame: 45
+  - frame: 112
     rotation_deg: [0.0, 16.0, 0.0]
-  - frame: 90
+  - frame: 225
     rotation_deg: [0.0, -16.0, 0.0]
-  - frame: 135
+  - frame: 337
     rotation_deg: [0.0, 14.0, 0.0]
-  - frame: 180
+  - frame: 450
     rotation_deg: [0.0, -14.0, 0.0]
-  - frame: 240
+  - frame: 600
     rotation_deg: [0.0, 0.0, 0.0]
 
 rotation_segment_names:
