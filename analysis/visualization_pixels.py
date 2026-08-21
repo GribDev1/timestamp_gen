@@ -281,8 +281,8 @@ def save_timestamps_vs_time(
 
     # Keep every pixel plot on the same sensor-based ToF scale.
     plt.ylim(
-        13.0,
-        19.0,
+        0.7,
+        26.7,
     )
 
     plt.grid(alpha=0.25)
