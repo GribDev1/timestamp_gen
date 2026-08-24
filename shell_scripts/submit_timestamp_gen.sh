@@ -3,23 +3,24 @@
 set -euo pipefail
 
 # Usage:
-#   shell_scripts/submit_timestamp_blocks_gen.sh \
-#       <scene_name> [sensor_name] [render_fps] \
-#       [blocks_per_task] [max_concurrent] [block_size]
+#   shell_scripts/submit_timestamp_gen.sh \
+#       <scene_name> [sensor_name]
 #
 # Example:
-#   shell_scripts/submit_timestamp_blocks_gen.sh \
-#       drone_flyby vl53l8ch 240 1000 8 256
+#   shell_scripts/submit_timestamp_gen.sh \
+#       drone_flyby
 
 SCENE_NAME="${1:?Missing scene name}"
 SENSOR_NAME="${2:-vl53l8ch}"
-RENDER_FPS="${3:-240}"
-BLOCKS_PER_TASK="${4:-1000}"
-MAX_CONCURRENT="${5:-8}"
-BLOCK_SIZE="${6:-}"
+
+BLOCKS_PER_TASK=1000
+MAX_CONCURRENT=8
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
 PYTHON="$PROJECT_DIR/.venv/bin/python"
+
+BLENDER="$HOME/software/blender-4.0.2-linux-x64/blender"
+SOURCE_BLEND="$PROJECT_DIR/blend_files/${SCENE_NAME}.blend"
 
 BLOCK_SLURM="$PROJECT_DIR/shell_scripts/run_timestamp_blocks.slurm"
 MERGE_SLURM="$PROJECT_DIR/shell_scripts/merge_timestamp_block_shards.slurm"
@@ -54,28 +55,28 @@ if [[ ! -d "$NORMAL_DIR" ]]; then
     exit 1
 fi
 
-if ! [[ "$BLOCKS_PER_TASK" =~ ^[1-9][0-9]*$ ]]; then
-    echo "ERROR: blocks_per_task must be a positive integer." >&2
-    exit 1
-fi
-
-if ! [[ "$MAX_CONCURRENT" =~ ^[1-9][0-9]*$ ]]; then
-    echo "ERROR: max_concurrent must be a positive integer." >&2
-    exit 1
-fi
-
-if ! [[ "$RENDER_FPS" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
-    echo "ERROR: render_fps must be a positive number." >&2
-    exit 1
-fi
-
-if [[ -n "$BLOCK_SIZE" ]] &&
-   ! [[ "$BLOCK_SIZE" =~ ^[1-9][0-9]*$ ]]; then
-    echo "ERROR: block_size must be a positive integer." >&2
-    exit 1
-fi
-
 mkdir -p logs
+
+echo "Reading render FPS from: $SOURCE_BLEND"
+
+RENDER_FPS=$(
+    "$BLENDER" \
+        --background \
+        "$SOURCE_BLEND" \
+        --python-expr \
+        'import bpy; s = bpy.context.scene; print(f"DETECTED_RENDER_FPS={s.render.fps / s.render.fps_base:.12g}")' \
+        2>/dev/null \
+    | sed -n 's/^DETECTED_RENDER_FPS=//p' \
+    | tail -n 1
+)
+
+if [[ ! "$RENDER_FPS" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "ERROR: Could not detect the render FPS." >&2
+    echo "Detected value: $RENDER_FPS" >&2
+    exit 1
+fi
+
+echo "Detected render FPS: $RENDER_FPS"
 
 CALCULATION=$(
     "$PYTHON" - \
@@ -83,8 +84,7 @@ CALCULATION=$(
         "$DEPTH_DIR" \
         "$NORMAL_DIR" \
         "$RENDER_FPS" \
-        "$BLOCKS_PER_TASK" \
-        "$BLOCK_SIZE" <<'PY'
+        "$BLOCKS_PER_TASK" <<'PY'
 import math
 import sys
 from pathlib import Path
@@ -96,7 +96,6 @@ depth_dir = Path(sys.argv[2])
 normal_dir = Path(sys.argv[3])
 render_fps = float(sys.argv[4])
 blocks_per_task = int(sys.argv[5])
-block_size_arg = sys.argv[6]
 
 if render_fps <= 0:
     raise SystemExit("render_fps must be positive")
@@ -105,12 +104,7 @@ if blocks_per_task <= 0:
     raise SystemExit("blocks_per_task must be positive")
 
 sensor = get_sensor_preset(sensor_name)
-
-block_size = (
-    int(block_size_arg)
-    if block_size_arg
-    else sensor.block_size_L
-)
+block_size = sensor.block_size_L
 
 if block_size <= 0:
     raise SystemExit("block_size must be positive")
