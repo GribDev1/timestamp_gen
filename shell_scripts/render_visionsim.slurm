@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16g
-#SBATCH --array=0-3
+#SBATCH --array=0-7
 #SBATCH --mail-type=NONE
 #SBATCH --mail-user=grib6206@stthomas.edu
 #SBATCH --output=logs/%A_visionsim_%a.out
@@ -21,9 +21,9 @@ set -euo pipefail
 #       flat_moving 1 120
 #
 # The number of segments is controlled by:
-#   #SBATCH --array=0-3
+#   #SBATCH --array=0-7
 #
-# This example creates four array tasks.
+# This example creates eight array tasks.
 
 SCENE_NAME="${1:?Missing scene name}"
 FIRST_FRAME="${2:?Missing first frame}"
