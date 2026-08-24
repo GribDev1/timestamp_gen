@@ -29,13 +29,16 @@ FINAL_BLEND="$PROJECT_DIR/blend_files/${SCENE_NAME}.blend"
 
 RENDER_DIR="$PROJECT_DIR/inputs/${SCENE_NAME}"
 SEGMENT_DIR="$PROJECT_DIR/inputs/${SCENE_NAME}_segments"
+OUTPUT_DIR="$PROJECT_DIR/outputs/$SCENE_NAME"
 
 cd "$PROJECT_DIR"
 
-rm -rf -- "$RENDER_DIR" "$SEGMENT_DIR"
+rm -rf -- "$RENDER_DIR" "$SEGMENT_DIR" "$OUTPUT_DIR"
 
-mkdir -p "$PROJECT_DIR/inputs"
-mkdir -p "$PROJECT_DIR/blend_files"
+mkdir -p \
+    "$PROJECT_DIR/inputs" \
+    "$PROJECT_DIR/outputs" \
+    "$PROJECT_DIR/blend_files"
 
 unset DISPLAY
 unset WAYLAND_DISPLAY
