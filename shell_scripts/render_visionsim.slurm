@@ -150,8 +150,8 @@ visionsim blender.render-animation \
     --render-config.depths \
     --render-config.normals \
     --render-config.no-debug \
-    --render-config.width=160 \
-    --render-config.height=160 \
+    --render-config.width=320 \
+    --render-config.height=320 \
     --render-config.device-type=cpu \
     --render-config.no-use-denoising \
     --render-config.max-samples=16 \
