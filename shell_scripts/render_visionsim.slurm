@@ -56,16 +56,6 @@ unset WAYLAND_DISPLAY
 export LIBGL_ALWAYS_SOFTWARE=1
 export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
 
-if (( FIRST_FRAME < 1 )); then
-    echo "ERROR: First frame must be at least 1." >&2
-    exit 2
-fi
-
-if (( LAST_FRAME < FIRST_FRAME )); then
-    echo "ERROR: Last frame must not be less than first frame." >&2
-    exit 2
-fi
-
 test -x "$VENV/bin/visionsim"
 test -x "$BLENDER_DIR/blender"
 test -s "$SOURCE_BLEND"
