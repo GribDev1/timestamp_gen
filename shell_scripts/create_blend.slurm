@@ -14,10 +14,12 @@ PROJECT_DIR="$HOME/projects/timestamp_gen"
 BLENDER="$HOME/software/blender-4.0.2-linux-x64/blender"
 
 # Usage:
-# sbatch shell_scripts/create_blend.slurm <scene_name>
+# sbatch shell_scripts/create_blend.slurm \
+#     <scene_name>
 #
 # Example:
-# sbatch shell_scripts/create_blend.slurm drone_landing
+# sbatch shell_scripts/create_blend.slurm \
+#     drone_flyby
 
 SCENE_NAME="${1:?Usage: sbatch create_blend.slurm <scene_name>}"
 

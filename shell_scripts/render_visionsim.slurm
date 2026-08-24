@@ -14,11 +14,11 @@ set -euo pipefail
 
 # Usage:
 #   sbatch shell_scripts/render_visionsim.slurm \
-#       <scene_name> <first_frame> <last_frame>
+#       <scene_name>
 #
 # Example:
 #   sbatch shell_scripts/render_visionsim.slurm \
-#       flat_moving 1 120
+#       drone_flyby
 #
 # The number of segments is controlled by:
 #   #SBATCH --array=0-7
@@ -26,8 +26,6 @@ set -euo pipefail
 # This example creates eight array tasks.
 
 SCENE_NAME="${1:?Missing scene name}"
-FIRST_FRAME="${2:?Missing first frame}"
-LAST_FRAME="${3:?Missing last frame}"
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
 VENV="$PROJECT_DIR/.venv"
@@ -73,6 +71,39 @@ test -x "$BLENDER_DIR/blender"
 test -s "$SOURCE_BLEND"
 test -f "$SEGMENT_SCRIPT"
 test -x "$VALIDATION_SCRIPT"
+
+echo "Reading frame range from: $SOURCE_BLEND"
+
+FRAME_RANGE=$(
+    "$BLENDER_DIR/blender" \
+        --background \
+        "$SOURCE_BLEND" \
+        --python-expr \
+        'import bpy; print(f"DETECTED_FRAME_RANGE={bpy.context.scene.frame_start},{bpy.context.scene.frame_end}")' \
+        2>/dev/null \
+    | sed -n 's/^DETECTED_FRAME_RANGE=//p' \
+    | tail -n 1
+)
+
+if [[ ! "$FRAME_RANGE" =~ ^[0-9]+,[0-9]+$ ]]; then
+    echo "ERROR: Could not detect the Blender frame range." >&2
+    echo "Detected value: $FRAME_RANGE" >&2
+    exit 1
+fi
+
+IFS=',' read -r FIRST_FRAME LAST_FRAME <<< "$FRAME_RANGE"
+
+if (( FIRST_FRAME < 1 )); then
+    echo "ERROR: First frame must be at least 1." >&2
+    exit 2
+fi
+
+if (( LAST_FRAME < FIRST_FRAME )); then
+    echo "ERROR: Last frame must not be less than first frame." >&2
+    exit 2
+fi
+
+echo "Detected Blender frame range: $FIRST_FRAME to $LAST_FRAME"
 
 mkdir -p "$SEGMENT_ROOT"
 mkdir -p "$TEMP_ROOT"

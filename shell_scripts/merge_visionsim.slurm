@@ -11,18 +11,18 @@ set -euo pipefail
 
 # Usage:
 #   sbatch shell_scripts/merge_visionsim.slurm \
-#       <scene_name> <first_frame> <last_frame>
+#       <scene_name>
 #
 # Example:
 #   sbatch shell_scripts/merge_visionsim.slurm \
-#       drone_flyby 1 240
+#       drone_flyby
 
 SCENE_NAME="${1:?Missing scene name}"
-FIRST_FRAME="${2:?Missing first frame}"
-LAST_FRAME="${3:?Missing last frame}"
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
 MERGE_SCRIPT="$PROJECT_DIR/shell_scripts/merge_visionsim_segments.sh"
+SEGMENT_ROOT="$PROJECT_DIR/inputs/${SCENE_NAME}_segments"
+OUTPUT_DIR="$PROJECT_DIR/inputs/$SCENE_NAME"
 
 cd "$PROJECT_DIR"
 
@@ -31,17 +31,55 @@ if [[ ! -x "$MERGE_SCRIPT" ]]; then
     exit 1
 fi
 
-OUTPUT_DIR="$PROJECT_DIR/inputs/$SCENE_NAME"
+if [[ ! -d "$SEGMENT_ROOT" ]]; then
+    echo "ERROR: Segment directory does not exist:" >&2
+    echo "$SEGMENT_ROOT" >&2
+    exit 1
+fi
+
+mapfile -t SEGMENT_NAMES < <(
+    find "$SEGMENT_ROOT" \
+        -mindepth 1 \
+        -maxdepth 1 \
+        -type d \
+        -name 'segment_*_*_*' \
+        -printf '%f\n' \
+        | sort
+)
+
+if (( ${#SEGMENT_NAMES[@]} == 0 )); then
+    echo "ERROR: No VisionSIM segment directories found in:" >&2
+    echo "$SEGMENT_ROOT" >&2
+    exit 1
+fi
+
+FIRST_FRAME=$(
+    printf '%s\n' "${SEGMENT_NAMES[@]}" |
+        awk -F_ '
+            NR == 1 { minimum = $3 + 0 }
+            ($3 + 0) < minimum { minimum = $3 + 0 }
+            END { print minimum }
+        '
+)
+
+LAST_FRAME=$(
+    printf '%s\n' "${SEGMENT_NAMES[@]}" |
+        awk -F_ '
+            NR == 1 { maximum = $4 + 0 }
+            ($4 + 0) > maximum { maximum = $4 + 0 }
+            END { print maximum }
+        '
+)
 
 echo "Merging VisionSIM segments"
 echo "Scene: $SCENE_NAME"
+echo "Segments: ${#SEGMENT_NAMES[@]}"
 echo "Frames: $FIRST_FRAME to $LAST_FRAME"
 echo "Started: $(date)"
 
-# Remove any previous merged output for this scene.
 if [[ -d "$OUTPUT_DIR" ]]; then
     echo "Removing existing merged scene directory:"
-    echo " $OUTPUT_DIR"
+    echo "$OUTPUT_DIR"
     rm -rf -- "$OUTPUT_DIR"
 fi
 
