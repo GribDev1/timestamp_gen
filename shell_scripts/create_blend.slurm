@@ -25,8 +25,15 @@ SCRIPT_PATH="$PROJECT_DIR/blender_scripts/create_${SCENE_NAME}_blend.py"
 GENERATED_BLEND="$PROJECT_DIR/${SCENE_NAME}.blend"
 FINAL_BLEND="$PROJECT_DIR/blend_files/${SCENE_NAME}.blend"
 
+RENDER_DIR="$PROJECT_DIR/inputs/${SCENE_NAME}"
+SEGMENT_DIR="$RENDER_DIR/inputs/${SCENE_NAME}_segments"
+
 cd "$PROJECT_DIR"
-mkdir -p blend_files
+
+rm -rf -- "$RENDER_DIR" "$SEGMENT_DIR"
+
+mkdir -p "$PROJECT_DIR/inputs"
+mkdir -p "$PROJECT_DIR/blend_files"
 
 unset DISPLAY
 unset WAYLAND_DISPLAY
