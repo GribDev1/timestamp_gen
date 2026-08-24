@@ -7,8 +7,8 @@
 #SBATCH --array=0-3
 #SBATCH --mail-type=NONE
 #SBATCH --mail-user=grib6206@stthomas.edu
-#SBATCH --output=logs/visionsim_%A_%a.out
-#SBATCH --error=logs/visionsim_%A_%a.err
+#SBATCH --output=logs/%A_visionsim_%a.out
+#SBATCH --error=logs/%A_visionsim_%a.err
 
 set -euo pipefail
 

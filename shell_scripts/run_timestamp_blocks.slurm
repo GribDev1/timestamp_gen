@@ -5,8 +5,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8g
-#SBATCH --output=logs/timestamp_blocks_%A_%a.out
-#SBATCH --error=logs/timestamp_blocks_%A_%a.err
+#SBATCH --output=logs/%A_timestamp_blocks_%a.out
+#SBATCH --error=logs/%A_timestamp_blocks_%a.err
 
 set -euo pipefail
 

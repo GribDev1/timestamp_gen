@@ -4,8 +4,8 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=2g
 #SBATCH --mail-type=NONE
-#SBATCH --output=logs/merge_visionsim_%j.out
-#SBATCH --error=logs/merge_visionsim_%j.err
+#SBATCH --output=logs/%j_merge_visionsim.out
+#SBATCH --error=logs/%j_merge_visionsim.err
 
 set -euo pipefail
 

@@ -4,9 +4,9 @@
 #SBATCH --time=00:15:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=2G
-#SBATCH --output=logs/merge_tvt_grid_%j.out
-#SBATCH --error=logs/merge_tvt_grid_%j.err
+#SBATCH --mem=2g
+#SBATCH --output=logs/%j_merge_tvt_grid.out
+#SBATCH --error=logs/%j_merge_tvt_grid.err
 
 set -euo pipefail
 

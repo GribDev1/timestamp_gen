@@ -4,9 +4,9 @@
 #SBATCH --time=01:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=4G
-#SBATCH --output=logs/visual_pixel_%A_%a.out
-#SBATCH --error=logs/visual_pixel_%A_%a.err
+#SBATCH --mem=4g
+#SBATCH --output=logs/%A_visual_pixel_%a.out
+#SBATCH --error=logs/%A_visual_pixel_%a.err
 
 set -euo pipefail
 

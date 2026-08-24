@@ -5,8 +5,8 @@
 #SBATCH --mem=4g
 #SBATCH --mail-type=NONE
 #SBATCH --mail-user=grib6206@stthomas.edu
-#SBATCH --output=logs/create_blend_%j.out
-#SBATCH --error=logs/create_blend_%j.err
+#SBATCH --output=logs/%j_create_blend.out
+#SBATCH --error=logs/%j_create_blend.err
 
 set -euxo pipefail
 

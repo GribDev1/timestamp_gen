@@ -4,9 +4,9 @@
 #SBATCH --time=04:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --mem=32G
-#SBATCH --output=logs/merge_hist_gifs_%j.out
-#SBATCH --error=logs/merge_hist_gifs_%j.err
+#SBATCH --mem=32g
+#SBATCH --output=logs/%j_merge_hist_gifs.out
+#SBATCH --error=logs/%j_merge_hist_gifs.err
 
 set -euo pipefail
 

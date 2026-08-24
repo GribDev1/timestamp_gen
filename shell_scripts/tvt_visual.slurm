@@ -4,9 +4,9 @@
 #SBATCH --time=02:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=4G
-#SBATCH --output=logs/timestamp_plots_%A_%a.out
-#SBATCH --error=logs/timestamp_plots_%A_%a.err
+#SBATCH --mem=4g
+#SBATCH --output=logs/%A_timestamp_plots_%a.out
+#SBATCH --error=logs/%A_timestamp_plots_%a.err
 
 set -euo pipefail
 

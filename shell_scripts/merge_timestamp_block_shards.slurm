@@ -4,9 +4,9 @@
 #SBATCH --time=01:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --mem=16G
-#SBATCH --output=logs/timestamp_merge_%j.out
-#SBATCH --error=logs/timestamp_merge_%j.err
+#SBATCH --mem=16g
+#SBATCH --output=logs/%j_timestamp_merge.out
+#SBATCH --error=logs/%j_timestamp_merge.err
 
 set -euo pipefail
 

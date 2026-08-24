@@ -4,9 +4,9 @@
 #SBATCH --time=00:10:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1G
-#SBATCH --output=logs/visual_submit_%j.out
-#SBATCH --error=logs/visual_submit_%j.err
+#SBATCH --mem=1g
+#SBATCH --output=logs/%j_visual_submit.out
+#SBATCH --error=logs/%j_visual_submit.err
 
 set -euo pipefail
 
