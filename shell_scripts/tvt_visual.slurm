@@ -5,27 +5,25 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=4g
+#SBATCH --array=0-63%8
 #SBATCH --output=logs/%A_timestamp_plots_%a.out
 #SBATCH --error=logs/%A_timestamp_plots_%a.err
 
 set -euo pipefail
 
 # Usage:
-#   sbatch --array=0-63%8 \
-#       shell_scripts/tvt_visual.slurm \
+#   sbatch shell_scripts/tvt_visual.slurm \
 #       <scene_name> [tof_width] [tof_height] \
 #       [start_time_ms] [end_time_ms]
 #
 # Examples:
 #
 # Plot the complete scene:
-#   sbatch --array=0-63%8 \
-#       shell_scripts/tvt_visual.slurm \
+#   sbatch shell_scripts/tvt_visual.slurm \
 #       drone_wall_approach 8 8
 #
 # Plot only 0–100 ms:
-#   sbatch --array=0-63%8 \
-#       shell_scripts/tvt_visual.slurm \
+#   sbatch shell_scripts/tvt_visual.slurm \
 #       drone_wall_approach 8 8 0 100
 
 SCENE_NAME="${1:?Missing scene name}"
