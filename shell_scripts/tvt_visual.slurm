@@ -14,7 +14,8 @@ set -euo pipefail
 # Usage:
 #   sbatch shell_scripts/tvt_visual.slurm \
 #       <scene_name> [tof_width] [tof_height] \
-#       [start_time_ms] [end_time_ms]
+#       [start_time_ms] [end_time_ms] \
+#       [y_min_ns] [y_max_ns] [marker_size]
 #
 # Examples:
 #
@@ -31,6 +32,9 @@ TOF_WIDTH="${2:-8}"
 TOF_HEIGHT="${3:-8}"
 START_TIME_MS="${4:-}"
 END_TIME_MS="${5:-}"
+Y_MIN_NS="${6:-0.7}"
+Y_MAX_NS="${7:-26.7}"
+MARKER_SIZE="${8:-0.1}"
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
 VENV="$PROJECT_DIR/.venv"
@@ -94,7 +98,9 @@ COMMAND=(
     --output-dir "$FIGURES_DIR"
     --pixel-y "$PIXEL_Y"
     --pixel-x "$PIXEL_X"
-    --timestamp-marker-size 2.0
+    --timestamp-marker-size "$MARKER_SIZE"
+    --timestamp-y-min-ns "$Y_MIN_NS"
+    --timestamp-y-max-ns "$Y_MAX_NS"
 )
 
 if [[ -n "$START_TIME_MS" ]]; then

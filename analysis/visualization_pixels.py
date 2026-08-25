@@ -111,6 +111,8 @@ def save_timestamps_vs_time(
     start_time_ms=None,
     end_time_ms=None,
     marker_size=0.1,
+    y_min=0.7,
+    y_max=26.7,
 ):
     """
     Plot raw detected photon timestamps versus real simulation time.
@@ -134,6 +136,12 @@ def save_timestamps_vs_time(
     if not frame_files:
         raise RuntimeError(
             f"No raw timestamp frame files found in {frames_dir}"
+        )
+        
+    if y_min_ns >= y_max_ns:
+        raise ValueError(
+            f"Timestamp y-axis minimum ({y_min_ns} ns) must be "
+            f"less than maximum ({y_max_ns} ns)."
         )
 
     laser_rate_hz = float(metadata["laser_rate_hz"])
@@ -278,12 +286,8 @@ def save_timestamps_vs_time(
         "Detected timestamps versus simulation time\n"
         f"ToF pixel y={pixel_y}, x={pixel_x}"
     )
-
-    # Keep every pixel plot on the same sensor-based ToF scale.
-    plt.ylim(
-        0.7,
-        26.7,
-    )
+    
+    plt.ylim(y_min_ns, y_max_ns)
 
     plt.grid(alpha=0.25)
     plt.tight_layout()

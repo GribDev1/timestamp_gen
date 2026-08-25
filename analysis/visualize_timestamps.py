@@ -136,6 +136,20 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=2.0,
     )
+    
+    parser.add_argument(
+        "--timestamp-y-min-ns",
+        type=float,
+        default=0.7,
+        help="Lower timestamp-axis limit in nanoseconds. Default: 0.7",
+    )
+
+    parser.add_argument(
+        "--timestamp-y-max-ns",
+        type=float,
+        default=26.7,
+        help="Upper timestamp-axis limit in nanoseconds. Default: 26.7",
+    )
 
     return parser.parse_args()
 
@@ -208,6 +222,8 @@ def main() -> None:
             start_time_ms=args.start_time_ms,
             end_time_ms=args.end_time_ms,
             marker_size=args.timestamp_marker_size,
+            y_min_ns=args.timestamp_y_min_ns,
+            y_max_ns=args.timestamp_y_max_ns,
         )
 
         print(f"Completed visualization mode: {args.mode}")
