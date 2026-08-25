@@ -111,8 +111,8 @@ def save_timestamps_vs_time(
     start_time_ms=None,
     end_time_ms=None,
     marker_size=0.1,
-    y_min=0.7,
-    y_max=26.7,
+    y_min_ns=0.7,
+    y_max_ns=26.7,
 ):
     """
     Plot raw detected photon timestamps versus real simulation time.
