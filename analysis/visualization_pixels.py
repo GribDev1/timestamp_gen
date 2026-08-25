@@ -110,7 +110,7 @@ def save_timestamps_vs_time(
     output_path,
     start_time_ms=None,
     end_time_ms=None,
-    marker_size=2.0,
+    marker_size=0.1,
 ):
     """
     Plot raw detected photon timestamps versus real simulation time.
@@ -265,7 +265,7 @@ def save_timestamps_vs_time(
         pulse_times_s * 1e3,
         timestamps_ns,
         s=marker_size,
-        alpha=0.5,
+        alpha=0.35,
         linewidths=0,
     )
 

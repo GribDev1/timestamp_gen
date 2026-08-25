@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=merge_visionsim
-#SBATCH --time=00:15:00
+#SBATCH --time=00:01:00
 #SBATCH --ntasks=1
 #SBATCH --mem=2g
 #SBATCH --mail-type=NONE

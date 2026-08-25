@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=create_blend
-#SBATCH --time=00:00:30
+#SBATCH --time=00:01:00
 #SBATCH --ntasks=1
 #SBATCH --mem=4g
 #SBATCH --mail-type=NONE

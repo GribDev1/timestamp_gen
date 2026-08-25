@@ -20,11 +20,11 @@ set -euo pipefail
 #
 # Plot the complete scene:
 #   sbatch shell_scripts/tvt_visual.slurm \
-#       drone_wall_approach 8 8
+#       drone_flyby
 #
 # Plot only 0–100 ms:
 #   sbatch shell_scripts/tvt_visual.slurm \
-#       drone_wall_approach 8 8 0 100
+#       drone_flyby 8 8 0 100
 
 SCENE_NAME="${1:?Missing scene name}"
 TOF_WIDTH="${2:-8}"
