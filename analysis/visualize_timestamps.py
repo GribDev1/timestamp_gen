@@ -150,6 +150,17 @@ def parse_args() -> argparse.Namespace:
         default=26.7,
         help="Upper timestamp-axis limit in nanoseconds. Default: 26.7",
     )
+    
+    parser.add_argument(
+        "--vertical-time-ms",
+        type=float,
+        action="append",
+        default=[],
+        help=(
+            "Simulation time in milliseconds at which to draw a "
+            "vertical line. May be supplied multiple times."
+        ),
+    )
 
     return parser.parse_args()
 
@@ -224,6 +235,7 @@ def main() -> None:
             marker_size=args.timestamp_marker_size,
             y_min_ns=args.timestamp_y_min_ns,
             y_max_ns=args.timestamp_y_max_ns,
+            vertical_times_ms=args.vertical_time_ms,
         )
 
         print(f"Completed visualization mode: {args.mode}")

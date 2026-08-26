@@ -113,6 +113,7 @@ def save_timestamps_vs_time(
     marker_size=0.1,
     y_min_ns=0.7,
     y_max_ns=26.7,
+    vertical_times_ms=None,
 ):
     """
     Plot raw detected photon timestamps versus real simulation time.
@@ -276,6 +277,17 @@ def save_timestamps_vs_time(
         alpha=0.35,
         linewidths=0,
     )
+    
+    if vertical_times_ms:
+        for time_ms in vertical_times_ms:
+            plt.axvline(
+                x=time_ms,
+                color="red",
+                linestyle="--",
+                linewidth=1.0,
+                alpha=0.9,
+                zorder=5,
+            )
 
     plt.xlabel("Simulation time (ms)")
     plt.ylabel(

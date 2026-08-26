@@ -15,7 +15,8 @@ set -euo pipefail
 #   sbatch shell_scripts/tvt_visual.slurm \
 #       <scene_name> [tof_width] [tof_height] \
 #       [start_time_ms] [end_time_ms] \
-#       [y_min_ns] [y_max_ns] [marker_size]
+#       [y_min_ns] [y_max_ns] [marker_size] \
+        [vertical_times_ms]
 #
 # Examples:
 #
@@ -35,6 +36,7 @@ END_TIME_MS="${5:-}"
 Y_MIN_NS="${6:-0.7}"
 Y_MAX_NS="${7:-26.7}"
 MARKER_SIZE="${8:-0.1}"
+VERTICAL_TIMES_MS="${9:-}"
 
 PROJECT_DIR="$HOME/projects/timestamp_gen"
 VENV="$PROJECT_DIR/.venv"
@@ -113,6 +115,16 @@ if [[ -n "$END_TIME_MS" ]]; then
     COMMAND+=(
         --end-time-ms "$END_TIME_MS"
     )
+fi
+
+if [[ -n "$VERTICAL_TIMES_MS" ]]; then
+    IFS=',' read -ra VERTICAL_TIMES_ARRAY <<< "$VERTICAL_TIMES_MS"
+
+    for TIME_MS in "${VERTICAL_TIMES_ARRAY[@]}"; do
+        COMMAND+=(
+            --vertical-time-ms "$TIME_MS"
+        )
+    done
 fi
 
 echo "=================================================="
