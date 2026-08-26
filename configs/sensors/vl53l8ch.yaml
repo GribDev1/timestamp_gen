@@ -23,7 +23,7 @@ depth:
 timing:
   laser_rate_hz: 10000000.0
   block_size_L: 256
-  timing_jitter_std_s: 50.0e-12
+  timing_jitter_std_s: 0.0e-12
 
 histogram:
   num_bins: 18
