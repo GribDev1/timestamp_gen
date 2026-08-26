@@ -16,7 +16,7 @@ set -euo pipefail
 #       <scene_name> [tof_width] [tof_height] \
 #       [start_time_ms] [end_time_ms] \
 #       [y_min_ns] [y_max_ns] [marker_size] \
-        [vertical_times_ms]
+#       [vertical_times_ms]
 #
 # Examples:
 #
