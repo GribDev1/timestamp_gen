@@ -19,8 +19,6 @@ class TimestampMetadata:
     min_valid_depth_m: float
     max_valid_depth_m: float
     use_weighted_depth_sampling: bool
-    use_lambertian_scattering: bool = False
-    diffuse_reflectance: float = 1.0
     timestamp_units: str = "seconds"
     depth_units: str = "meters"
     missed_detection_value: str = "NaN"
