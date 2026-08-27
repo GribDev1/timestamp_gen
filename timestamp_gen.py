@@ -61,7 +61,7 @@ from timestamp_dataset import TimestampBlock, TimestampMetadata
 SENSOR = get_sensor_preset("generic_spad_sensor")
 
 
-USE_WEIGHTED_DEPTH_SAMPLING = True
+USE_WEIGHTED_DEPTH_SAMPLING = False
 
 RANDOM_SEED = 0
 
