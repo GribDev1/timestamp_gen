@@ -41,6 +41,8 @@ Timestamp Generation:
 import os
 os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 
+from dataclasses import asdict
+import json
 from pathlib import Path
 import numpy as np
 import cv2
@@ -465,6 +467,27 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--start-block",
+        type=int,
+        default=None,
+        help="First global timestamp block to generate (zero-based, inclusive).",
+    )
+
+    parser.add_argument(
+        "--end-block",
+        type=int,
+        default=None,
+        help="Final global timestamp block boundary (zero-based, exclusive).",
+    )
+
+    parser.add_argument(
+        "--block-size",
+        type=int,
+        default=None,
+        help="Override the sensor preset's pulses per timestamp block.",
+    )
+
+    parser.add_argument(
         "--hist-bins",
         type=int,
         default=32,
@@ -516,6 +539,12 @@ def main():
     args = parse_args()
 
     SENSOR = get_sensor_preset(args.sensor)
+
+    if args.block_size is not None:
+        if args.block_size <= 0:
+            raise ValueError("--block-size must be greater than 0.")
+        SENSOR.block_size_L = args.block_size
+        SENSOR.validate()
 
     render_dir = args.render_dir
     depth_dir = render_dir / "depths"
@@ -579,6 +608,22 @@ def main():
         np.floor(scene_duration_s / block_duration_s)
     )
 
+    start_block = 0 if args.start_block is None else args.start_block
+    end_block = expected_blocks if args.end_block is None else args.end_block
+    shard_mode = args.start_block is not None or args.end_block is not None
+
+    if start_block < 0:
+        raise ValueError("--start-block must be nonnegative.")
+    if end_block <= start_block:
+        raise ValueError("--end-block must be greater than --start-block.")
+    if end_block > expected_blocks:
+        raise ValueError(
+            f"--end-block {end_block} exceeds the scene's "
+            f"{expected_blocks} timestamp blocks."
+        )
+
+    selected_block_count = end_block - start_block
+
     samples_per_block_per_pixel = SENSOR.block_size_L
     samples_per_block_all_pixels = (
         SENSOR.block_size_L * SENSOR.tof_h * SENSOR.tof_w
@@ -609,6 +654,8 @@ def main():
     print(f"ToF block duration: {block_duration_s * 1e6:.4f} us")
     print(f"ToF block rate: {block_rate_hz:.4f} Hz")
     print(f"Expected timestamp blocks: {expected_blocks}")
+    print(f"Generating block range: [{start_block}, {end_block})")
+    print(f"Blocks in this invocation: {selected_block_count}")
     print(f"Samples/block/pixel: {samples_per_block_per_pixel}")
     print(f"Samples/block/all pixels: {samples_per_block_all_pixels:,}")
     print(f"Total samples/pixel: {total_samples_per_pixel:,}")
@@ -664,7 +711,7 @@ def main():
         tof_block_times_s.append(block.simulation_time_s)
 
     with tqdm(
-        total=expected_blocks,
+        total=selected_block_count,
         desc="Generating timestamp blocks",
         unit="block",
         disable=args.no_progress,
@@ -677,7 +724,14 @@ def main():
         normals1 = None
         normals2 = None
 
-        for block_idx in range(expected_blocks):
+        for block_idx in range(start_block, end_block):
+            # Make each global block reproducible and independent of which
+            # Slurm array task generated it.
+            block_seed = np.random.SeedSequence(
+                [args.random_seed, block_idx]
+            ).generate_state(1, dtype=np.uint32)[0]
+            np.random.seed(int(block_seed))
+
             # Start and end time of this ToF acquisition block.
             block_start_time_s = block_idx * block_duration_s
             block_end_time_s = (block_idx + 1) * block_duration_s
@@ -739,10 +793,11 @@ def main():
     if len(tof_depths) == 0:
         raise RuntimeError("No timestamp blocks were generated.")
     
-    if len(tof_depths) != expected_blocks:
+    if len(tof_depths) != selected_block_count:
         raise RuntimeError(
             f"Generated {len(tof_depths)} timestamp blocks, "
-            f"but expected {expected_blocks}."
+            f"but expected {selected_block_count} for range "
+            f"[{start_block}, {end_block})."
         )
 
     tof_depths = np.stack(tof_depths, axis=0)
@@ -752,10 +807,20 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if save_precomputed_data:
-        precomputed_path = output_dir / "timestamp_precomputed.npz"
+        if shard_mode:
+            shard_dir = output_dir / "precomputed_shards"
+            shard_dir.mkdir(parents=True, exist_ok=True)
+            precomputed_path = (
+                shard_dir
+                / f"blocks_{start_block:09d}_{end_block:09d}.npz"
+            )
+        else:
+            precomputed_path = output_dir / "timestamp_precomputed.npz"
 
         np.savez(
             precomputed_path,
+            start_block=np.array(start_block, dtype=np.int64),
+            end_block=np.array(end_block, dtype=np.int64),
             tof_depths=tof_depths,
             all_I=all_I,
             all_histograms=all_histograms,
@@ -767,7 +832,7 @@ def main():
         print(f"Saved precomputed timestamp/histogram data to: {precomputed_path}")
 
     if save_full_timestamp_dataset:
-        metadata = TimestampMetadata(
+        metadata_values = dict(
             tof_h=SENSOR.tof_h,
             tof_w=SENSOR.tof_w,
             block_size_L=SENSOR.block_size_L,
@@ -780,12 +845,53 @@ def main():
             min_valid_depth_m=SENSOR.min_valid_depth_m,
             max_valid_depth_m=SENSOR.max_valid_depth_m,
             use_weighted_depth_sampling=USE_WEIGHTED_DEPTH_SAMPLING,
-            use_lambertian_scattering=USE_LAMBERTIAN_SCATTERING,
-            diffuse_reflectance=DIFFUSE_REFLECTANCE,
         )
 
-        dataset = TimestampDataset(blocks=blocks, metadata=metadata)
-        dataset.save(output_dir)
+        # Remain compatible with older TimestampMetadata definitions while
+        # recording the Lambertian settings when the updated fields exist.
+        metadata_fields = TimestampMetadata.__dataclass_fields__
+        if "use_lambertian_scattering" in metadata_fields:
+            metadata_values["use_lambertian_scattering"] = (
+                USE_LAMBERTIAN_SCATTERING
+            )
+        if "diffuse_reflectance" in metadata_fields:
+            metadata_values["diffuse_reflectance"] = DIFFUSE_REFLECTANCE
+
+        metadata = TimestampMetadata(**metadata_values)
+
+        frames_dir = output_dir / "frames"
+        frames_dir.mkdir(parents=True, exist_ok=True)
+
+        for block in blocks:
+            frame_path = frames_dir / f"frame_{block.frame_number:06d}.npz"
+            np.savez(
+                frame_path,
+                frame_number=np.array(block.frame_number, dtype=np.int32),
+                simulation_time_s=np.array(
+                    block.simulation_time_s,
+                    dtype=np.float64,
+                ),
+                sampled_depths_m=block.sampled_depths_m.astype(np.float32),
+                timestamps_clean_s=block.timestamps_clean_s.astype(np.float32),
+                detection_mask=block.detection_mask.astype(bool),
+                timestamps_noisy_s=block.timestamps_noisy_s.astype(np.float32),
+                source_depth_file=np.array(block.source_depth_file),
+                source_normal_file=np.array(block.source_normal_file),
+            )
+
+        # Only the first shard writes the shared metadata file, preventing
+        # concurrent Slurm tasks from overwriting it.
+        if not shard_mode or start_block == 0:
+            metadata_path = output_dir / "metadata.json"
+            temporary_metadata_path = output_dir / "metadata.tmp.json"
+            with temporary_metadata_path.open("w", encoding="utf-8") as file:
+                json.dump(asdict(metadata), file, indent=4)
+            temporary_metadata_path.replace(metadata_path)
+
+        print(
+            f"Saved {len(blocks)} timestamp frame files for "
+            f"range [{start_block}, {end_block})."
+        )
 
     print("Done.")
     
