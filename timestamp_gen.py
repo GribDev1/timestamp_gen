@@ -41,7 +41,7 @@ Timestamp Generation:
 import os
 os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import json
 from pathlib import Path
 import numpy as np
@@ -543,8 +543,10 @@ def main():
     if args.block_size is not None:
         if args.block_size <= 0:
             raise ValueError("--block-size must be greater than 0.")
-        SENSOR.block_size_L = args.block_size
-        SENSOR.validate()
+        SENSOR = replace(
+            SENSOR,
+            block_size_L=args.block_size,
+        )
 
     render_dir = args.render_dir
     depth_dir = render_dir / "depths"
