@@ -320,7 +320,7 @@ def save_pixel_outputs(
     hist_bin_centers_depth_m: np.ndarray,
     block_times_s: np.ndarray,
     ttc_results: dict[str, np.ndarray],
-    frame_idx: int,
+    gif_stride: int,
     pixel_y: int,
     pixel_x: int,
     output_dir: Path,
@@ -329,17 +329,20 @@ def save_pixel_outputs(
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    save_pixel_histogram(
-        all_histograms=all_histograms,
-        hist_bin_centers_depth_m=hist_bin_centers_depth_m,
-        frame_idx=frame_idx,
-        pixel_y=pixel_y,
-        pixel_x=pixel_x,
-        output_path=(
-            output_dir
-            / f"histogram_block_{frame_idx:06d}.png"
-        ),
-    )
+    num_blocks = all_histograms.shape[0]
+
+    for frame_idx in range(0, num_blocks, gif_stride):
+        save_pixel_histogram(
+            all_histograms=all_histograms,
+            hist_bin_centers_depth_m=hist_bin_centers_depth_m,
+            frame_idx=frame_idx,
+            pixel_y=pixel_y,
+            pixel_x=pixel_x,
+            output_path=(
+                output_dir
+                / f"histogram_block_{frame_idx:06d}.png"
+            ),
+        )
 
     save_pixel_ttc_over_time(
         block_times_s=block_times_s,
