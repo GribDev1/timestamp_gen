@@ -344,6 +344,11 @@ def main() -> None:
                 "Pixel mode requires --ttc-file."
             )
 
+        if args.gif_stride < 1:
+            raise ValueError(
+                "--gif-stride must be a positive integer."
+            )
+
         ttc_results = load_ttc_results(args.ttc_file)
 
         save_pixel_outputs(
@@ -353,7 +358,7 @@ def main() -> None:
             ),
             block_times_s=block_times_s,
             ttc_results=ttc_results,
-            frame_idx=args.frame,
+            gif_stride=args.gif_stride,
             pixel_y=pixel_y,
             pixel_x=pixel_x,
             output_dir=args.output_dir,
