@@ -61,7 +61,7 @@ from timestamp_dataset import TimestampBlock, TimestampMetadata
 SENSOR = get_sensor_preset("generic_spad_sensor")
 
 
-USE_WEIGHTED_DEPTH_SAMPLING = False
+USE_WEIGHTED_DEPTH_SAMPLING = True
 
 RANDOM_SEED = 0
 
@@ -70,7 +70,7 @@ HIST_DEPTH_MAX_M = 10.0
 HIST_NUM_BINS = 32
 
 MAX_SAME_SURFACE_SPEED_M_PER_S = 15.0
-NORMAL_COSINE_THRESH = 0.8
+NORMAL_COSINE_THRESH = 0.95
 
 SAVE_FULL_TIMESTAMP_DATASET = True
 SAVE_PRECOMPUTED_DATA = True
