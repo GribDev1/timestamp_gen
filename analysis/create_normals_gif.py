@@ -107,6 +107,99 @@ def load_normal_rgb(path: Path) -> np.ndarray:
     return rgb
 
 
+def add_normal_legend(image: Image.Image) -> Image.Image:
+    panel_width = 250
+    padding = 14
+    swatch_size = 24
+
+    canvas = Image.new(
+        "RGB",
+        (image.width + panel_width, image.height),
+        color=(245, 245, 245),
+    )
+
+    canvas.paste(image, (0, 0))
+
+    draw = ImageDraw.Draw(canvas)
+    x0 = image.width + padding
+    y = 15
+
+    draw.text(
+        (x0, y),
+        "NORMAL DIRECTION KEY",
+        fill=(0, 0, 0),
+    )
+    y += 30
+
+    draw.text(
+        (x0, y),
+        "RGB = (normal + 1) / 2",
+        fill=(30, 30, 30),
+    )
+    y += 28
+
+    # Colors produced by mapping each cardinal unit normal
+    # from [-1, 1] into [0, 255].
+    legend_entries = [
+        ("+X", (255, 128, 128), "positive X"),
+        ("-X", (0, 128, 128), "negative X"),
+        ("+Y", (128, 255, 128), "positive Y"),
+        ("-Y", (128, 0, 128), "negative Y"),
+        ("+Z", (128, 128, 255), "positive Z"),
+        ("-Z", (128, 128, 0), "negative Z"),
+        ("Invalid", (0, 0, 0), "no valid normal"),
+    ]
+
+    for symbol, color, description in legend_entries:
+        draw.rectangle(
+            (
+                x0,
+                y,
+                x0 + swatch_size,
+                y + swatch_size,
+            ),
+            fill=color,
+            outline=(50, 50, 50),
+        )
+
+        draw.text(
+            (x0 + swatch_size + 10, y + 5),
+            f"{symbol}: {description}",
+            fill=(0, 0, 0),
+        )
+
+        y += 34
+
+    y += 12
+
+    explanation = [
+        "R intensity represents Nx",
+        "G intensity represents Ny",
+        "B intensity represents Nz",
+        "",
+        "Mixed colors represent",
+        "directions containing",
+        "multiple components.",
+        "",
+        "Similar colors mean",
+        "similar surface angles.",
+        "",
+        "Sharp color boundaries",
+        "usually indicate edges",
+        "or different surfaces.",
+    ]
+
+    for line in explanation:
+        draw.text(
+            (x0, y),
+            line,
+            fill=(30, 30, 30),
+        )
+        y += 18
+
+    return canvas
+
+
 def main():
     args = parse_args()
 
@@ -174,6 +267,7 @@ def main():
             fill=(255, 255, 255),
         )
 
+        image = add_normal_legend(image)
         gif_frames.append(image)
 
         print(
