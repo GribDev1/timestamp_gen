@@ -659,10 +659,10 @@ def parse_args():
     parser.add_argument(
         "--render-dir",
         type=Path,
-        default=Path("full_render_320x160"),
+        default=Path("full_render_160x160"),
         help=(
             "Directory containing depths/ and normals/ subfolders. "
-            "Default: full_render_320x160"
+            "Default: full_render_160x160"
         ),
     )
 
