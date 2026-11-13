@@ -261,7 +261,6 @@ The scripts assume the repository is at `$HOME/projects/timestamp_gen`, Python i
 Submit these stages individually, waiting for each preceding job to finish successfully before submitting the next. These commands do not automatically chain the first three stages:
 
 ```bash
-mkdir -p logs
 sbatch shell_scripts/create_blend.slurm drone_flyby
 sbatch shell_scripts/render_visionsim.slurm drone_flyby
 sbatch shell_scripts/merge_visionsim.slurm drone_flyby
