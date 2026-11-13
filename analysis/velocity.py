@@ -7,19 +7,30 @@ velocity. Slide the window along the recording and repeat for every pixel.
 
 Negative velocity = approaching the sensor, positive = moving away.
 
-Usage: python velocity.py path/to/timestamp_precomputed.npz
+Usage: python analysis/velocity.py <test_name>
 """
 import sys
+from pathlib import Path
 import numpy as np
 
 # Settings
+OUTPUTS_DIR = Path("outputs") # folder that holds one sub-folder per test
 WINDOW = 500        # blocks per fit (500 blocks * 25.6 us = 12.8 ms)
 STEP = 20           # move the window forward this many blocks each time
 MAX_SPEED = 20.0    # m/s; faster fits are treated as errors and dropped
 MIN_POINTS = 250    # need at least this many valid samples in a window
 
 # 1) Load the data
-with np.load(sys.argv[1]) as data:
+if len(sys.argv) < 2:
+    sys.exit("Usage: python analysis/velocity.py <test_name>   (e.g. drone_flyby)")
+
+test_name = sys.argv[1]
+npz_path = OUTPUTS_DIR / test_name / "timestamp_precomputed.npz"
+if not npz_path.exists():
+    available = sorted(p.name for p in OUTPUTS_DIR.glob("*/") if (p / "timestamp_precomputed.npz").exists())
+    sys.exit(f"Not found: {npz_path}\nTests with a timestamp_precomputed.npz: {available}")
+
+with np.load(npz_path) as data:
     ranges = data["tof_depths"].astype(np.float64) # [blocks, 8, 8], NaN = no
     times = data["tof_block_times_s"].astype(np.float64) # [blocks], seconds
 
