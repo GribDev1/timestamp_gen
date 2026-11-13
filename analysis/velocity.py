@@ -14,6 +14,8 @@ from pathlib import Path
 import numpy as np
 
 # Settings
+RENDER_FPS = 240.0 # Blender frame rate
+FIRST_FRAME = 1 # Blender first frame
 OUTPUTS_DIR = Path("outputs") # folder that holds one sub-folder per test
 WINDOW = 500        # blocks per fit (500 blocks * 25.6 us = 12.8 ms)
 STEP = 20           # move the window forward this many blocks each time
@@ -70,6 +72,11 @@ print(np.nanmedian(velocity, axis=0))
 
 y, x = H // 2 - 1, W // 2 # a pixel near the center
 print(f"\nPixel ({y}, {x}) over time:")
-print("  t (ms)   v (m/s)")
+print("  t (ms)   frame   v (m/s)")
+
+block_duration = np.median(np.diff(times))
 for w in np.linspace(0, len(window_starts) - 1, 10).astype(int):
-        print(f"   {window_times[w] * 1e3:6.1f}   {velocity[w, x, y]:+7.2f}") 
+    scene_time = window_times[w] - block_duration
+    frame = scene_time * RENDER_FPS + FIRST_FRAME
+    
+    print(f"   {window_times[w] * 1e3:6.1f}   {frame:6.1f}   {velocity[w, x, y]:+7.2f}") 
