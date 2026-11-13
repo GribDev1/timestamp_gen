@@ -17,7 +17,7 @@ import numpy as np
 RENDER_FPS = 240.0 # Blender frame rate
 FIRST_FRAME = 1 # Blender first frame
 OUTPUTS_DIR = Path("outputs") # folder that holds one sub-folder per test
-WINDOW = 500        # blocks per fit (500 blocks * 25.6 us = 12.8 ms)
+WINDOW = 100        # blocks per fit (500 blocks * 25.6 us = 12.8 ms)
 STEP = 20           # move the window forward this many blocks each time
 MAX_SPEED = 20.0    # m/s; faster fits are treated as errors and dropped
 MIN_POINTS = 250    # need at least this many valid samples in a window
