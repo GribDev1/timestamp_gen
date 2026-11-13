@@ -17,10 +17,10 @@ import numpy as np
 RENDER_FPS = 240.0 # Blender frame rate
 FIRST_FRAME = 1 # Blender first frame
 OUTPUTS_DIR = Path("outputs") # folder that holds one sub-folder per test
-WINDOW = 100        # blocks per fit (500 blocks * 25.6 us = 12.8 ms)
-STEP = 20           # move the window forward this many blocks each time
-MAX_SPEED = 20.0    # m/s; faster fits are treated as errors and dropped
-MIN_POINTS = 250    # need at least this many valid samples in a window
+WINDOW = 100 # blocks per fit (500 blocks * 25.6 us = 12.8 ms)
+STEP = 20 # move the window forward this many blocks each time
+MAX_SPEED = 20.0 # m/s; faster fits are treated as errors and dropped
+MIN_VALID_FRAC = 0.5 # need at least this fraction of valid samples in a window
 
 # 1) Load the data
 if len(sys.argv) < 2:
@@ -52,7 +52,7 @@ for w, start in enumerate(window_starts):
         for x in range(W):
             r = ranges[start:start + WINDOW, y, x]
             ok = np.isfinite(r) # ignore blocks with no readings
-            if ok.sum() < MIN_POINTS:
+            if ok.sum() < MIN_VALID_FRAC * WINDOW:
                 continue # too few readings to trust a fit
             
             # polyfit degree 1 -> [slope, intercept]; slope = meters per second
