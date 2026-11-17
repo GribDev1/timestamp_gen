@@ -20,25 +20,25 @@ from scene_builder import RenderConfig, PlaneConfig, build_basic_scene
 
 
 render = RenderConfig(
-    width=320,
+    width=160,
     height=160,
     fps=240,
     frame_start=1,
-    frame_end=30,
+    frame_end=240,
 )
 
 foreground = PlaneConfig(
     name="Moving Flat Plane",
     size=9,
-    location=(0.0, 0.0, -6.0),
+    location=(0.0, 0.0, -4.0),
     rotation_deg=(0.0, 0.0, 0.0),
     color=(0.8, 0.8, 0.8, 1.0),
 )
 
 motion = {
     "keyframes": [
-        (1, (0.0, 0.0, -6.0)),
-        (30, (0.0, 0.0, -4.0)),
+        (1, (0.0, 0.0, -4.0)),
+        (240, (0.0, 0.0, 0.0)),
     ],
     "interpolation": "LINEAR",
 }
