@@ -50,7 +50,7 @@ print(f"{num_blocks} blocks, {H}x{W} pixels, {times[-1] - times[0]:.3f} s of dat
 # 2) Slide a window along time and fit a line for each pixel
 window_starts = list(range(0, num_blocks - WINDOW + 1, STEP))
 velocity = np.full((len(window_starts), H, W), np.nan) # result, NaN if not usable
-mean_range = velocity
+mean_range = np.full((len(window_starts), H, W), np.nan)
 window_times = np.zeros(len(window_starts))
 
 print(f"Computing {len(window_starts)} windows...")
@@ -89,7 +89,7 @@ for w in np.linspace(0, len(window_starts) - 1, 10).astype(int):
     scene_time = window_times[w] - block_duration
     frame = scene_time * RENDER_FPS + FIRST_FRAME
     
-    print(f"   {window_times[w] * 1e3:6.1f}   {frame:6.1f}   {velocity[w, x, y]:+7.2f}") 
+    print(f"   {window_times[w] * 1e3:6.1f}   {frame:6.1f}   {velocity[w, y, x]:+7.2f}") 
     
 # 4) Draw one image per window
 vel_cmap = plt.get_cmap("coolwarm").copy()
